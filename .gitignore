@@ -1,0 +1,2 @@
+*.save
+home-manager/modules/*.save
