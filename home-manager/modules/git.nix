@@ -4,8 +4,8 @@
     enable = true;
     settings = {
       user = {
-        name  = "Godog_1145";                              # 替换 1
-        email = "Godog_1145@users.noreply.gitcode.com";      # 替换 2：填真实邮箱，别再留占位符
+        name  = "Godog_1145";
+        email = "261724093+Tevy-DK@users.noreply.github.com.";
       };
       init.defaultBranch = "main";
       pull.rebase = true;
