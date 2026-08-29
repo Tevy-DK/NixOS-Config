@@ -1,18 +1,8 @@
-{ config, pkgs, ... }:
-{
-  /*boot.loader = {
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
-    };
-    systemd-boot.enable = false;
-    grub = {
-      enable = true;
-      efiSupport = true;
-      device = "nodev";
-    };
-  };*/
+{ config, pkgs, inputs, ... }:
+let
+  cachyos = inputs.nix-cachyos-kernel.packages.${pkgs.system};
+in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackagesFor cachyos.linux-cachyos-bore-lto-x86_64-v3;
 }
