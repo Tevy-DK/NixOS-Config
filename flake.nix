@@ -19,10 +19,6 @@
       url = "github:hyprwm/Hyprland/v0.56.0";
       #inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
     hyprland-scroll-overview = {
       url = "github:yayuuu/hyprland-scroll-overview";
       inputs.hyprland.follows = "hyprland";

@@ -1,4 +1,4 @@
-{ config, ...}:
+{ config, pkgs, ... }:
 {
   /*boot.loader = {
     efi = {
