@@ -2,7 +2,7 @@
 
 {
   home.sessionVariables = {
-    EDITOR = "nano";
+    EDITOR = "nvim";
   };
 
   programs.fish = {

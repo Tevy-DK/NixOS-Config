@@ -53,7 +53,6 @@ local menu        = "hyprlauncher"
 hl.on("hyprland.start", function ()
     hl.exec_cmd("caelestia shell -d")
     hl.exec_cmd("fcitx5")
-    hl.exec_cmd("qs -c overview")
 end)
 
 
@@ -263,14 +262,10 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 --********************caelestia-shell********************
 hl.bind(mainMod .. " + SPACE", hl.dsp.global("caelestia:launcher"))
 hl.bind(mainMod .. " + X", hl.dsp.global("caelestia:session"))
-hl.bind("Print", hl.dsp.exec_cmd("caelestia screenshot"))
-hl.bind(mainMod .. " + SHIFT + ALT+ S", hl.dsp.global("caelestia:screenshotFreeze"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.global("caelestia:screenshot"))
-hl.bind("CTRL + ALT + R", hl.dsp.exec_cmd("caelestia record -s"))
-hl.bind(mainMod .. " + SHIFT + ALT + R", hl.dsp.exec_cmd("caelestia record -r"))
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard"))
-hl.bind(mainMod .. " + ALT + V", hl.dsp.exec_cmd("pkill fuzzel || caelestia clipboard -d"))
-hl.bind(mainMod .. " + TAB", hl.dsp.exec_cmd("qs ipc -c overview call overview toggle"))
+hl.bind(mainMod .. " + SHIFT + ALT+ S", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("ghostty --class=com.dk.clipse -e clipse"))
+hl.bind(mainMod .. " + TAB", function() hl.plugin.scrolloverview.overview("toggle all") end)
 
 
 -- ******************** 现有绑定（保持不变） ********************
@@ -300,10 +295,6 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i }))
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
-
--- 特殊工作区（scratchpad）
-hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
 -- 通过滚轮切换工作区
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
@@ -358,23 +349,6 @@ hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.move({ direction = "right" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
-
--- 监视器切换
---hl.bind(mainMod .. " + CONTROL + H", hl.dsp.focusmonitor({ direction = "left" }))
---hl.bind(mainMod .. " + CONTROL + L", hl.dsp.focusmonitor({ direction = "right" }))
---hl.bind(mainMod .. " + CONTROL + K", hl.dsp.focusmonitor({ direction = "up" }))
---hl.bind(mainMod .. " + CONTROL + J", hl.dsp.focusmonitor({ direction = "down" }))
---hl.bind(mainMod .. " + CONTROL + left",  hl.dsp.focusmonitor({ direction = "left" }))
---hl.bind(mainMod .. " + CONTROL + right", hl.dsp.focusmonitor({ direction = "right" }))
--- 注意：focusmonitor 可能参数是字符串，此处假设用法一致，如不支持方向，可改用 numeric
-
--- 截图（需要 grim + slurp，也可替换为 flameshot）
-hl.bind("ALT + Print",         hl.dsp.exec_cmd("grim -g \"$(slurp)\""))
-hl.bind("ALT + XF86Launch1",   hl.dsp.exec_cmd("grim -g \"$(slurp)\""))
-hl.bind("CONTROL + Print",     hl.dsp.exec_cmd("grim"))
-hl.bind("CONTROL + XF86Launch1", hl.dsp.exec_cmd("grim"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\""))
-hl.bind("XF86Launch1",         hl.dsp.exec_cmd("grim -g \"$(slurp)\""))
 
 -- 显示器休眠（DPMS off）
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.dpms("off"))
@@ -434,4 +408,26 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
+})
+hl.window_rule({
+    name  = "clipse",
+    match = { class = "com.dk.clipse" },
+    float  = true,
+    size  = "650 750",
+})
+
+----------------BLUR--------------
+hl.config({
+  decoration = {
+    blur = {
+      size = 7,
+      passes = 2,
+    },
+  },
+})
+
+hl.layer_rule({
+  match = { namespace = "caelestia-.*" },
+  blur = true,
+  ignore_alpha = 0.57,
 })

@@ -19,5 +19,8 @@
     ./modules/services.nix
     ./modules/ghostty.nix
     ./modules/yazi.nix
+    ./modules/nvim.nix
+    ./modules/hyprshot.nix
+    ./modules/cava.nix
   ];
 }

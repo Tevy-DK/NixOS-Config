@@ -1,5 +1,14 @@
 { pkgs, ... }:
-{
+
+let
+  # 1. 使用 fetchFromGitHub 声明式地获取着色器仓库
+  cursorShaders = pkgs.fetchFromGitHub {
+    owner = "sahaj-b";
+    repo = "ghostty-cursor-shaders";
+    rev = "0a274beac8b93ee6ce6b94402b7313a0417b8e38";
+    hash = "sha256-B7B6K7Ee4uJlW8zzLP3ILgddnbcIQyNimY+rVllzbR0=";
+  };
+in {
   programs.ghostty = {
     enable = true;
     package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else pkgs.ghostty;
@@ -17,12 +26,8 @@
       window-theme = "auto";                   # 跟随系统主题
 
       # ==========================================
-      # 2. 毛玻璃效果 - 背景透明与模糊
-      # ==========================================
-      background-opacity = 0.9;                # 透明度 0.9，隐约可见背景[reference:3][reference:4]
-      background-blur-radius = 24;             # 模糊半径 24，磨砂质感[reference:5][reference:6]
-      macos-titlebar-style = "transparent";    # (macOS) 透明标题栏
-
+      background-opacity = 0.75;
+      background-blur-radius = 24; 
       # ==========================================
       # 3. 窗口与内边距 - 舒适呼吸感
       # ==========================================
@@ -85,6 +90,8 @@
       # ==========================================
       scrollback-limit = 25000000;              # 回滚行数限制 (约25MB)
       confirm-close-surface = false;	#关掉倒霉的提醒
+      custom-shader = "${cursorShaders}/cursor_warp.glsl";
+      custom-shader-animation = "always";    #光标特效
     };
   };
 }

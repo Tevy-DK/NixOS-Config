@@ -16,22 +16,39 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland = {
-      url = "github:hyprwm/Hyprland";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:hyprwm/Hyprland/v0.56.0";
+      #inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
       inputs.hyprland.follows = "hyprland";
     };
+    hyprland-scroll-overview = {
+      url = "github:yayuuu/hyprland-scroll-overview";
+      inputs.hyprland.follows = "hyprland";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, hyprland , ... }@inputs: {
+    overlays.default = final: prev: {
+      yaziPlugins = prev.yaziPlugins // {
+        mount = prev.yaziPlugins.mount.overrideAttrs (old: {
+          postPatch = (old.postPatch or "") + ''
+            substituteInPlace mount.yazi/cross.lua \
+              --replace-fail '"--no-user-interaction"' ""
+          '';
+        });
+       };
+    };
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
         home-manager.nixosModules.home-manager
         {
+	  nixpkgs.overlays = [
+      	    self.overlays.default
+          ];
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit inputs; };
