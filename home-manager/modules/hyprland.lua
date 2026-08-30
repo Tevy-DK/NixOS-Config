@@ -17,7 +17,6 @@
 -- Create your files separately and then require them like this:
 -- require("myColors")
 
-
 ------------------
 ---- MONITORS ----
 ------------------
@@ -271,9 +270,9 @@ hl.bind(mainMod .. " + TAB", function() hl.plugin.scrolloverview.overview("toggl
 -- ******************** 现有绑定（保持不变） ********************
 
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
-
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
--- closeWindowBind:set_enabled(false)
+--调整窗口大小--
+hl.bind(mainMod .. " + SHIFT + Equal", hl.dsp.layout("colresize +0.02"), { repeating = true })
+hl.bind(mainMod .. " + SHIFT + Minus", hl.dsp.layout("colresize -0.02"), { repeating = true })
 
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("ghostty -e yazi"))
@@ -349,7 +348,6 @@ hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.move({ direction = "right" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
-
 -- 显示器休眠（DPMS off）
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.dpms("off"))
 
