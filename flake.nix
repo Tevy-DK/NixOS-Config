@@ -23,7 +23,7 @@
       url = "github:yayuuu/hyprland-scroll-overview";
       inputs.hyprland.follows = "hyprland";
     };
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
+    #nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
   };
 
   outputs = { self, nixpkgs, home-manager, hyprland , ... }@inputs: {
