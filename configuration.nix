@@ -23,7 +23,6 @@
       ./modules/shell.nix
       ./modules/hyprland.nix
       ./modules/nix-ld.nix
-      ./modules/security.nix
       ./modules/clash.nix
     ];
   system.stateVersion = "26.05";
