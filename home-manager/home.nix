@@ -22,5 +22,6 @@
     ./modules/nvim.nix
     ./modules/hyprshot.nix
     ./modules/cava.nix
+    ./modules/hyprpolkitagent.nix
   ];
 }

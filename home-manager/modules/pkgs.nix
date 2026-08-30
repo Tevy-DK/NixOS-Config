@@ -8,7 +8,5 @@
     vscode
     obs-studio
     wl-clipboard
-    hyprpolkitagent
-
   ];
 }
