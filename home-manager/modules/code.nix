@@ -16,18 +16,19 @@ let
   };
 
 in {
-  programs.vscode = {
+  programs.vscodium = {
     enable = true;
-    package = pkgs.vscodium;   # 使用 VSCodium（轻量替代品）
-    extensions = with pkgs.vscode-extensions; [
-      zhuangtongfa.material-theme
-      ziglang.vscode-zig
-      yzhang.markdown-all-in-one
-      bbenoist.nix
-      ms-python.python
-      ms-vscode.makefile-tools
+    profiles.default = {
+      extensions = with pkgs.vscode-extensions; [
+        zhuangtongfa.material-theme
+        ziglang.vscode-zig
+        yzhang.markdown-all-in-one
+        bbenoist.nix
+        ms-python.python
+        ms-vscode.makefile-tools
 
-    ];
-    userSettings = vscodesettings;
+      ];
+      userSettings = vscodesettings;
+    };
   };
 }

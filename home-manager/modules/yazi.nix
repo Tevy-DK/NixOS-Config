@@ -8,7 +8,7 @@
       _7zz = pkgs._7zz-rar;
     };
     plugins = {
-      inherit (pkgs.yaziPlugins) mediainfo git mount;
+      inherit (pkgs.yaziPlugins) mediainfo git mount trush;
     };
     extraPackages = with pkgs; [
       file
