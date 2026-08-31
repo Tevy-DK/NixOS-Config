@@ -5,7 +5,6 @@
     google-chrome
     hmcl
     tela-icon-theme
-    vscode
     obs-studio
     wl-clipboard
   ];
