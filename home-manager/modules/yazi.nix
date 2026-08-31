@@ -1,14 +1,14 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   programs.yazi = {
     enable = true;
     enableFishIntegration = true;
     package = pkgs.yazi.override {
-      _7zz = pkgs._7zz-rar;
+      _7zz = pkgs._7zz-rar;   # 支持 RAR 解压
     };
     plugins = {
-      inherit (pkgs.yaziPlugins) mediainfo git mount trush;
+      inherit (pkgs.yaziPlugins) mediainfo git mount recycle-bin;
     };
     extraPackages = with pkgs; [
       file
