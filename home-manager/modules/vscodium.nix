@@ -26,7 +26,7 @@ in {
         bbenoist.nix
         ms-python.python
         ms-vscode.makefile-tools
-
+        ms-ceintl.vscode-language-pack-zh-hans
       ];
       userSettings = vscodesettings;
     };
