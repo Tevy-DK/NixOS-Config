@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 {
     imports = [
       inputs.caelestia-shell.homeManagerModules.default
@@ -7,8 +7,8 @@
       enable = true;
       package = inputs.caelestia-shell.packages.${pkgs.system}.with-cli;
       systemd = {
-        enable = false; # if you prefer starting from your compositor
-        target = "graphical-session.target";
+        enable = true; # if you prefer starting from your compositor
+        target = config.wayland.systemd.target;
         environment = [];
       };
       extraConfig = builtins.readFile ./shell.json;
