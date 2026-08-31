@@ -20,10 +20,10 @@ in {
     enable = true;
     package = pkgs.vscodium;   # 使用 VSCodium（轻量替代品）
     extensions = with pkgs.vscode-extensions; [
-      vscode-extensions.zhuangtongfa.material-theme
-      vscode-extensions.ziglang.vscode-zig
+      zhuangtongfa.material-theme
+      ziglang.vscode-zig
       yzhang.markdown-all-in-one
-      vscode-extensions.bbenoist.nix
+      bbenoist.nix
       ms-python.python
       ms-vscode.makefile-tools
 
