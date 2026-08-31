@@ -19,5 +19,6 @@
   bun
   lua
   zig
+  gnumake
   ];
 }
