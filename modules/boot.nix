@@ -1,6 +1,13 @@
 { config, pkgs, inputs, ... }:
 {
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    grub = {
+      enable = true;
+      device = "/dev/sda";
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
+    efi.canTouchEfiVariables = false;
+  };
   boot.kernelPackages = pkgs.linuxPackages_zen;
 }
