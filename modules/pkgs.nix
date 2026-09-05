@@ -18,7 +18,5 @@
   tree-sitter
   bun
   lua
-  zig
-  gnumake
   ];
 }
