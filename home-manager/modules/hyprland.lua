@@ -130,11 +130,11 @@ hl.config({
             passes    = 2,
             vibrancy  = 0.1696,
             new_optimizations = true,
-            ignore_opacity = true, 
+            ignore_opacity = true,
+            input_methods = false,
         },
         active_border = {
             colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
-            angle = 45,
         },
     },
 
