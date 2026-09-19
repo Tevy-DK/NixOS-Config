@@ -93,7 +93,7 @@ hl.config({
         gaps_in  = 5,
         gaps_out = 20,
 
-        border_size = 2,
+        border_size = 1,
 
         col = {
             active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
@@ -106,7 +106,7 @@ hl.config({
         -- Please see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Tearing/ before you turn this on
         allow_tearing = false,
 
-        layout = "scrolling",
+        layout = "dwindle",
     },
 
     decoration = {
@@ -114,8 +114,8 @@ hl.config({
         rounding_power = 2,
 
         -- Change transparency of focused and unfocused windows
-        active_opacity   = 1.0,
-        inactive_opacity = 1.0,
+        active_opacity   = 0.95,
+        inactive_opacity = 0.85,
 
         shadow = {
             enabled      = true,
@@ -126,9 +126,15 @@ hl.config({
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 7,
+            passes    = 2,
             vibrancy  = 0.1696,
+            new_optimizations = true,
+            ignore_opacity = true, 
+        },
+        active_border = {
+            colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
+            angle = 45,
         },
     },
 
@@ -260,18 +266,18 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 --********************caelestia-shell********************
 hl.bind(mainMod .. " + SPACE", hl.dsp.global("caelestia:launcher"))
 hl.bind(mainMod .. " + X", hl.dsp.global("caelestia:session"))
-hl.bind(mainMod .. " + SHIFT + ALT+ S", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind(mainMod .. " + SHIFT + ALT + S", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -z -m region"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("ghostty --class=com.dk.clipse -e clipse"))
-hl.bind(mainMod .. " + TAB", function() hl.plugin.scrolloverview.overview("toggle all") end)
+--hl.bind(mainMod .. " + TAB", function() hl.plugin.scrolloverview.overview("toggle all") end)
 
 
 -- ******************** 现有绑定（保持不变） ********************
 
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 --调整窗口大小--
-hl.bind(mainMod .. " + SHIFT + Equal", hl.dsp.layout("colresize +0.02"), { repeating = true })
-hl.bind(mainMod .. " + SHIFT + Minus", hl.dsp.layout("colresize -0.02"), { repeating = true })
+--hl.bind(mainMod .. " + SHIFT + Equal", hl.dsp.layout("colresize +0.02"), { repeating = true })
+--hl.bind(mainMod .. " + SHIFT + Minus", hl.dsp.layout("colresize -0.02"), { repeating = true })
 
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("ghostty -e yazi"))
@@ -288,11 +294,16 @@ hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
 -- 工作区切换（数字 1-9 和 0）
-for i = 1, 10 do
+for i = 1, 9 do
     local key = i % 10
     hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i }))
     hl.bind(mainMod .. " + SHIFT + " .. key,     hl.dsp.window.move({ workspace = i }))
 end
+-- 切换到特殊工作区（切换显示/隐藏）
+hl.bind(mainMod .. " + 0", hl.dsp.workspace.toggle_special())
+
+-- 把当前窗口移动到特殊工作区
+hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = "special" }))
 
 -- 通过滚轮切换工作区
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
@@ -325,33 +336,17 @@ hl.bind(mainMod .. " + U", hl.dsp.focus({ workspace = "e+1" }))  -- 下一个
 hl.bind(mainMod .. " + Page_Up",   hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + Page_Down", hl.dsp.focus({ workspace = "e+1" }))
 
--- 移动当前窗口到相邻工作区（上下）
-hl.bind(mainMod .. " + CONTROL + I", hl.dsp.window.move({ workspace = "e-1" }))
-hl.bind(mainMod .. " + CONTROL + U", hl.dsp.window.move({ workspace = "e+1" }))
-hl.bind(mainMod .. " + CONTROL + Up",   hl.dsp.window.move({ workspace = "e-1" }))
-hl.bind(mainMod .. " + CONTROL + Down", hl.dsp.window.move({ workspace = "e+1" }))
-
--- 移动窗口到上一个/下一个工作区（与上面类似，但保留原意）
-hl.bind(mainMod .. " + SHIFT + I", hl.dsp.window.move({ workspace = "e-1" }))
-hl.bind(mainMod .. " + SHIFT + U", hl.dsp.window.move({ workspace = "e+1" }))
-hl.bind(mainMod .. " + SHIFT + Page_Up",   hl.dsp.window.move({ workspace = "e-1" }))
-hl.bind(mainMod .. " + SHIFT + Page_Down", hl.dsp.window.move({ workspace = "e+1" }))
-
--- 移动窗口（方向移动）—— 注意现有已用 SUPER+SHIFT+方向？现有没有，所以新增
-hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+-- 调整窗口大小
+-- 调整窗口大小（基于 Dwindle 布局的 splitratio）
+hl.bind(mainMod .. " + Equal", hl.dsp.layout("splitratio +0.05"), { repeating = true })
+hl.bind(mainMod .. " + Minus", hl.dsp.layout("splitratio -0.05"), { repeating = true })
+-- 移动窗口
+hl.bind(mainMod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
 hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
-hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
--- 也可以用 J/K/H/L
-hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "left" }))
-hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.move({ direction = "up" }))
-hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.move({ direction = "down" }))
+hl.bind(mainMod .. " + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
 -- 显示器休眠（DPMS off）
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.dpms("off"))
-
--- 直接退出 Hyprland（与现有 SUPER+M 不同，可共存）
-hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
 
 -- 额外应用启动（未占用键位）
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("helium"))        -- 浏览器
@@ -398,14 +393,6 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
--- Hyprland-run windowrule
-hl.window_rule({
-    name  = "move-hyprland-run",
-    match = { class = "hyprland-run" },
-
-    move  = "20 monitor_h-120",
-    float = true,
-})
 hl.window_rule({
     name  = "clipse",
     match = { class = "com.dk.clipse" },
@@ -414,14 +401,6 @@ hl.window_rule({
 })
 
 ----------------BLUR--------------
-hl.config({
-  decoration = {
-    blur = {
-      size = 7,
-      passes = 2,
-    },
-  },
-})
 
 hl.layer_rule({
   match = { namespace = "caelestia-.*" },

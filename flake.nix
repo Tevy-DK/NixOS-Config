@@ -16,16 +16,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland = {
-      url = "github:hyprwm/Hyprland/v0.56.0";
+      url = "github:hyprwm/Hyprland";
       #inputs.nixpkgs.follows = "nixpkgs";
-    };
-    hyprland-scroll-overview = {
-      url = "github:yayuuu/hyprland-scroll-overview";
-      inputs.hyprland.follows = "hyprland";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland , ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     overlays.default = final: prev: {
       yaziPlugins = prev.yaziPlugins // {
         mount = prev.yaziPlugins.mount.overrideAttrs (old: {

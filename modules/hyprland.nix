@@ -9,3 +9,5 @@
     xwayland.enable = true; # Xwayland can be disabled.
   };
 }
+
+

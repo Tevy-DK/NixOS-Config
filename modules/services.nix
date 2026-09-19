@@ -31,4 +31,5 @@
       hide_session_selection = true;
     };
   };
+  services.flatpak.enable = true;
 }
