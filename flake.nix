@@ -9,11 +9,10 @@
     };
     noctalia = {
       url = "github:noctalia-dev/noctalia/cachix";
-      # 不要写 inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, noctalia, ... }@inputs: {
     overlays.default = final: prev: {
       yaziPlugins = prev.yaziPlugins // {
         mount = prev.yaziPlugins.mount.overrideAttrs (old: {

@@ -1,9 +1,6 @@
 { config, pkgs, ... }:
 {
-# Set your time zone.
   time.timeZone = "Asia/Shanghai";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "zh_CN.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -21,17 +18,18 @@
   i18n.inputMethod = {
     type = "fcitx5";
     enable = true;
-
-    # 2. 配置输入法引擎和外观插件
-    fcitx5.addons = with pkgs; [
-      qt6Packages.fcitx5-chinese-addons     # 核心：内置了拼音、五笔等中文输入法
-      fcitx5-mellow-themes     # 皮肤：非常好看的 Material 质感配色主题
-    ];
+    fcitx5 = {
+      addons = with pkgs; [
+        qt6Packages.fcitx5-chinese-addons
+        fcitx5-mellow-themes
+        fcitx5-gtk # 建议添加，为GTK程序提供更好的输入法支持
+      ];
+      waylandFrontend = true; # 关键配置
+    };
   };
 
-  # 3. 环境变量优化（防止某些老旧或特殊架构软件无法切出输入法）
+  # 保留 XMODIFIERS，移除 QT_IM_MODULE
   environment.variables = {
     XMODIFIERS = "@im=fcitx";
-    QT_IM_MODULE = "fcitx";     # 现代 Kitty/Ghostty 终端在 Wayland 下推荐的形式
   };
 }

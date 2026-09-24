@@ -19,6 +19,7 @@
       ./modules/nix-ld.nix
       ./modules/clash.nix
       ./modules/security.nix
+      ./modules/others.nix
     ];
   system.stateVersion = "26.05";
 }
