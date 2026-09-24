@@ -1,0 +1,420 @@
+// ═══════════════════════════════════════════════════════
+// Niri 配置 — DMS 配置合并整理版（适配 Noctalia）
+// 原 dms/*.kdl 已全部内联，DMS 专属规则已移除
+// ═══════════════════════════════════════════════════════
+
+// ─── 启动 Noctalia ────────────────────────────────────
+// 命令名请根据实际安装验证，可能是 noctalia 或 noctalia-shell
+spawn-at-startup "noctalia-shell"
+
+// ─── 环境变量导入 ─────────────────────────────────────
+spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
+spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
+// ─── 基础设置 ─────────────────────────────────────────
+config-notification {
+    disable-failed
+}
+
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+// ─── 输入设备（合并 dms/input.kdl）────────────────────
+input {
+    keyboard {
+        xkb {
+            // layout "us"
+            // options "grp:win_space_toggle,compose:ralt,ctrl:nocaps"
+        }
+        numlock
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        accel-speed 0.0
+        dwt
+    }
+
+    mouse {
+        accel-speed 0.0
+    }
+
+    trackpoint {
+    }
+}
+
+// ─── 输出（来自 dms/outputs.kdl）─────────────────────
+output "HDMI-A-1" {
+    mode "1920x1080@100.003"
+    scale 1
+    position x=0 y=0
+}
+
+// ─── 布局（合并主文件 + dms/layout.kdl + dms/colors.kdl）──
+layout {
+    background-color "transparent"
+    gaps 4
+    center-focused-column "never"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    border {
+        off
+        width 1
+        active-color   "#a4c9fe"
+        inactive-color "#8d9199"
+        urgent-color   "#ffb4ab"
+    }
+
+    focus-ring {
+        width 1
+        active-color   "#a4c9fe"
+        inactive-color "#8d9199"
+        urgent-color   "#ffb4ab"
+    }
+
+    shadow {
+        softness 30
+        spread 5
+        offset x=0 y=5
+        color "#00000070"
+    }
+
+    tab-indicator {
+        active-color   "#a4c9fe"
+        inactive-color "#8d9199"
+        urgent-color   "#ffb4ab"
+    }
+
+    insert-hint {
+        color "#a4c9fe80"
+    }
+
+    struts {
+    }
+}
+
+// ─── Layer 规则 ───────────────────────────────────────
+// 原 DMS/Quickshell 的 layer-rule 已移除
+// Noctalia v5 是原生 C++ 应用，不依赖 quickshell namespace
+// 如果 Noctalia 需要 place-within-backdrop，在此添加其 namespace
+
+// ─── 概览 ─────────────────────────────────────────────
+overview {
+    workspace-shadow {
+        off
+    }
+}
+
+// ─── 环境 ─────────────────────────────────────────────
+environment {
+    XDG_CURRENT_DESKTOP "niri"
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// ─── 动画 ─────────────────────────────────────────────
+animations {
+    workspace-switch {
+        spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
+    }
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+    }
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+    horizontal-view-movement {
+        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+    }
+    window-movement {
+        spring damping-ratio=0.75 stiffness=323 epsilon=0.0001
+    }
+    window-resize {
+        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+    }
+    config-notification-open-close {
+        spring damping-ratio=0.65 stiffness=923 epsilon=0.001
+    }
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+    overview-open-close {
+        spring damping-ratio=0.85 stiffness=800 epsilon=0.0001
+    }
+}
+
+// ─── 窗口规则 ─────────────────────────────────────────
+
+// 全局圆角（来自 dms/layout.kdl，已移除无效的 tiled-state）
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+window-rule {
+    match app-id=r#"^org\.gnome\."#
+    draw-border-with-background false
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+
+window-rule {
+    match app-id=r#"^gnome-control-center$"#
+    match app-id=r#"^pavucontrol$"#
+    match app-id=r#"^nm-connection-editor$"#
+    default-column-width { proportion 0.5; }
+    open-floating false
+}
+
+window-rule {
+    match app-id=r#"^org\.gnome\.Calculator$"#
+    match app-id=r#"^gnome-calculator$"#
+    match app-id=r#"^galculator$"#
+    match app-id=r#"^blueman-manager$"#
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    match app-id=r#"^xdg-desktop-portal$"#
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^steam$"# title=r#"^notificationtoasts_\d+_desktop$"#
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+    open-focused false
+}
+
+window-rule {
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    match app-id="Alacritty"
+    match app-id="zen"
+    match app-id="com.mitchellh.ghostty"
+    match app-id="kitty"
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id="zoom"
+    match app-id="ghostty"
+    match app-id="SJMCL"
+    open-floating true
+}
+
+window-rule {
+    match app-id="ghostty"
+    match app-id="code"
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    clip-to-geometry true
+    background-effect {
+        blur true
+        noise 0.01
+        saturation 1.5
+    }
+    opacity 0.75
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// ─── 最近窗口（合并主文件 + dms/alttab.kdl）──────────
+recent-windows {
+    highlight {
+        corner-radius 12
+    }
+    binds {
+        Alt+Tab         { next-window scope="output"; }
+        Alt+Shift+Tab   { previous-window scope="output"; }
+        Alt+grave       { next-window filter="app-id"; }
+        Alt+Shift+grave { previous-window filter="app-id"; }
+    }
+}
+
+// ─── 键位绑定（合并 dms/binds.kdl，DMS IPC 已替换）───
+binds {
+    // ═══ 应用启动 ═══
+    Mod+B hotkey-overlay-title="Helium Browser" { spawn "helium"; }
+    Mod+E hotkey-overlay-title="Nautilus File Manager" { spawn "nautilus"; }
+    Mod+T hotkey-overlay-title="Open Terminal" { spawn "ghostty"; }
+    Super+G hotkey-overlay-title="Chrome" { spawn "google-chrome"; }
+    Super+Shift+C hotkey-overlay-title="VSCode" { spawn "code"; }
+
+    // ═══ 窗口管理 ═══
+    Mod+Q repeat=false { close-window; }
+    Mod+Shift+E { quit; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+W { toggle-column-tabbed-display; }
+    Mod+Shift+T { toggle-window-floating; }
+    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+    Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+C { center-column; }
+    Mod+Ctrl+C { center-visible-columns; }
+    Mod+Ctrl+F { expand-column-to-available-width; }
+    Mod+Ctrl+R { reset-window-height; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Period { expel-window-from-column; }
+    Mod+BracketLeft { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    // ═══ 焦点移动 ═══
+    Mod+H { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+J { focus-window-down; }
+    Mod+K { focus-window-up; }
+    Mod+Left { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up { focus-window-up; }
+    Mod+Down { focus-window-down; }
+    Mod+Home { focus-column-first; }
+    Mod+End { focus-column-last; }
+    Mod+WheelScrollLeft { focus-column-left; }
+    Mod+WheelScrollRight { focus-column-right; }
+    Mod+Shift+WheelScrollDown { focus-column-right; }
+    Mod+Shift+WheelScrollUp { focus-column-left; }
+
+    // ═══ 移动窗口 ═══
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+L { move-column-right; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+Left { move-column-left; }
+    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+Up { move-window-up; }
+    Mod+Shift+Down { move-window-down; }
+    Mod+Ctrl+Shift+WheelScrollDown { move-column-right; }
+    Mod+Ctrl+Shift+WheelScrollUp { move-column-left; }
+    Mod+Ctrl+WheelScrollLeft { move-column-left; }
+    Mod+Ctrl+WheelScrollRight { move-column-right; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End { move-column-to-last; }
+
+    // ═══ 工作区 ═══
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+    Mod+I { focus-workspace-up; }
+    Mod+U { focus-workspace-down; }
+    Mod+Page_Up { focus-workspace-up; }
+    Mod+Page_Down { focus-workspace-down; }
+    Mod+Ctrl+I { move-column-to-workspace-up; }
+    Mod+Ctrl+U { move-column-to-workspace-down; }
+    Mod+Ctrl+Up { move-column-to-workspace-up; }
+    Mod+Ctrl+Down { move-column-to-workspace-down; }
+    Mod+Shift+I { move-workspace-up; }
+    Mod+Shift+U { move-workspace-down; }
+    Mod+Shift+Page_Up { move-workspace-up; }
+    Mod+Shift+Page_Down { move-workspace-down; }
+    Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+Ctrl+WheelScrollUp cooldown-ms=150 { move-column-to-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+
+    // ═══ 显示器 ═══
+    Mod+Ctrl+H { focus-monitor-left; }
+    Mod+Ctrl+J { focus-monitor-down; }
+    Mod+Ctrl+K { focus-monitor-up; }
+    Mod+Ctrl+L { focus-monitor-right; }
+    Mod+Ctrl+Left { focus-monitor-left; }
+    Mod+Ctrl+Right { focus-monitor-right; }
+    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+K { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+Left { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
+    Mod+Shift+Ctrl+Up { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+Down { move-column-to-monitor-down; }
+
+    // ═══ 概览/其他 ═══
+    Mod+D repeat=false { toggle-overview; }
+    Mod+Tab repeat=false { toggle-overview; }
+    Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+    Mod+Shift+P { power-off-monitors; }
+
+    // ═══ 截屏 ═══
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+    Super+Shift+S { screenshot; }
+    XF86Launch1 { screenshot; }
+    Alt+XF86Launch1 { screenshot-window; }
+    Ctrl+XF86Launch1 { screenshot-screen; }
+
+    // ═══ Noctalia Shell ═══
+    // ⚠️ 以下 IPC 命令语法需根据 Noctalia 实际版本验证
+    // 如果命令不对，请查阅 Noctalia 文档替换
+    Mod+Space hotkey-overlay-title="Application Launcher" { spawn-sh "noctalia-shell msg panel-toggle launcher"; }
+    Mod+N hotkey-overlay-title="Notification Center" { spawn-sh "noctalia-shell msg panel-toggle notifications"; }
+    Mod+V hotkey-overlay-title="Clipboard Manager" { spawn-sh "noctalia-shell msg panel-toggle clipboard"; }
+    Mod+Y hotkey-overlay-title="Browse Wallpapers" { spawn-sh "noctalia-shell msg panel-toggle wallpaper"; }
+    Super+X hotkey-overlay-title="Power Menu" { spawn-sh "noctalia-shell msg panel-toggle powermenu"; }
+    Mod+Comma hotkey-overlay-title="Settings" { spawn-sh "noctalia-shell msg panel-toggle control-center"; }
+    Mod+Alt+L hotkey-overlay-title="Lock Screen" { spawn "swaylock"; }
+
+    // ═══ 系统控制（Noctalia 会显示 OSD）═══
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
+    XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
+    Ctrl+XF86AudioRaiseVolume allow-when-locked=true { spawn "playerctl" "next"; }
+    Ctrl+XF86AudioLowerVolume allow-when-locked=true { spawn "playerctl" "previous"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl set 5%+"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%-"; }
+
+    // ═══ 已移除的 DMS 专属绑定 ═══
+    // Ctrl+Alt+Delete → DMS 任务管理器（Noctalia 无对应）
+    // Ctrl+Shift+R    → DMS 重命名工作区（Noctalia 无对应）
+    // Mod+M           → DMS 任务管理器（Noctalia 无对应）
+    // Mod+Shift+N     → DMS 记事本（Noctalia 无对应）
+    // Mod+Shift+W     → DMS 窗口规则（Noctalia 无对应）
+}

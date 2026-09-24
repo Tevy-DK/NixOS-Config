@@ -6,7 +6,6 @@
     hmcl
     tela-icon-theme
     obs-studio
-    wl-clipboard
     marktext
   ];
 }

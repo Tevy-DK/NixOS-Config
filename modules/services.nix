@@ -22,14 +22,7 @@
     };
   };
   services.udisks2.enable = true;
-  services.displayManager.ly = {
-    enable = true;
-    settings = {
-      # 直接指定启动命令
-      start_cmd = "start-hyprland";
-      # 可选：隐藏会话选择界面，直接启动（不显示菜单）
-      hide_session_selection = true;
-    };
-  };
+  services.displayManager.ly.enable = true;
   services.flatpak.enable = true;
+  services.gnome.gnome-keyring.enable = true;
 }

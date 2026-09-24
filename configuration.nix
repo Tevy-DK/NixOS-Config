@@ -15,9 +15,10 @@
       ./modules/network.nix
       ./modules/memory.nix
       ./modules/shell.nix
-      ./modules/hyprland.nix
+      ./modules/niri.nix
       ./modules/nix-ld.nix
       ./modules/clash.nix
+      ./modules/security.nix
     ];
   system.stateVersion = "26.05";
 }

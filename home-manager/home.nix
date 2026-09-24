@@ -14,13 +14,12 @@
     ./modules/git.nix
     ./modules/starship.nix
     ./modules/themes.nix
-    ./modules/caelestia.nix
-    ./modules/hyprland.nix
+    ./modules/noctalia.nix
+    ./modules/niri.nix
     ./modules/services.nix
     ./modules/ghostty.nix
     ./modules/yazi.nix
     ./modules/nvim.nix
-    ./modules/hyprshot.nix
     ./modules/cava.nix
     ./modules/vscodium.nix
   ];
