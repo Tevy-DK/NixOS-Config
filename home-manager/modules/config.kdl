@@ -1,10 +1,7 @@
 // ═══════════════════════════════════════════════════════
 // Niri 配置 — 最终整合版（适配 Noctalia v5）
 // ═══════════════════════════════════════════════════════
-
-// ─── 启动 Noctalia ─────────────────────────────────────
 spawn-at-startup "noctalia"
-
 // ─── 环境变量导入 ─────────────────────────────────────
 spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
 spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
@@ -105,14 +102,12 @@ layout {
 }
 
 // ─── Layer 规则（Noctalia v5）─────────────────────────
-// 普通壁纸不要放入 backdrop；Noctalia v5 的专用 backdrop
-// layer 才应该放进 Niri Overview 的 backdrop。
+// Noctalia v5 Overview backdrop
 layer-rule {
-    match namespace="^noctalia-backdrop$"
+    match namespace="^noctalia-backdrop"
     place-within-backdrop true
 }
 
-// ─── 概览 ─────────────────────────────────────────────
 overview {
     workspace-shadow {
         off
@@ -241,7 +236,6 @@ window-rule {
 }
 
 // ─── Noctalia 设置窗口 ─────────────────────────────────
-// Noctalia v5 是原生 C++/Qt 窗口；这里由 Niri 负责透明度、圆角和背景模糊。
 // opacity 必须小于 1，否则 background-effect 会被不透明窗口完全盖住。
 window-rule {
     match app-id=r#"^dev\.noctalia\.Noctalia$"#
@@ -252,11 +246,11 @@ window-rule {
     clip-to-geometry true
     draw-border-with-background false
 
-    opacity 0.82
+    opacity 0.90
 
     background-effect {
         blur true
-        xray true
+        xray false
         noise 0.015
         saturation 1.25
     }
