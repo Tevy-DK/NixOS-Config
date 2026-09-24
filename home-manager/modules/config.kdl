@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════
 
 // ─── 启动 Noctalia ────────────────────────────────────
-// 命令名请根据实际安装验证，可能是 noctalia 或 noctalia-shell
-spawn-at-startup "noctalia-shell"
+// ⚠️ 命令名请用 `which noctalia` 或 `which noctalia-shell` 确认
+spawn-at-startup "noctalia"
 
 // ─── 环境变量导入 ─────────────────────────────────────
 spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
@@ -106,8 +106,6 @@ layout {
 
 // ─── Layer 规则 ───────────────────────────────────────
 // 原 DMS/Quickshell 的 layer-rule 已移除
-// Noctalia v5 是原生 C++ 应用，不依赖 quickshell namespace
-// 如果 Noctalia 需要 place-within-backdrop，在此添加其 namespace
 
 // ─── 概览 ─────────────────────────────────────────────
 overview {
@@ -165,7 +163,7 @@ animations {
 
 // ─── 窗口规则 ─────────────────────────────────────────
 
-// 全局圆角（来自 dms/layout.kdl，已移除无效的 tiled-state）
+// 全局圆角（来自 dms/layout.kdl）
 window-rule {
     geometry-corner-radius 12
     clip-to-geometry true
@@ -220,7 +218,7 @@ window-rule {
 window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     match app-id="zoom"
-    match app-id="ghostty"
+    //match app-id="ghostty"
     match app-id="SJMCL"
     open-floating true
 }
@@ -255,7 +253,7 @@ recent-windows {
     }
 }
 
-// ─── 键位绑定（合并 dms/binds.kdl，DMS IPC 已替换）───
+// ─── 键位绑定（合并 dms/binds.kdl，仅修正 Noctalia 命令）───
 binds {
     // ═══ 应用启动 ═══
     Mod+B hotkey-overlay-title="Helium Browser" { spawn "helium"; }
@@ -387,34 +385,32 @@ binds {
     Ctrl+XF86Launch1 { screenshot-screen; }
 
     // ═══ Noctalia Shell ═══
-    // ⚠️ 以下 IPC 命令语法需根据 Noctalia 实际版本验证
-    // 如果命令不对，请查阅 Noctalia 文档替换
-    Mod+Space hotkey-overlay-title="Application Launcher" { spawn-sh "noctalia-shell msg panel-toggle launcher"; }
-    Mod+N hotkey-overlay-title="Notification Center" { spawn-sh "noctalia-shell msg panel-toggle notifications"; }
-    Mod+V hotkey-overlay-title="Clipboard Manager" { spawn-sh "noctalia-shell msg panel-toggle clipboard"; }
-    Mod+Y hotkey-overlay-title="Browse Wallpapers" { spawn-sh "noctalia-shell msg panel-toggle wallpaper"; }
-    Super+X hotkey-overlay-title="Power Menu" { spawn-sh "noctalia-shell msg panel-toggle powermenu"; }
-    Mod+Comma hotkey-overlay-title="Settings" { spawn-sh "noctalia-shell msg panel-toggle control-center"; }
-    Mod+Alt+L hotkey-overlay-title="Lock Screen" { spawn "swaylock"; }
+    Mod+Space hotkey-overlay-title="Application Launcher" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+N hotkey-overlay-title="Notification Center" { spawn "noctalia" "msg" "panel-toggle" "control-center" "notifications"; }
+    Mod+V hotkey-overlay-title="Clipboard Manager" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+Y hotkey-overlay-title="Browse Wallpapers" { spawn "noctalia" "msg" "panel-toggle" "wallpaper"; }
+    Super+X hotkey-overlay-title="Power Menu" { spawn "noctalia" "msg" "panel-toggle" "session"; }
+    Mod+Comma hotkey-overlay-title="Settings" { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+Alt+L hotkey-overlay-title="Lock Screen" { spawn "noctalia" "msg" "session" "lock"; }
 
-    // ═══ 系统控制（Noctalia 会显示 OSD）═══
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"; }
-    XF86AudioMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
-    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
-    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
-    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
-    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
-    Ctrl+XF86AudioRaiseVolume allow-when-locked=true { spawn "playerctl" "next"; }
-    Ctrl+XF86AudioLowerVolume allow-when-locked=true { spawn "playerctl" "previous"; }
-    XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl set 5%+"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl set 5%-"; }
+    // ═══ 系统控制（使用 Noctalia 原生命令，OSD 正常显示）═══
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
+    XF86AudioMute allow-when-locked=true { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "noctalia" "msg" "mic-mute"; }
+    XF86AudioPlay allow-when-locked=true { spawn "noctalia" "msg" "media" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "noctalia" "msg" "media" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
+    Ctrl+XF86AudioRaiseVolume allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
+    Ctrl+XF86AudioLowerVolume allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down"; }
 
     // ═══ 已移除的 DMS 专属绑定 ═══
-    // Ctrl+Alt+Delete → DMS 任务管理器（Noctalia 无对应）
-    // Ctrl+Shift+R    → DMS 重命名工作区（Noctalia 无对应）
-    // Mod+M           → DMS 任务管理器（Noctalia 无对应）
-    // Mod+Shift+N     → DMS 记事本（Noctalia 无对应）
-    // Mod+Shift+W     → DMS 窗口规则（Noctalia 无对应）
+    // Ctrl+Alt+Delete → DMS 任务管理器
+    // Ctrl+Shift+R    → DMS 重命名工作区
+    // Mod+M           → DMS 任务管理器
+    // Mod+Shift+N     → DMS 记事本
+    // Mod+Shift+W     → DMS 窗口规则
 }
