@@ -176,6 +176,13 @@ window-rule {
     }
 }
 
+// ─── 音量速览（Mod+M）─────────────────────────────────
+// 尺寸由 ghostty 的 --window-width/-height 决定（格数），这里只负责浮起。
+window-rule {
+    match app-id=r#"^com\.dk\.volview$"#
+    open-floating true
+}
+
 // ─── 开机仪表盘窗口规则 ───────────────────────────────
 window-rule {
     match app-id=r#"^com\.dk\.fetch$"#
@@ -706,6 +713,10 @@ binds {
 
     Mod+Y hotkey-overlay-title="System Tray (TUI)" {
         spawn "ghostty" "--class=com.dk.tray" "-e" "tray-tui"
+    }
+
+    Mod+M hotkey-overlay-title="Volume (TUI)" {
+        spawn "ghostty" "--class=com.dk.volview" "--window-width=44" "--window-height=6" "-e" "volview"
     }
 
     Mod+Alt+L hotkey-overlay-title="Lock Screen" {
