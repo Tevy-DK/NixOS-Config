@@ -14,9 +14,9 @@
     fastfetch = true;
     ghostty = true;
     git = true;
-    gtk = true;
+    gtk = true;         # niri 的 GTK 外观（adw-gtk3 + 方角描边）；hyprland 档案在 flake.nix 里覆盖为 false（GTK 交给 caelestia）
     hyprland = false;   # Hyprland 用户层配置
-    launcher = true;
+    launcher = true;    # fuzzel 启动器；hyprland 档案在 flake.nix 里覆盖为 false（用 caelestia 自带启动器）
     niri = true;        # niri 用户层配置（工作环境）
     nvim = true;
     pkgs = true;

@@ -37,7 +37,7 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "ghostty"
 local fileManager = "yazi"
-local menu        = "launcher"
+-- 启动器：Mod+Space → caelestia 自带启动器（caelestia:launcher），不再用 fuzzel
 
 
 -------------------
@@ -282,7 +282,6 @@ hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("ghostty -e yazi"))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
