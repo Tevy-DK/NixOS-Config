@@ -1,0 +1,737 @@
+// ═══════════════════════════════════════════════════════
+// Niri 配置 — koru 式极简桌面
+// 无毛玻璃 / 无透明 / 无圆角 / 无阴影 / 零自定义动画 / 实色底
+// 配色取自 system/theme.nix（紫蓝系）；kdl 是静态文件，色值需手动同步：
+//   bg #1e1e2e · accent #a4c9fe · border #8d9199 · urgent #ffb4ab · muted-alt #6c7086
+// ═══════════════════════════════════════════════════════
+
+// ─── 开机仪表盘：scratch 工作区放 fastfetch（左半列）+ btop（整列）───
+spawn-at-startup "ghostty" "--class=com.dk.fetch" "-e" "fish" "-C" "fastfetch"
+spawn-at-startup "ghostty" "--class=com.dk.btop" "-e" "btop"
+// 输入法守护进程（waylandFrontend 模式需要会话内自启，同 koru）
+spawn-at-startup "fcitx5" "-d"
+// 启动后焦点跳到仪表盘工作区
+spawn-at-startup "niri" "msg" "action" "focus-workspace" "scratch"
+
+// ─── 环境变量导入 ─────────────────────────────────────
+spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
+spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+
+// ─── 基础设置 ─────────────────────────────────────────
+config-notification {
+    disable-failed
+}
+
+gestures {
+    hot-corners {
+        off
+    }
+}
+
+// ─── 输入设备 ─────────────────────────────────────────
+input {
+    keyboard {
+        xkb {
+        }
+        numlock
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        accel-speed 0.0
+        dwt
+    }
+
+    mouse {
+        accel-speed 0.0
+    }
+}
+
+// ─── 输出 ─────────────────────────────────────────────
+output "HDMI-A-1" {
+    mode "1920x1080@100.003"
+    scale 1
+    position x=0 y=0
+}
+
+// ─── 布局（koru 式：宽边距留白 + 常亮 2px 边框）────────
+layout {
+    background-color "#1e1e2e"
+    gaps 8
+
+    // 顶部留出呼吸空间（代替状态栏的头寸），两侧用负 strut 抵消 gap
+    struts {
+        top 16
+        left -4
+        right -4
+        bottom -4
+    }
+
+    preset-column-widths {
+        proportion 0.5
+        proportion 0.25
+        proportion 0.75
+    }
+
+    default-column-width {
+        proportion 0.5
+    }
+
+    // koru 的做法：focus-ring 关、border 常亮，聚焦时用主强调色
+    border {
+        on
+        width 2
+        active-color   "#a4c9fe"
+        inactive-color "#8d9199"
+        urgent-color   "#ffb4ab"
+    }
+
+    tab-indicator {
+        active-color   "#a4c9fe"
+        inactive-color "#8d9199"
+        urgent-color   "#ffb4ab"
+    }
+
+    insert-hint {
+        color "#a4c9fe80"
+    }
+}
+
+// ─── 光标（与 home/cursor-theme.nix 的重着色主题同名）──
+cursor {
+    xcursor-theme "Bibata-Modern-DK"
+    xcursor-size 24
+}
+
+overview {
+    backdrop-color "#1e1e2e"
+    workspace-shadow {
+        off
+    }
+}
+
+environment {
+    XDG_CURRENT_DESKTOP "niri"
+}
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// 动画全部走 niri 默认值（koru 不自定义装饰性动画）
+
+// ─── 窗口规则（只保留有用的）──────────────────────────
+window-rule {
+    // 终端自带深底，别让 niri 的边框画在背景上
+    match app-id=r#"^com\.mitchellh\.ghostty$"#
+    draw-border-with-background false
+}
+
+window-rule {
+    // 系统设置/音频/网络对话框：半宽平铺
+    match app-id=r#"^gnome-control-center$"#
+    match app-id=r#"^pavucontrol$"#
+    match app-id=r#"^nm-connection-editor$"#
+    default-column-width {
+        proportion 0.5
+    }
+    open-floating false
+}
+
+window-rule {
+    // 门户与文件管理器浮动
+    match app-id=r#"^xdg-desktop-portal$"#
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    open-floating true
+}
+
+window-rule {
+    // 剪贴板 TUI（clipse）：浮窗，尺寸沿用 hyprland-recovery 的 650x750
+    match app-id=r#"^com\.dk\.clipse$"#
+    open-floating true
+    default-column-width {
+        fixed 650
+    }
+    default-window-height {
+        fixed 750
+    }
+}
+
+// ─── 开机仪表盘窗口规则 ───────────────────────────────
+window-rule {
+    match app-id=r#"^com\.dk\.fetch$"#
+    open-on-workspace "scratch"
+    default-column-width {
+        proportion 0.5
+    }
+}
+
+window-rule {
+    match app-id=r#"^com\.dk\.btop$"#
+    open-on-workspace "scratch"
+    default-column-width {
+        proportion 1.0
+    }
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// ─── 最近窗口 ─────────────────────────────────────────
+recent-windows {
+    highlight {
+        // 方角，与全桌面的无圆角一致
+        corner-radius 0
+    }
+
+    binds {
+        Alt+Tab {
+            next-window scope="output"
+        }
+        Alt+Shift+Tab {
+            previous-window scope="output"
+        }
+        Alt+grave {
+            next-window filter="app-id"
+        }
+        Alt+Shift+grave {
+            previous-window filter="app-id"
+        }
+    }
+}
+
+// ─── 键位绑定 ─────────────────────────────────────────
+binds {
+    // ═══ 应用启动 ═══
+    Mod+B hotkey-overlay-title="Helium Browser" {
+        spawn "helium"
+    }
+
+    Mod+E hotkey-overlay-title="Nautilus File Manager" {
+        spawn "nautilus"
+    }
+
+    Mod+T hotkey-overlay-title="Open Terminal" {
+        spawn "ghostty"
+    }
+
+    Super+G hotkey-overlay-title="Chrome" {
+        spawn "google-chrome"
+    }
+
+    Super+Shift+C hotkey-overlay-title="VSCode" {
+        spawn "code"
+    }
+
+    // ═══ 窗口管理 ═══
+    Mod+Q repeat=false {
+        close-window
+    }
+
+    Mod+Shift+E {
+        quit
+    }
+
+    Mod+F {
+        maximize-column
+    }
+
+    Mod+Shift+F {
+        fullscreen-window
+    }
+
+    Mod+W {
+        toggle-column-tabbed-display
+    }
+
+    Mod+Shift+T {
+        toggle-window-floating
+    }
+
+    Mod+Shift+V {
+        switch-focus-between-floating-and-tiling
+    }
+
+    Mod+R {
+        switch-preset-column-width
+    }
+
+    Mod+Shift+R {
+        switch-preset-window-height
+    }
+
+    Mod+C {
+        center-column
+    }
+
+    Mod+Ctrl+C {
+        center-visible-columns
+    }
+
+    Mod+Ctrl+F {
+        expand-column-to-available-width
+    }
+
+    Mod+Ctrl+R {
+        reset-window-height
+    }
+
+    Mod+Equal {
+        set-column-width "+10%"
+    }
+
+    Mod+Minus {
+        set-column-width "-10%"
+    }
+
+    Mod+Shift+Equal {
+        set-window-height "+10%"
+    }
+
+    Mod+Shift+Minus {
+        set-window-height "-10%"
+    }
+
+    Mod+Period {
+        expel-window-from-column
+    }
+
+    Mod+BracketLeft {
+        consume-or-expel-window-left
+    }
+
+    Mod+BracketRight {
+        consume-or-expel-window-right
+    }
+
+    // ═══ 焦点移动 ═══
+    Mod+H {
+        focus-column-left
+    }
+
+    Mod+L {
+        focus-column-right
+    }
+
+    Mod+J {
+        focus-window-down
+    }
+
+    Mod+K {
+        focus-window-up
+    }
+
+    Mod+Left {
+        focus-column-left
+    }
+
+    Mod+Right {
+        focus-column-right
+    }
+
+    Mod+Up {
+        focus-window-up
+    }
+
+    Mod+Down {
+        focus-window-down
+    }
+
+    Mod+Home {
+        focus-column-first
+    }
+
+    Mod+End {
+        focus-column-last
+    }
+
+    Mod+WheelScrollLeft {
+        focus-column-left
+    }
+
+    Mod+WheelScrollRight {
+        focus-column-right
+    }
+
+    Mod+Shift+WheelScrollDown {
+        focus-column-right
+    }
+
+    Mod+Shift+WheelScrollUp {
+        focus-column-left
+    }
+
+    // ═══ 移动窗口 ═══
+    Mod+Shift+H {
+        move-column-left
+    }
+
+    Mod+Shift+L {
+        move-column-right
+    }
+
+    Mod+Shift+J {
+        move-window-down
+    }
+
+    Mod+Shift+K {
+        move-window-up
+    }
+
+    Mod+Shift+Left {
+        move-column-left
+    }
+
+    Mod+Shift+Right {
+        move-column-right
+    }
+
+    Mod+Shift+Up {
+        move-window-up
+    }
+
+    Mod+Shift+Down {
+        move-window-down
+    }
+
+    Mod+Ctrl+Shift+WheelScrollDown {
+        move-column-right
+    }
+
+    Mod+Ctrl+Shift+WheelScrollUp {
+        move-column-left
+    }
+
+    Mod+Ctrl+WheelScrollLeft {
+        move-column-left
+    }
+
+    Mod+Ctrl+WheelScrollRight {
+        move-column-right
+    }
+
+    Mod+Ctrl+Home {
+        move-column-to-first
+    }
+
+    Mod+Ctrl+End {
+        move-column-to-last
+    }
+
+    // ═══ 工作区 ═══
+    Mod+1 {
+        focus-workspace 1
+    }
+
+    Mod+2 {
+        focus-workspace 2
+    }
+
+    Mod+3 {
+        focus-workspace 3
+    }
+
+    Mod+4 {
+        focus-workspace 4
+    }
+
+    Mod+5 {
+        focus-workspace 5
+    }
+
+    Mod+6 {
+        focus-workspace 6
+    }
+
+    Mod+7 {
+        focus-workspace 7
+    }
+
+    Mod+8 {
+        focus-workspace 8
+    }
+
+    Mod+9 {
+        focus-workspace 9
+    }
+
+    Mod+Shift+1 {
+        move-column-to-workspace 1
+    }
+
+    Mod+Shift+2 {
+        move-column-to-workspace 2
+    }
+
+    Mod+Shift+3 {
+        move-column-to-workspace 3
+    }
+
+    Mod+Shift+4 {
+        move-column-to-workspace 4
+    }
+
+    Mod+Shift+5 {
+        move-column-to-workspace 5
+    }
+
+    Mod+Shift+6 {
+        move-column-to-workspace 6
+    }
+
+    Mod+Shift+7 {
+        move-column-to-workspace 7
+    }
+
+    Mod+Shift+8 {
+        move-column-to-workspace 8
+    }
+
+    Mod+Shift+9 {
+        move-column-to-workspace 9
+    }
+
+    // scratch = 开机仪表盘工作区
+    Mod+0 {
+        focus-workspace "scratch"
+    }
+
+    Mod+Shift+0 {
+        move-column-to-workspace "scratch"
+    }
+
+    Mod+I {
+        focus-workspace-up
+    }
+
+    Mod+U {
+        focus-workspace-down
+    }
+
+    Mod+Page_Up {
+        focus-workspace-up
+    }
+
+    Mod+Page_Down {
+        focus-workspace-down
+    }
+
+    Mod+Ctrl+I {
+        move-column-to-workspace-up
+    }
+
+    Mod+Ctrl+U {
+        move-column-to-workspace-down
+    }
+
+    Mod+Ctrl+Up {
+        move-column-to-workspace-up
+    }
+
+    Mod+Ctrl+Down {
+        move-column-to-workspace-down
+    }
+
+    Mod+Shift+I {
+        move-workspace-up
+    }
+
+    Mod+Shift+U {
+        move-workspace-down
+    }
+
+    Mod+Shift+Page_Up {
+        move-workspace-up
+    }
+
+    Mod+Shift+Page_Down {
+        move-workspace-down
+    }
+
+    Mod+WheelScrollUp cooldown-ms=150 {
+        focus-workspace-up
+    }
+
+    Mod+WheelScrollDown cooldown-ms=150 {
+        focus-workspace-down
+    }
+
+    Mod+Ctrl+WheelScrollUp cooldown-ms=150 {
+        move-column-to-workspace-up
+    }
+
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 {
+        move-column-to-workspace-down
+    }
+
+    // ═══ 显示器 ═══
+    Mod+Ctrl+H {
+        focus-monitor-left
+    }
+
+    Mod+Ctrl+J {
+        focus-monitor-down
+    }
+
+    Mod+Ctrl+K {
+        focus-monitor-up
+    }
+
+    Mod+Ctrl+L {
+        focus-monitor-right
+    }
+
+    Mod+Ctrl+Left {
+        focus-monitor-left
+    }
+
+    Mod+Ctrl+Right {
+        focus-monitor-right
+    }
+
+    Mod+Shift+Ctrl+H {
+        move-column-to-monitor-left
+    }
+
+    Mod+Shift+Ctrl+J {
+        move-column-to-monitor-down
+    }
+
+    Mod+Shift+Ctrl+K {
+        move-column-to-monitor-up
+    }
+
+    Mod+Shift+Ctrl+L {
+        move-column-to-monitor-right
+    }
+
+    Mod+Shift+Ctrl+Left {
+        move-column-to-monitor-left
+    }
+
+    Mod+Shift+Ctrl+Right {
+        move-column-to-monitor-right
+    }
+
+    Mod+Shift+Ctrl+Up {
+        move-column-to-monitor-up
+    }
+
+    Mod+Shift+Ctrl+Down {
+        move-column-to-monitor-down
+    }
+
+    // ═══ 概览/其他 ═══
+    Mod+D repeat=false {
+        toggle-overview
+    }
+
+    Mod+Tab repeat=false {
+        toggle-overview
+    }
+
+    Mod+Shift+Slash {
+        show-hotkey-overlay
+    }
+
+    Mod+Escape allow-inhibiting=false {
+        toggle-keyboard-shortcuts-inhibit
+    }
+
+    Mod+Shift+P {
+        power-off-monitors
+    }
+
+    // ═══ 截屏 ═══
+    Print {
+        screenshot
+    }
+
+    Ctrl+Print {
+        screenshot-screen
+    }
+
+    Alt+Print {
+        screenshot-window
+    }
+
+    Super+Shift+S {
+        screenshot
+    }
+
+    XF86Launch1 {
+        screenshot
+    }
+
+    Alt+XF86Launch1 {
+        screenshot-window
+    }
+
+    Ctrl+XF86Launch1 {
+        screenshot-screen
+    }
+
+    // ═══ 启动器 / 管理中心 ═══
+    Mod+Space hotkey-overlay-title="Application Launcher" {
+        spawn "launcher"
+    }
+
+    Mod+S hotkey-overlay-title="System Menu (TUI)" {
+        spawn "ghostty" "--class=com.dk.sysmenu" "-e" "sysmenu"
+    }
+
+    Mod+V hotkey-overlay-title="Clipboard History" {
+        spawn "ghostty" "--class=com.dk.clipse" "-e" "clipse"
+    }
+
+    Mod+Alt+L hotkey-overlay-title="Lock Screen" {
+        spawn "swaylock"
+    }
+
+    // ═══ 系统控制（wpctl / playerctl / brightnessctl）═══
+    XF86AudioRaiseVolume allow-when-locked=true {
+        spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"
+    }
+
+    XF86AudioLowerVolume allow-when-locked=true {
+        spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"
+    }
+
+    XF86AudioMute allow-when-locked=true {
+        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"
+    }
+
+    XF86AudioMicMute allow-when-locked=true {
+        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"
+    }
+
+    XF86AudioPlay allow-when-locked=true {
+        spawn "playerctl" "play-pause"
+    }
+
+    XF86AudioPause allow-when-locked=true {
+        spawn "playerctl" "play-pause"
+    }
+
+    XF86AudioNext allow-when-locked=true {
+        spawn "playerctl" "next"
+    }
+
+    XF86AudioPrev allow-when-locked=true {
+        spawn "playerctl" "previous"
+    }
+
+    XF86MonBrightnessUp allow-when-locked=true {
+        spawn "brightnessctl" "set" "+5%"
+    }
+
+    XF86MonBrightnessDown allow-when-locked=true {
+        spawn "brightnessctl" "set" "5%-"
+    }
+}
