@@ -27,7 +27,9 @@
   };
   programs.bat = {
     enable = true;
-    config.theme = "Catppuccin Mocha"; # 与 Ghostty 同源的内置主题
+    # theme = "ansi"：直接复用终端的 16 ANSI 色（ghostty 已接 theme.nix 的 Koru Fern），
+    # 同 koru 的做法，bat 配色自动跟随全局主题
+    config.theme = "ansi";
   };
   programs.eza = {
     enable = true;

@@ -1,4 +1,4 @@
-{ pkgs, theme, ... }:
+{ pkgs, lib, theme, ... }:
 
 let
   # 1. 使用 fetchFromGitHub 声明式地获取着色器仓库
@@ -8,6 +8,10 @@ let
     rev = "0a274beac8b93ee6ce6b94402b7313a0417b8e38";
     hash = "sha256-B7B6K7Ee4uJlW8zzLP3ILgddnbcIQyNimY+rVllzbR0=";
   };
+
+  # 主题文件里的色值不带 #（HM 模块的官方写法）；palette 条目保留 #，
+  # 两种写法 ghostty 都认，跟模块 README 的示例保持一致
+  hex = c: lib.removePrefix "#" c;
 in {
   programs.ghostty = {
     enable = true;
@@ -19,8 +23,13 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      theme = "Catppuccin Mocha";              # 流行的现代暗色主题[reference:0][reference:1]
+      # 自定义主题 Koru-Fern：色值唯一来源是 theme.nix（见下方 themes）
+      theme = "Koru-Fern";
       window-theme = "auto";                   # 跟随系统主题
+
+      # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
+      # 否则 niri 里每个 ghostty 窗口顶上都多一条 GTK 顶栏
+      gtk-titlebar = false;
 
       font-family = theme.font;                # 字体唯一来源是 theme.nix
       font-size = theme.font-size;             # 字号同上
@@ -61,6 +70,21 @@ in {
       confirm-close-surface = false;	#关掉倒霉的提醒
       custom-shader = "${cursorShaders}/cursor_warp.glsl";
       custom-shader-animation = "always";    #光标特效
+    };
+
+    # 自定义主题文件（~/.config/ghostty/themes/Koru-Fern），全部取自 theme.nix
+    themes.Koru-Fern = {
+      background = hex theme.bg;
+      foreground = hex theme.fg;
+      cursor-color = hex theme.cursor;
+      selection-background = hex theme.accent-bg;
+      selection-foreground = hex theme.fg;
+      palette = [
+        "0=${theme.ansi.black}"   "1=${theme.ansi.red}"     "2=${theme.ansi.green}"   "3=${theme.ansi.yellow}"
+        "4=${theme.ansi.blue}"    "5=${theme.ansi.magenta}" "6=${theme.ansi.cyan}"    "7=${theme.ansi.white}"
+        "8=${theme.ansi-bright.black}"  "9=${theme.ansi-bright.red}"    "10=${theme.ansi-bright.green}" "11=${theme.ansi-bright.yellow}"
+        "12=${theme.ansi-bright.blue}"  "13=${theme.ansi-bright.magenta}" "14=${theme.ansi-bright.cyan}" "15=${theme.ansi-bright.white}"
+      ];
     };
   };
 }

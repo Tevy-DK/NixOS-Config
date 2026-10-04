@@ -76,22 +76,24 @@ let
   '';
 in
 {
+  # GTK 外观基础值统一 mkDefault：hyprland 档案里这些键由 caelestia.nix 显式
+  # 声明（两侧值相同）；只有 homeConfigurations.all 全模块求值时会同开，
+  # theme/iconTheme 的 package 是 unique 类型，同名值也要分优先级
   gtk = {
     enable = true;
-    colorScheme = "dark";
+    colorScheme = lib.mkDefault "dark";
 
-    theme = {
+    theme = lib.mkDefault {
       name = "adw-gtk3-dark";
       package = pkgs.adw-gtk3;
     };
 
-    font = {
+    font = lib.mkDefault {
       name = theme.font;
       size = theme.font-size-ui;
     };
 
-    # 图标主题沿用你原来的 Tela
-    iconTheme = {
+    iconTheme = lib.mkDefault {
       name = "Tela";
       package = pkgs.tela-icon-theme;
     };

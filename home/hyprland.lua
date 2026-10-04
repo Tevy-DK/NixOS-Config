@@ -51,6 +51,8 @@ local fileManager = "yazi"
 --
 hl.on("hyprland.start", function ()
     hl.exec_cmd("fcitx5")
+    -- caelestia：禁用了它的 systemd 单元（home/caelestia.nix），由 Hyprland 直接拉起
+    hl.exec_cmd("caelestia shell -d")
 end)
 
 

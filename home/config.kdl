@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════
 // Niri 配置 — koru 式极简桌面
 // 无毛玻璃 / 无透明 / 无圆角 / 无阴影 / 零自定义动画 / 实色底
-// 配色取自 system/theme.nix（紫蓝系）；kdl 是静态文件，色值需手动同步：
-//   bg #1e1e2e · accent #a4c9fe · border #8d9199 · urgent #ffb4ab · muted-alt #6c7086
+// 配色取自 system/theme.nix（koru Fern 绿炭系）；kdl 是静态文件，色值需手动同步：
+//   bg #171E1A · accent #8FBF88 · border #425347 · urgent #D39B79 · muted-alt #788A78
 // ═══════════════════════════════════════════════════════
 
 // ─── 开机仪表盘：scratch 工作区放 fastfetch（左半列）+ btop（整列）───
@@ -57,7 +57,7 @@ output "HDMI-A-1" {
 
 // ─── 布局（koru 式：宽边距留白 + 常亮 2px 边框）────────
 layout {
-    background-color "#1e1e2e"
+    background-color "#171E1A"
     gaps 8
 
     // 顶部留出呼吸空间（代替状态栏的头寸），两侧用负 strut 抵消 gap
@@ -82,19 +82,19 @@ layout {
     border {
         on
         width 2
-        active-color   "#a4c9fe"
-        inactive-color "#8d9199"
-        urgent-color   "#ffb4ab"
+        active-color   "#8FBF88"
+        inactive-color "#425347"
+        urgent-color   "#D39B79"
     }
 
     tab-indicator {
-        active-color   "#a4c9fe"
-        inactive-color "#8d9199"
-        urgent-color   "#ffb4ab"
+        active-color   "#8FBF88"
+        inactive-color "#425347"
+        urgent-color   "#D39B79"
     }
 
     insert-hint {
-        color "#a4c9fe80"
+        color "#8FBF8880"
     }
 }
 
@@ -105,7 +105,7 @@ cursor {
 }
 
 overview {
-    backdrop-color "#1e1e2e"
+    backdrop-color "#171E1A"
     workspace-shadow {
         off
     }
@@ -159,6 +159,20 @@ window-rule {
     }
     default-window-height {
         fixed 750
+    }
+}
+
+// ─── TUI 托盘（tray-tui）──────────────────────────────
+// StatusNotifierItem 宿主：clash-verge、fcitx5 的托盘图标和右键菜单在这里，
+// 退出 clash / 重启 fcitx 都从它的菜单里点。
+window-rule {
+    match app-id=r#"^com\.dk\.tray$"#
+    open-floating true
+    default-column-width {
+        fixed 460
+    }
+    default-window-height {
+        fixed 320
     }
 }
 
@@ -688,6 +702,10 @@ binds {
 
     Mod+V hotkey-overlay-title="Clipboard History" {
         spawn "ghostty" "--class=com.dk.clipse" "-e" "clipse"
+    }
+
+    Mod+Y hotkey-overlay-title="System Tray (TUI)" {
+        spawn "ghostty" "--class=com.dk.tray" "-e" "tray-tui"
     }
 
     Mod+Alt+L hotkey-overlay-title="Lock Screen" {
