@@ -20,6 +20,7 @@
     niri = true;        # niri 用户层配置（工作环境）
     nvim = true;
     pkgs = true;
+    powermenu = true;   # TUI 电源菜单（关机/重启/登出），Mod+X 浮窗
     shell = true;
     starship = true;
     sysmenu = true;

@@ -32,8 +32,8 @@
       #              （娱乐环境）
       # 新桌面 = home/ 与 system/ 各加一个模块 + 这里加一行档案。
       desktopProfiles = {
-        niri = { niri = true; hyprland = false; caelestia = false; launcher = true; gtk = true; };
-        hyprland = { niri = false; hyprland = true; caelestia = true; launcher = false; gtk = false; };
+        niri = { niri = true; hyprland = false; caelestia = false; launcher = true; gtk = true; powermenu = true; };
+        hyprland = { niri = false; hyprland = true; caelestia = true; launcher = false; gtk = false; powermenu = false; };
       };
 
       # 单台机器最终的用户层开关 = 基础面板 // 桌面档案（desktop 缺省为 niri）

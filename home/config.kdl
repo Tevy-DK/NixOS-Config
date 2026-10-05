@@ -55,7 +55,7 @@ output "HDMI-A-1" {
     position x=0 y=0
 }
 
-// ─── 布局（koru 式：宽边距留白 + 常亮 2px 边框）────────
+// ─── 布局（koru 式：宽边距留白 + 常亮 1px 边框）────────
 layout {
     background-color "#171E1A"
     gaps 8
@@ -78,10 +78,14 @@ layout {
         proportion 0.5
     }
 
-    // koru 的做法：focus-ring 关、border 常亮，聚焦时用主强调色
+    // koru 的做法：focus-ring 关（不关会漏出 niri 默认的蓝色聚焦环）、border 常亮
+    focus-ring {
+        off
+    }
+
     border {
         on
-        width 2
+        width 1
         active-color   "#8FBF88"
         inactive-color "#425347"
         urgent-color   "#D39B79"
@@ -717,6 +721,10 @@ binds {
 
     Mod+M hotkey-overlay-title="Volume (TUI)" {
         spawn "ghostty" "--class=com.dk.volview" "--window-width=44" "--window-height=6" "-e" "volview"
+    }
+
+    Mod+X hotkey-overlay-title="Power Menu" {
+        spawn "powermenu"
     }
 
     Mod+Alt+L hotkey-overlay-title="Lock Screen" {

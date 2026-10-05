@@ -14,7 +14,7 @@
       update_ms = 2000;
     };
     themes.dk-mocha = ''
-      # DK Mocha —— 紫蓝系 btop 主题，由 system/theme.nix 生成
+      # DK Mocha —— Koru Fern 绿系 btop 主题，由 system/theme.nix 生成
 
       # Main bg
       theme[main_bg]="${theme.bg}"
