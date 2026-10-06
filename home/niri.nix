@@ -36,12 +36,13 @@ let
         printf '%s' "$out"
       }
 
-      # $1=已补齐宽度的标签 $2=wpctl get-volume 的输出
+      # $1=已补齐宽度的标签 $2=wpctl get-volume 的输出。
+      # 行尾不带换行：最后一行若发 \n，2 行高的窗口会被顶得滚屏。
       row() {
         label=$1
         line=$2
         if [ -z "$line" ]; then
-          printf ' %s%s%s %s不可用%s%s\n' "$dim" "$label" "$reset" "$dim" "$reset" "$eol"
+          printf ' %s%s%s %s不可用%s%s' "$dim" "$label" "$reset" "$dim" "$reset" "$eol"
           return
         fi
         vol=''${line#*: }
@@ -57,12 +58,13 @@ let
           color=$red
           tag="  已静音"
         fi
-        printf ' %s%s%s %s%3d%% %s%s%s%s%s\n' "$dim" "$label" "$reset" "$color" "$pct" "$color" "$(bar "$pct")" "$reset" "$tag" "$eol"
+        printf ' %s%s%s %s%3d%% %s%s%s%s%s' "$dim" "$label" "$reset" "$color" "$pct" "$color" "$(bar "$pct")" "$reset" "$tag" "$eol"
       }
 
       render() {
         printf '%s[H' "$esc" # 只归位不清屏，配合行尾 [K 原地覆写防闪
         row "音量    " "$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)"
+        printf '\n'
         row "麦克风  " "$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null || true)"
       }
 
@@ -141,7 +143,8 @@ let
         exit 0
       fi
 
-      setsid -f ghostty --class="$app" --window-width=68 --window-height=3 -e volview
+      # 高度恰好装下两行数据（--window-height=2），上下各留 4px 呼吸空隙
+      setsid -f ghostty --class="$app" --window-width=68 --window-height=2 --window-padding-y=4 -e volview
 
       # 等窗口注册（最多 1.5s），注册好顺手聚焦一次再放锁
       i=0
