@@ -2,7 +2,7 @@
 // Niri 配置 — koru 式极简桌面
 // 无毛玻璃 / 无透明 / 无阴影 / 零自定义动画；壁纸走 awww，实色底兜底；圆角 8px + 2px 常亮边框
 // 配色取自 system/theme.nix（NixOS logo 紫蓝系）；kdl 是静态文件，色值需手动同步：
-//   bg #1B2434（现为 overview backdrop 兜底色） · accent #649AFA · border #3A445E · urgent #D9827B · muted-alt #67728F
+//   bg #2E3246（现为 overview backdrop 兜底色） · accent #649AFA · border #4A506B · urgent #D9827B · muted-alt #737E9C
 // ═══════════════════════════════════════════════════════
 
 // 输入法守护进程（waylandFrontend 模式需要会话内自启，同 koru）
@@ -59,7 +59,7 @@ layout {
     // 工作区背景全透明：壁纸经 place-within-backdrop 放在 backdrop 里（见下方 layer-rule），
     // 常规桌面靠这里透出来（否则工作区背景会把 backdrop 和壁纸整个盖住）。
     // 写法与本机 Fedora/DMS 的日常配置一致（"transparent" 是 niri 认的颜色关键字）。
-    // 壁纸守护挂掉时，由 overview 的 backdrop-color（#1B2434）兜底。
+    // 壁纸守护挂掉时，由 overview 的 backdrop-color（#2E3246）兜底。
     background-color "transparent"
     gaps 8
 
@@ -91,14 +91,14 @@ layout {
         on
         width 2
         active-color   "#649AFA"
-        inactive-color "#3A445E"
+        inactive-color "#4A506B"
         urgent-color   "#D9827B"
     }
 
     tab-indicator {
         corner-radius  8
         active-color   "#649AFA"
-        inactive-color "#3A445E"
+        inactive-color "#4A506B"
         urgent-color   "#D9827B"
     }
 
@@ -114,7 +114,7 @@ cursor {
 }
 
 overview {
-    backdrop-color "#1B2434"
+    backdrop-color "#2E3246"
     workspace-shadow {
         off
     }

@@ -1,7 +1,9 @@
 # 全局主题：颜色与字号的唯一来源。
 #
-# 调色板：Nix Periwinkle —— 蓝灰夜色底 + NixOS logo 的紫蓝主强调，
-# 色值取自官方 logo 渐变（nixos-artwork logo/nixos.svg）：
+# 调色板：Nix Periwinkle —— 蓝灰夜色底 + NixOS logo 的紫蓝主强调。
+# 背景/表面族色值取自壁纸（wallhaven-x6x3gz，深蓝底 + 几何雪花）的浅色块：
+#   基底 #1E2030 → 雪花亮带 #2E3246 → 轮廓高光 #393D52
+# 强调色取自官方 logo 渐变（nixos-artwork logo/nixos.svg）：
 #   深蓝 #415E9A → #4A6BAF → #5277C3
 #   亮蓝 #699AD7 → #7EB1DD → #7EBAE4
 #   紫蓝 #637DDF → #649AFA → #719EFA
@@ -23,27 +25,27 @@
   cursor-size = 24;
 
   # --- 语义色（Nix Periwinkle）---
-  bg = "#1B2434";        # 主背景；niri backdrop 兜底 / zathura / btop
-  bg-alt = "#26324B";    # 凸起表面（选中项 / 侧栏）
+  bg = "#2E3246";        # 主背景；壁纸浅色块（雪花亮带）；niri backdrop 兜底 / zathura / btop
+  bg-alt = "#393D52";    # 凸起表面（选中项 / 侧栏）；壁纸轮廓高光色
   fg = "#D4DCEC";        # 主前景
   fg-bright = "#E6ECF8"; # 强调前景
   muted = "#9AA7C4";     # 次要可读文本
-  muted-alt = "#67728F"; # 装饰/禁用文本
+  muted-alt = "#737E9C"; # 装饰/禁用文本（随底色提亮，保持原可读档位）
   accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：窗口边框、聚焦、niri insert-hint
   accent-2 = "#8B93F8";  # 交互强调（紫蓝再提亮）：菜单高亮、fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
   accent-yellow-bright = "#C3CBFF"; # 强调文本的亮蓝紫（键名沿用旧结构）
   accent-deep = "#415E9A";          # logo 深蓝渐变起点：图表起点等深色装饰
-  accent-bg = "#2A3552";            # 选区背景（ghostty selection）
+  accent-bg = "#414868";            # 选区背景（ghostty selection）；壁纸最亮块再提亮一档
   cursor = "#DDE4F3";               # 光标颜色（ghostty cursor-color）
-  black = "#121724";     # 最深表面；亮色强调上的文字
-  border = "#3A445E";    # 非活动窗口边框
+  black = "#1E2030";     # 最深表面；亮色强调上的文字；壁纸基底色
+  border = "#4A506B";    # 非活动窗口边框（随底色提亮）
   urgent = "#D9827B";    # 紧急/警告
 
   # --- ANSI 16 色（Nix Periwinkle 终端色；蓝/青直接取 logo 渐变）---
   # normal (0-7)
   ansi = {
-    black = "#26324B";
+    black = "#393D52";
     red = "#CC8388";
     green = "#8BC49B";
     yellow = "#D5BC80";
@@ -54,7 +56,7 @@
   };
   # bright (8-15)
   ansi-bright = {
-    black = "#566180";
+    black = "#646C90";
     red = "#DDA1A0";
     green = "#A9D4B3";
     yellow = "#EBD3A2";
