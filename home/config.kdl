@@ -199,8 +199,8 @@ window-rule {
     }
 }
 
-// ─── 音量速览（Mod+M）─────────────────────────────────
-// 尺寸由 ghostty 的 --window-width/-height 决定（格数），这里只负责浮起。
+// ─── 音量速览（Mod+M / 音量键自动弹出）────────────────
+// 浮窗尺寸在 volview-popup（niri.nix）里定，这里只负责浮起。
 window-rule {
     match app-id=r#"^com\.dk\.volview$"#
     open-floating true
@@ -717,7 +717,7 @@ binds {
     }
 
     Mod+M hotkey-overlay-title="Volume (TUI)" {
-        spawn "ghostty" "--class=com.dk.volview" "--window-width=44" "--window-height=6" "-e" "volview"
+        spawn "volview-popup"
     }
 
     Mod+X hotkey-overlay-title="Power Menu" {
@@ -729,20 +729,21 @@ binds {
     }
 
     // ═══ 系统控制（wpctl / playerctl / brightnessctl）═══
+    // 音量类按键走 volkey（niri.nix）：改音量 + 自动弹出 volview 窗口
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"
+        spawn "volkey" "5%+"
     }
 
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"
+        spawn "volkey" "5%-"
     }
 
     XF86AudioMute allow-when-locked=true {
-        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"
+        spawn "volkey" "mute-sink"
     }
 
     XF86AudioMicMute allow-when-locked=true {
-        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"
+        spawn "volkey" "mute-mic"
     }
 
     XF86AudioPlay allow-when-locked=true {
