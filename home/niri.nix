@@ -4,7 +4,9 @@ let
   # 音量速览：ghostty 浮窗显示默认输出/麦克风的音量条与静音状态。
   # 弹出入口统一走 volview-popup（音量键和 Mod+M 都调它）。窗口内每 0.2s
   # 自动刷新（read -t 0.2 轮询，刷新节拍顺便当按键等待，不空转），Esc（或 q）
-  # 退出。配色直接用终端 ANSI 色（ghostty 已接 theme.nix 的 ANSI 调色板：
+  # 退出。窗口里不放提示行、并隐藏光标：ghostty 的光标拖尾 shader 会跟着
+  # 每帧跳动的光标画动画，整行字都在闪；藏掉光标它就没东西可画了。
+  # 配色直接用终端 ANSI 色（ghostty 已接 theme.nix 的 ANSI 调色板：
   # 绿=正常、红=已静音、90=暗灰），无需引入主题文件。
   volview = pkgs.writeShellApplication {
     name = "volview";
@@ -16,7 +18,6 @@ let
       green=$'\033[32m'
       red=$'\033[31m'
       eol=$'\033[K'   # 清到行尾：每帧原地覆写，不清整屏就不闪
-      below=$'\033[J' # 清光标以下，兜底行数变化
 
       bar() {
         pct=$1
@@ -63,10 +64,11 @@ let
         printf '%s[H' "$esc" # 只归位不清屏，配合行尾 [K 原地覆写防闪
         row "音量    " "$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)"
         row "麦克风  " "$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null || true)"
-        printf '\n %sEsc 退出 · 每 0.2s 自动刷新%s%s%s' "$dim" "$reset" "$eol" "$below"
       }
 
-      printf '%s[2J%s[H' "$esc" "$esc" # 进屏先整屏清一次
+      trap 'printf "\033[?25h"' EXIT # 退出时恢复光标（万一在普通终端里跑）
+      printf '%s[?25l' "$esc"        # 隐藏光标：拖尾 shader 不再有东西可画
+      printf '%s[2J%s[H' "$esc" "$esc"
       while true; do
         render
         key=""
@@ -139,7 +141,7 @@ let
         exit 0
       fi
 
-      setsid -f ghostty --class="$app" --window-width=68 --window-height=6 -e volview
+      setsid -f ghostty --class="$app" --window-width=68 --window-height=3 -e volview
 
       # 等窗口注册（最多 1.5s），注册好顺手聚焦一次再放锁
       i=0
