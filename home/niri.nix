@@ -83,8 +83,17 @@ in
   # TUI 托盘（Mod+Y）：niri 环境没有状态栏，clash-verge / fcitx5 的
   # StatusNotifierItem 图标和菜单需要一个宿主，tray-tui 在终端里当这个宿主。
   # hyprland 环境不装：caelestia 的栏自带托盘。
+  #
+  # XWayland：niri ≥25.08 内置 xwayland-satellite 集成，PATH 里有 ≥0.7 的
+  # satellite 即可全自动 —— 有 X11 客户端连入时按需创建 X11 socket、导出
+  # DISPLAY、拉起 satellite（挂了自动重启）。所以这里只装包：不要再手动
+  # spawn-at-startup，也不要在 config.kdl 的 environment 里设 DISPLAY。
+  # nixpkgs 的 satellite 包已把 Xwayland 二进制包进 PATH；剪贴板、IME
+  # （XIM→text-input-v3，fcitx5 的 XMODIFIERS 见 system/fcitx5.nix）、
+  # 高分屏原生分辨率缩放都由 satellite 自己处理。
   home.packages = [
     pkgs.tray-tui
+    pkgs.xwayland-satellite
     volview
   ];
 
