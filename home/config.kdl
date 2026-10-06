@@ -63,9 +63,10 @@ layout {
     background-color "transparent"
     gaps 8
 
-    // 顶部留出呼吸空间（代替状态栏的头寸），两侧用负 strut 抵消 gap
+    // 四边用负 strut 把 8px gap 抵消成 4px 薄边，壁纸从 backdrop 透出（顶部同样处理，
+    // 不再额外留状态栏头寸——那会空出一条背景带）
     struts {
-        top 16
+        top -4
         left -4
         right -4
         bottom -4
@@ -240,7 +241,7 @@ binds {
     }
 
     Mod+E hotkey-overlay-title="Yazi File Manager" {
-        spawn "ghostty -e yazi"
+        spawn "ghostty" "-e" "yazi"
     }
 
     Mod+T hotkey-overlay-title="Open Terminal" {
