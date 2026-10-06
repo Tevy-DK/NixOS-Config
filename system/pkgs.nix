@@ -26,6 +26,6 @@
   swaylock         # 锁屏（PAM 由 niri 的 wayland-session 提供）
   libnotify        # notify-send
   fzf              # sysmenu 依赖
-  btop             # scratch 仪表盘 / 系统监控
+  btop             # 系统监控
   ];
 }

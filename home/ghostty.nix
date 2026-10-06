@@ -23,8 +23,8 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      # 自定义主题 Koru-Fern：色值唯一来源是 theme.nix（见下方 themes）
-      theme = "Koru-Fern";
+      # 自定义主题 Nix-Periwinkle：色值唯一来源是 theme.nix（见下方 themes）
+      theme = "Nix-Periwinkle";
       window-theme = "auto";                   # 跟随系统主题
 
       # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
@@ -100,8 +100,8 @@ in {
       custom-shader-animation = "always";    #光标特效
     };
 
-    # 自定义主题文件（~/.config/ghostty/themes/Koru-Fern），全部取自 theme.nix
-    themes.Koru-Fern = {
+    # 自定义主题文件（~/.config/ghostty/themes/Nix-Periwinkle），全部取自 theme.nix
+    themes.Nix-Periwinkle = {
       background = hex theme.bg;
       foreground = hex theme.fg;
       cursor-color = hex theme.cursor;

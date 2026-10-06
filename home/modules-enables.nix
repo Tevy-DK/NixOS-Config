@@ -26,6 +26,7 @@
     sysmenu = true;
     themes = true;
     vscodium = true;
+    wallpaper = true;   # awww 壁纸 + fuzzel 选图（Mod+Shift+W）；hyprland 档案在 flake.nix 里覆盖为 false（caelestia 自带壁纸）
     yazi = true;
     zathura = true;
   };

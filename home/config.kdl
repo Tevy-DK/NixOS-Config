@@ -1,17 +1,16 @@
 // ═══════════════════════════════════════════════════════
 // Niri 配置 — koru 式极简桌面
-// 无毛玻璃 / 无透明 / 无圆角 / 无阴影 / 零自定义动画 / 实色底
-// 配色取自 system/theme.nix（koru Fern 绿炭系）；kdl 是静态文件，色值需手动同步：
-//   bg #171E1A · accent #8FBF88 · border #425347 · urgent #D39B79 · muted-alt #788A78
+// 无毛玻璃 / 无透明 / 无阴影 / 零自定义动画；壁纸走 awww，实色底兜底；圆角 8px + 2px 常亮边框
+// 配色取自 system/theme.nix（NixOS logo 紫蓝系）；kdl 是静态文件，色值需手动同步：
+//   bg #1B2434（现为 overview backdrop 兜底色） · accent #649AFA · border #3A445E · urgent #D9827B · muted-alt #67728F
 // ═══════════════════════════════════════════════════════
 
-// ─── 开机仪表盘：scratch 工作区放 fastfetch（左半列）+ btop（整列）───
-spawn-at-startup "ghostty" "--class=com.dk.fetch" "-e" "fish" "-C" "fastfetch"
-spawn-at-startup "ghostty" "--class=com.dk.btop" "-e" "btop"
 // 输入法守护进程（waylandFrontend 模式需要会话内自启，同 koru）
 spawn-at-startup "fcitx5" "-d"
-// 启动后焦点跳到仪表盘工作区
-spawn-at-startup "niri" "msg" "action" "focus-workspace" "scratch"
+
+// 壁纸（home/wallpaper.nix）：拉起 awww-daemon 并恢复上次选的壁纸，
+// 目录为空时落主题渐变兜底图
+spawn-at-startup "wallpaper"
 
 // ─── 环境变量导入 ─────────────────────────────────────
 spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
@@ -55,9 +54,13 @@ output "HDMI-A-1" {
     position x=0 y=0
 }
 
-// ─── 布局（koru 式：宽边距留白 + 常亮 1px 边框）────────
+// ─── 布局（koru 式：宽边距留白 + 2px 常亮圆角边框）──────
 layout {
-    background-color "#171E1A"
+    // 工作区背景全透明：壁纸经 place-within-backdrop 放在 backdrop 里（见下方 layer-rule），
+    // 常规桌面靠这里透出来（否则工作区背景会把 backdrop 和壁纸整个盖住）。
+    // 写法与本机 Fedora/DMS 的日常配置一致（"transparent" 是 niri 认的颜色关键字）。
+    // 壁纸守护挂掉时，由 overview 的 backdrop-color（#1B2434）兜底。
+    background-color "transparent"
     gaps 8
 
     // 顶部留出呼吸空间（代替状态栏的头寸），两侧用负 strut 抵消 gap
@@ -85,20 +88,21 @@ layout {
 
     border {
         on
-        width 1
-        active-color   "#8FBF88"
-        inactive-color "#425347"
-        urgent-color   "#D39B79"
+        width 2
+        active-color   "#649AFA"
+        inactive-color "#3A445E"
+        urgent-color   "#D9827B"
     }
 
     tab-indicator {
-        active-color   "#8FBF88"
-        inactive-color "#425347"
-        urgent-color   "#D39B79"
+        corner-radius  8
+        active-color   "#649AFA"
+        inactive-color "#3A445E"
+        urgent-color   "#D9827B"
     }
 
     insert-hint {
-        color "#8FBF8880"
+        color "#649AFA80"
     }
 }
 
@@ -109,10 +113,18 @@ cursor {
 }
 
 overview {
-    backdrop-color "#171E1A"
+    backdrop-color "#1B2434"
     workspace-shadow {
         off
     }
+}
+
+// ─── 壁纸进 overview backdrop（place-within-backdrop）──
+// 默认壁纸这层在 backdrop 之下，Mod+D 概览里只剩实色底。把 awww 的背景层放进
+// backdrop 后，概览和工作区切换时壁纸保持可见；backdrop 内的层不接收输入，壁纸无妨。
+layer-rule {
+    match namespace=r#"^awww-daemon$"#
+    place-within-backdrop true
 }
 
 environment {
@@ -130,6 +142,12 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 // 动画全部走 niri 默认值（koru 不自定义装饰性动画）
 
 // ─── 窗口规则（只保留有用的）──────────────────────────
+window-rule {
+    // 全局圆角：边框/聚焦环跟随此半径变圆，clip-to-geometry 把窗口内容也裁圆
+    geometry-corner-radius 8
+    clip-to-geometry true
+}
+
 window-rule {
     // 终端自带深底，别让 niri 的边框画在背景上
     match app-id=r#"^com\.mitchellh\.ghostty$"#
@@ -187,23 +205,6 @@ window-rule {
     open-floating true
 }
 
-// ─── 开机仪表盘窗口规则 ───────────────────────────────
-window-rule {
-    match app-id=r#"^com\.dk\.fetch$"#
-    open-on-workspace "scratch"
-    default-column-width {
-        proportion 0.5
-    }
-}
-
-window-rule {
-    match app-id=r#"^com\.dk\.btop$"#
-    open-on-workspace "scratch"
-    default-column-width {
-        proportion 1.0
-    }
-}
-
 debug {
     honor-xdg-activation-with-invalid-serial
 }
@@ -211,8 +212,8 @@ debug {
 // ─── 最近窗口 ─────────────────────────────────────────
 recent-windows {
     highlight {
-        // 方角，与全桌面的无圆角一致
-        corner-radius 0
+        // 圆角，与 border 的 radius 一致
+        corner-radius 8
     }
 
     binds {
@@ -238,8 +239,8 @@ binds {
         spawn "helium"
     }
 
-    Mod+E hotkey-overlay-title="Nautilus File Manager" {
-        spawn "nautilus"
+    Mod+E hotkey-overlay-title="Yazi File Manager" {
+        spawn "ghostty -e yazi"
     }
 
     Mod+T hotkey-overlay-title="Open Terminal" {
@@ -522,15 +523,6 @@ binds {
         move-column-to-workspace 9
     }
 
-    // scratch = 开机仪表盘工作区
-    Mod+0 {
-        focus-workspace "scratch"
-    }
-
-    Mod+Shift+0 {
-        move-column-to-workspace "scratch"
-    }
-
     Mod+I {
         focus-workspace-up
     }
@@ -705,6 +697,10 @@ binds {
     // ═══ 启动器 / 管理中心 ═══
     Mod+Space hotkey-overlay-title="Application Launcher" {
         spawn "launcher"
+    }
+
+    Mod+Shift+W hotkey-overlay-title="Wallpaper Picker" {
+        spawn "wallpick"
     }
 
     Mod+S hotkey-overlay-title="System Menu (TUI)" {
