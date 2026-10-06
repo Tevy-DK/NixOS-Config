@@ -119,6 +119,7 @@ Ice.colorschemes = {
     tokyonight = {
         name = "tokyonight",
         background = "dark",
+        transparent = true, -- 与其他暗色方案一致：背景透出终端（theme.nix 的 bg），不再自绘
         setup = {
             style = "moon",
             styles = {
