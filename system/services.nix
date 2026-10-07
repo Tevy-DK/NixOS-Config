@@ -23,6 +23,15 @@
   };
   services.udisks2.enable = true;
   services.displayManager.ly.enable = true;
+  # 登录页黑洞动画：官方社区仓库的 .dur 动画（一颗行星被黑洞吞噬）
+  # https://codeberg.org/fairyglade/ly-community/src/branch/main/animations/dur
+  # 240x67 正好是一整屏 1080p TTY 默认字体；分辨率不同则居中显示，多余部分留黑
+  services.displayManager.ly.settings = {
+    animation = "dur_file";
+    dur_file_path = "/etc/ly/blackhole-smooth-240x67.dur";
+    dur_offset_alignment = "center";
+  };
+  environment.etc."ly/blackhole-smooth-240x67.dur".source = ./ly/blackhole-smooth-240x67.dur;
   services.flatpak.enable = true;
   services.gnome.gnome-keyring.enable = true;
 }
