@@ -7,7 +7,7 @@
 #   username  登录用户
 #   system    CPU 架构
 #   desktop   桌面环境档案（缺省 niri），可选值见 flake.nix 的 desktopProfiles：
-#               niri     = niri + fuzzel       （工作环境）
+#               niri     = niri + noctalia 外壳（工作环境）
 #               hyprland = Hyprland + caelestia（娱乐环境）
 #
 # 新增机器的步骤：

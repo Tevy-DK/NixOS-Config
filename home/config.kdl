@@ -1,18 +1,18 @@
 // ═══════════════════════════════════════════════════════
-// Niri 配置 — koru 布局 + 本机 DMS 同款窗口特效
-// 毛玻璃（终端/编辑器/Nautilus 半透明 + 背景模糊）、阴影、自定义动画全开，
-// 特效参数取自本机 Fedora ~/.config/niri/config.kdl（DMS 会话，同为 niri 26.04）；
-// 壁纸走 awww，实色底兜底；圆角 8px + 1px 常亮边框
-// 配色取自 system/theme.nix（NixOS logo 紫蓝系）；kdl 是静态文件，色值需手动同步：
-//   bg #2E3246（现为 overview backdrop 兜底色） · accent #649AFA · border #4A506B · urgent #D9827B · muted-alt #737E9C
+// Niri 配置 — noctalia 外壳 + 玻璃效果
+// bar/启动器/控制中心/通知/OSD/托盘/剪贴板/锁屏/会话/壁纸/polkit 全在 noctalia
+// （用户配置 home/noctalia.nix，包与服务 system/niri.nix），niri 只管布局与键位。
+// 玻璃：noctalia 面板层 xray=false 走合成器模糊 + 全局 blur 调参；概览壁纸进 backdrop。
+// 圆角 8px + 1px 常亮边框。配色取自 system/theme.nix（NixOS logo 紫蓝系）；
+// kdl 是静态文件，色值需手动同步：
+//   bg #2E3246（overview backdrop 兜底色） · accent #649AFA · border #4A506B · urgent #D9827B
 // ═══════════════════════════════════════════════════════
 
 // 输入法守护进程（waylandFrontend 模式需要会话内自启，同 koru）
 spawn-at-startup "fcitx5" "-d"
 
-// 壁纸（home/wallpaper.nix）：拉起 awww-daemon 并恢复上次选的壁纸，
-// 目录为空时落主题渐变兜底图
-spawn-at-startup "wallpaper"
+// 壁纸由 noctalia 渲染（systemd 用户服务拉起，壁纸层进 backdrop，见 layer-rule），
+// 不再需要 awww 的 spawn-at-startup。
 
 // ─── 环境变量导入 ─────────────────────────────────────
 spawn-sh-at-startup "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_ID"
@@ -56,23 +56,13 @@ output "HDMI-A-1" {
     position x=0 y=0
 }
 
-// ─── 布局（koru 式：宽边距留白 + 1px 常亮圆角边框 + 阴影）──
+// ─── 布局（1px 常亮圆角边框 + 窗口阴影；顶部空间交给 noctalia bar）──
 layout {
-    // 工作区背景全透明：壁纸经 place-within-backdrop 放在 backdrop 里（见下方 layer-rule），
-    // 常规桌面靠这里透出来（否则工作区背景会把 backdrop 和壁纸整个盖住）。
-    // 写法与本机 Fedora/DMS 的日常配置一致（"transparent" 是 niri 认的颜色关键字）。
-    // 壁纸守护挂掉时，由 overview 的 backdrop-color（#2E3246）兜底。
+    // 工作区背景全透明：壁纸由 noctalia 渲染并经 place-within-backdrop 放在
+    // backdrop 里（见下方 layer-rule），常规桌面靠这里透出来。
+    // 壁纸守护不在时，由 overview 的 backdrop-color（#2E3246）兜底。
     background-color "transparent"
     gaps 8
-
-    // 四边用负 strut 把 8px gap 抵消成 4px 薄边，壁纸从 backdrop 透出（顶部同样处理，
-    // 不再额外留状态栏头寸——那会空出一条背景带）
-    struts {
-        top -4
-        left -4
-        right -4
-        bottom -4
-    }
 
     preset-column-widths {
         proportion 0.5
@@ -97,8 +87,8 @@ layout {
         urgent-color   "#D9827B"
     }
 
-    // 窗口阴影（参数取自本机 DMS 配置；layout.shadow 必须写 on 才生效，
-    // 本机那份只写了参数没写 on，所以阴影在 DMS 上其实没开——这里补上）
+    // 窗口阴影（noctalia 面板的影子由它自己的 [shell.shadow] 画，这里管应用窗口；
+    // layout.shadow 必须写 on 才生效）
     shadow {
         on
         softness 30
@@ -132,11 +122,17 @@ overview {
     }
 }
 
-// ─── 壁纸进 overview backdrop（place-within-backdrop）──
-// 默认壁纸这层在 backdrop 之下，Mod+D 概览里只剩实色底。把 awww 的背景层放进
-// backdrop 后，概览和工作区切换时壁纸保持可见；backdrop 内的层不接收输入，壁纸无妨。
+// ─── 壁纸进 overview backdrop ─────────────────────────
+// [backdrop] 开启时壁纸由 noctalia-backdrop 层渲染进 backdrop，Mod+D 概览和
+// 工作区切换时壁纸保持可见且带模糊；关掉 backdrop 后壁纸层叫 noctalia-wallpaper，
+// 同样放进来。两条都写，开关哪种状态都成立。backdrop 内的层不接收输入，壁纸无妨。
 layer-rule {
-    match namespace=r#"^awww-daemon$"#
+    match namespace=r#"^noctalia-backdrop"#
+    place-within-backdrop true
+}
+
+layer-rule {
+    match namespace=r#"^noctalia-wallpaper"#
     place-within-backdrop true
 }
 
@@ -152,7 +148,7 @@ prefer-no-csd
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-// ─── 动画（本机 DMS 同款）──────────────────────────────
+// ─── 动画 ─────────────────────────────────────────────
 animations {
     workspace-switch {
         spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
@@ -186,7 +182,34 @@ animations {
     }
 }
 
-// ─── 窗口规则（只保留有用的）──────────────────────────
+// ─── 玻璃/模糊（niri ≥26.04，noctalia 官方推荐写法）──
+// noctalia 的面板/OSD 自己上报 blur 区域（ext-background-effects 协议），这里只
+// 纠 xray：false = 模糊采样身后的窗口内容而不是壁纸，避免圆角处漏出壁纸色点。
+// 要整层关掉 noctalia 的模糊：match namespace="^noctalia-" + blur false。
+layer-rule {
+    match namespace=r#"^noctalia-(bar-[^"]+|notification|dock|panel|attached-panel|osd)$"#
+    background-effect {
+        xray false
+    }
+}
+
+layer-rule {
+    match namespace=r#"noctalia-window-switcher"#
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
+// 全局模糊调参（noctalia 推荐值；默认 passes 3 / noise 0.02 / saturation 1.5）
+blur {
+    passes 2
+    offset 3.0
+    noise 0.03
+    saturation 1.0
+}
+
+// ─── 窗口规则 ─────────────────────────────────────────
 window-rule {
     // 全局圆角：边框/聚焦环跟随此半径变圆，clip-to-geometry 把窗口内容也裁圆
     geometry-corner-radius 8
@@ -200,18 +223,31 @@ window-rule {
 }
 
 window-rule {
-    // 毛玻璃（本机 DMS 同款）：终端/编辑器/文件管理器半透明 + 背景模糊。
+    // 毛玻璃：终端/编辑器/文件管理器半透明 + 背景模糊。
     // app-id 用 (?i) 兜住 VS Code 系的 code/Code/codium/VSCodium/vscodium；
-    // 浮动小窗（clipse/tray/volview 等）不进这条规则，保持不透明保证可读性
+    // xray false 同上：采样身后内容而非壁纸
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     match app-id=r#"^(?i)(code|codium|vscodium)$"#
     match app-id=r#"^org\.gnome\.Nautilus$"#
     background-effect {
         blur true
+        xray false
         noise 0.01
         saturation 1.5
     }
     opacity 0.75
+}
+
+window-rule {
+    // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值
+    match app-id=r#"^dev\.noctalia\.Noctalia$"#
+    open-floating true
+    default-column-width {
+        fixed 1080
+    }
+    default-window-height {
+        fixed 920
+    }
 }
 
 window-rule {
@@ -232,40 +268,8 @@ window-rule {
     open-floating true
 }
 
-window-rule {
-    // 剪贴板 TUI（clipse）：浮窗，尺寸沿用 hyprland-recovery 的 650x750
-    match app-id=r#"^com\.dk\.clipse$"#
-    open-floating true
-    default-column-width {
-        fixed 650
-    }
-    default-window-height {
-        fixed 750
-    }
-}
-
-// ─── TUI 托盘（tray-tui）──────────────────────────────
-// StatusNotifierItem 宿主：clash-verge、fcitx5 的托盘图标和右键菜单在这里，
-// 退出 clash / 重启 fcitx 都从它的菜单里点。
-window-rule {
-    match app-id=r#"^com\.dk\.tray$"#
-    open-floating true
-    default-column-width {
-        fixed 460
-    }
-    default-window-height {
-        fixed 320
-    }
-}
-
-// ─── 音量速览（Mod+M / 音量键自动弹出）────────────────
-// 浮窗尺寸在 volview-popup（niri.nix）里定，这里只负责浮起。
-window-rule {
-    match app-id=r#"^com\.dk\.volview$"#
-    open-floating true
-}
-
 debug {
+    // noctalia 的通知动作和窗口激活依赖它
     honor-xdg-activation-with-invalid-serial
 }
 
@@ -293,6 +297,7 @@ recent-windows {
 }
 
 // ─── 键位绑定 ─────────────────────────────────────────
+// noctalia 的面板/动作统一走 `noctalia msg`（官方 niri 接入页的写法）。
 binds {
     // ═══ 应用启动 ═══
     Mod+B hotkey-overlay-title="Helium Browser" {
@@ -311,8 +316,8 @@ binds {
         spawn "google-chrome"
     }
 
-    Super+Shift+C hotkey-overlay-title="VSCode" {
-        spawn "code"
+    Super+Shift+C hotkey-overlay-title="VSCodium" {
+        spawn "codium"
     }
 
     // ═══ 窗口管理 ═══
@@ -726,6 +731,7 @@ binds {
     }
 
     // ═══ 截屏 ═══
+    // Print 系走 niri 内置；noctalia 的截屏（region/fullscreen/annotate）在控制中心
     Print {
         screenshot
     }
@@ -754,78 +760,73 @@ binds {
         screenshot-screen
     }
 
-    // ═══ 启动器 / 管理中心 ═══
-    Mod+Space hotkey-overlay-title="Application Launcher" {
-        spawn "launcher"
+    // ═══ noctalia 面板（启动器/控制中心/剪贴板/壁纸/会话/设置）═══
+    Mod+Space hotkey-overlay-title="Launcher" {
+        spawn "noctalia" "msg" "panel-toggle" "launcher"
     }
 
-    Mod+Shift+W hotkey-overlay-title="Wallpaper Picker" {
-        spawn "wallpick"
+    Mod+S hotkey-overlay-title="Control Center" {
+        spawn "noctalia" "msg" "panel-toggle" "control-center"
     }
 
-    Mod+S hotkey-overlay-title="System Menu (TUI)" {
-        spawn "ghostty" "--class=com.dk.sysmenu" "-e" "sysmenu"
+    Mod+Comma hotkey-overlay-title="Noctalia Settings" {
+        spawn "noctalia" "msg" "settings-toggle"
     }
 
     Mod+V hotkey-overlay-title="Clipboard History" {
-        spawn "ghostty" "--class=com.dk.clipse" "-e" "clipse"
+        spawn "noctalia" "msg" "panel-toggle" "clipboard"
     }
 
-    Mod+Y hotkey-overlay-title="System Tray (TUI)" {
-        spawn "ghostty" "--class=com.dk.tray" "-e" "tray-tui"
+    Mod+Shift+W hotkey-overlay-title="Wallpaper Picker" {
+        spawn "noctalia" "msg" "panel-toggle" "wallpaper"
     }
 
-    Mod+M hotkey-overlay-title="Volume (TUI)" {
-        spawn "volview-popup"
-    }
-
-    Mod+X hotkey-overlay-title="Power Menu" {
-        spawn "powermenu"
+    Mod+X hotkey-overlay-title="Session (Power Menu)" {
+        spawn "noctalia" "msg" "panel-toggle" "session"
     }
 
     Mod+Alt+L hotkey-overlay-title="Lock Screen" {
-        spawn "swaylock"
+        spawn "noctalia" "msg" "session" "lock"
     }
 
-    // ═══ 系统控制（wpctl / playerctl / brightnessctl）═══
-    // 音量类按键走 volkey（niri.nix）：改音量 + 自动弹出 volview 窗口
+    // ═══ 音量/亮度/媒体（noctalia 出 OSD；音量键是 repeating，msg 天然支持）═══
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn "volkey" "5%+"
+        spawn "noctalia" "msg" "volume-up"
     }
 
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn "volkey" "5%-"
+        spawn "noctalia" "msg" "volume-down"
     }
 
     XF86AudioMute allow-when-locked=true {
-        spawn "volkey" "mute-sink"
+        spawn "noctalia" "msg" "volume-mute"
     }
 
     XF86AudioMicMute allow-when-locked=true {
-        spawn "volkey" "mute-mic"
+        spawn "noctalia" "msg" "mic-mute"
     }
 
     XF86AudioPlay allow-when-locked=true {
-        spawn "playerctl" "play-pause"
+        spawn "noctalia" "msg" "media" "toggle"
     }
 
     XF86AudioPause allow-when-locked=true {
-        spawn "playerctl" "play-pause"
+        spawn "noctalia" "msg" "media" "toggle"
     }
 
     XF86AudioNext allow-when-locked=true {
-        spawn "playerctl" "next"
+        spawn "noctalia" "msg" "media" "next"
     }
 
     XF86AudioPrev allow-when-locked=true {
-        spawn "playerctl" "previous"
+        spawn "noctalia" "msg" "media" "previous"
     }
 
     XF86MonBrightnessUp allow-when-locked=true {
-        spawn "brightnessctl" "set" "+5%"
+        spawn "noctalia" "msg" "brightness-up"
     }
 
     XF86MonBrightnessDown allow-when-locked=true {
-        spawn "brightnessctl" "set" "5%-"
+        spawn "noctalia" "msg" "brightness-down"
     }
 }

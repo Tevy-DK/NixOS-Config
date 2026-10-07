@@ -25,14 +25,16 @@
 
       # 桌面环境档案：inventory 每台机器的 desktop 字段 → 用户层开关覆盖。
       # 与 modules-enables.nix 的基础面板合并（同名键以档案为准）：
-      #   niri     = niri + fuzzel 启动器 + niri 的 GTK 外观（工作环境）
-      #   hyprland = Hyprland + caelestia-shell，启动器用 caelestia 自带的，
+      #   niri     = niri + noctalia 外壳（bar/启动器/控制中心/通知/OSD/托盘/
+      #              剪贴板/锁屏/会话菜单/壁纸/polkit 全套）。自制品让位：
+      #              fuzzel 启动器、awww 壁纸、clipse、powermenu 都不装（工作环境）
+      #   hyprland = Hyprland + caelestia-shell，外壳与启动器用 caelestia 自带的，
       #              不装 fuzzel；GTK 外观由 caelestia theme.enableGtk 接管，
       #              niri 的 gtk.nix（adw-gtk3 + 方角描边）不能进这个环境
       #              （娱乐环境）
       # 新桌面 = home/ 与 system/ 各加一个模块 + 这里加一行档案。
       desktopProfiles = {
-        niri = { niri = true; hyprland = false; caelestia = false; launcher = true; gtk = true; powermenu = true; };
+        niri = { niri = true; hyprland = false; caelestia = false; launcher = false; gtk = true; powermenu = false; wallpaper = false; clipboard = false; noctalia = true; };
         hyprland = { niri = false; hyprland = true; caelestia = true; launcher = false; gtk = false; powermenu = false; };
       };
 
