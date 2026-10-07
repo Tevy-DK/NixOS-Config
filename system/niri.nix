@@ -8,6 +8,10 @@
   # 用户侧 config.toml（玻璃面板、概览模糊壁纸、壁纸目录等）在 home/noctalia.nix。
   programs.noctalia = {
     enable = true;
+    # noctalia.service 挂在 graphical-session.target（wantedBy/After）；该 target
+    # 由 niri.service（BindsTo）经 niri-session 拉起。所以 tty 里手动进会话必须用
+    # `niri-session`——直接跑 `niri` 不经过 systemd，target 不激活，外壳/portal
+    # 等所有 graphical-session 用户服务都不会启动。
     systemd.enable = true; # 用户服务随 graphical-session.target 拉起
     recommendedServices.enable = true; # NetworkManager / bluetooth / upower / power-profiles-daemon
   };
