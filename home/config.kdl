@@ -1,6 +1,8 @@
 // ═══════════════════════════════════════════════════════
-// Niri 配置 — koru 式极简桌面
-// 无毛玻璃 / 无透明 / 无阴影 / 零自定义动画；壁纸走 awww，实色底兜底；圆角 8px + 2px 常亮边框
+// Niri 配置 — koru 布局 + 本机 DMS 同款窗口特效
+// 毛玻璃（终端/编辑器/Nautilus 半透明 + 背景模糊）、阴影、自定义动画全开，
+// 特效参数取自本机 Fedora ~/.config/niri/config.kdl（DMS 会话，同为 niri 26.04）；
+// 壁纸走 awww，实色底兜底；圆角 8px + 1px 常亮边框
 // 配色取自 system/theme.nix（NixOS logo 紫蓝系）；kdl 是静态文件，色值需手动同步：
 //   bg #2E3246（现为 overview backdrop 兜底色） · accent #649AFA · border #4A506B · urgent #D9827B · muted-alt #737E9C
 // ═══════════════════════════════════════════════════════
@@ -54,7 +56,7 @@ output "HDMI-A-1" {
     position x=0 y=0
 }
 
-// ─── 布局（koru 式：宽边距留白 + 2px 常亮圆角边框）──────
+// ─── 布局（koru 式：宽边距留白 + 1px 常亮圆角边框 + 阴影）──
 layout {
     // 工作区背景全透明：壁纸经 place-within-backdrop 放在 backdrop 里（见下方 layer-rule），
     // 常规桌面靠这里透出来（否则工作区背景会把 backdrop 和壁纸整个盖住）。
@@ -89,10 +91,20 @@ layout {
 
     border {
         on
-        width 2
+        width 1
         active-color   "#649AFA"
         inactive-color "#4A506B"
         urgent-color   "#D9827B"
+    }
+
+    // 窗口阴影（参数取自本机 DMS 配置；layout.shadow 必须写 on 才生效，
+    // 本机那份只写了参数没写 on，所以阴影在 DMS 上其实没开——这里补上）
+    shadow {
+        on
+        softness 30
+        spread 5
+        offset x=0 y=5
+        color "#0007"
     }
 
     tab-indicator {
@@ -140,7 +152,39 @@ prefer-no-csd
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-// 动画全部走 niri 默认值（koru 不自定义装饰性动画）
+// ─── 动画（本机 DMS 同款）──────────────────────────────
+animations {
+    workspace-switch {
+        spring damping-ratio=0.80 stiffness=523 epsilon=0.0001
+    }
+    window-open {
+        duration-ms 150
+        curve "ease-out-expo"
+    }
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+    horizontal-view-movement {
+        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+    }
+    window-movement {
+        spring damping-ratio=0.75 stiffness=323 epsilon=0.0001
+    }
+    window-resize {
+        spring damping-ratio=0.85 stiffness=423 epsilon=0.0001
+    }
+    config-notification-open-close {
+        spring damping-ratio=0.65 stiffness=923 epsilon=0.001
+    }
+    screenshot-ui-open {
+        duration-ms 200
+        curve "ease-out-quad"
+    }
+    overview-open-close {
+        spring damping-ratio=0.85 stiffness=800 epsilon=0.0001
+    }
+}
 
 // ─── 窗口规则（只保留有用的）──────────────────────────
 window-rule {
@@ -153,6 +197,21 @@ window-rule {
     // 终端自带深底，别让 niri 的边框画在背景上
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     draw-border-with-background false
+}
+
+window-rule {
+    // 毛玻璃（本机 DMS 同款）：终端/编辑器/文件管理器半透明 + 背景模糊。
+    // app-id 用 (?i) 兜住 VS Code 系的 code/Code/codium/VSCodium/vscodium；
+    // 浮动小窗（clipse/tray/volview 等）不进这条规则，保持不透明保证可读性
+    match app-id=r#"^com\.mitchellh\.ghostty$"#
+    match app-id=r#"^(?i)(code|codium|vscodium)$"#
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    background-effect {
+        blur true
+        noise 0.01
+        saturation 1.5
+    }
+    opacity 0.75
 }
 
 window-rule {
