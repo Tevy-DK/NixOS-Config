@@ -122,14 +122,23 @@ overview {
     }
 }
 
-// ─── 概览壁纸（noctalia 官方接入页 Option 1：Blurred Overview Wallpaper）──
-// [backdrop] 开启时 noctalia 渲染一块「模糊+着色的壁纸副本」在 noctalia-backdrop
-// 层，放进 overview backdrop 后只在概览/工作区切换时可见 —— DMS 的
-// dms:blurwallpaper 同款结构。清晰壁纸由 noctalia-wallpaper 层照常渲染在普通
-// 桌面（随工作区滚动），不要把它也放进 backdrop：backdrop 里的层会同时出现在
-// 概览里，清晰层叠在模糊副本上面，概览的模糊就被盖没了。
+// ─── 壁纸进 overview backdrop（DMS 同构： stationary 壁纸 + 无卡片重渲染）──
+// DMS 的做法是壁纸层（namespace=quickshell）整体 place-within-backdrop：壁纸
+// 常驻不动、不随工作区滚动，且 backdrop 里的层不会被 niri 逐工作区重渲染进
+// 概览卡片——概览里壁纸是一整块连续的，窗口直接浮在上面。noctalia 壁纸层
+// （noctalia-wallpaper）同样放进来，得到同款构图。
+// 与 DMS 的唯一差距：DMS 会在概览打开时把壁纸层原地自模糊（监听 niri 事件），
+// noctalia 的壁纸层没有这个钩子，静态模糊副本层（noctalia-backdrop）又只能
+// 常开（放上去桌面跟着糊），所以 [backdrop] 在 noctalia.nix 里关着——概览壁
+// 纸是清晰的。想要「模糊背景 + 清晰小卡片」的 Option 1 风格：打开 [backdrop]
+// 并删掉下面 noctalia-wallpaper 这条规则即可。
 layer-rule {
     match namespace=r#"^noctalia-backdrop"#
+    place-within-backdrop true
+}
+
+layer-rule {
+    match namespace=r#"^noctalia-wallpaper"#
     place-within-backdrop true
 }
 

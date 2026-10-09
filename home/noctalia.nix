@@ -52,14 +52,13 @@
         "session"
       ];
 
-      # 概览模糊壁纸：noctalia 渲染模糊+着色副本进 overview backdrop
-      # （place-within-backdrop 规则见 home/config.kdl）。强度 0-1。
-      # tint 往主题 Surface 色（深色）染：壁纸亮部多时把 blur_intensity 开大、
-      # tint 开小会让背景发白发亮，和工作区卡片里的清晰壁纸拉不开层次。
+      # 概览模糊壁纸副本：关闭。noctalia 的模糊副本层是静态常开的，放进
+      # backdrop 后会和清晰壁纸层叠放，要么盖住模糊（概览看不到模糊）要么把
+      # 桌面一起糊掉；DMS 那种「概览打开时壁纸层原位模糊」noctalia 没有实现。
+      # 概览构图走 DMS 同款：清晰壁纸层进 backdrop（见 home/config.kdl），
+      # 概览里壁纸连续一整块、窗口浮在上面。
       backdrop = {
-        enabled = true;
-        blur_intensity = 0.8;
-        tint_intensity = 0.5;
+        enabled = false;
       };
 
       theme = {
