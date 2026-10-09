@@ -27,8 +27,13 @@
         polkit_agent = true;
       };
 
-      # 玻璃：面板 solid | soft | glass 三档，glass 最透
+      # 玻璃：面板 solid | soft | glass 三档，glass 最透。
+      # 注意它只管浮动面板和卡片；bar 的透明度是独立的 background_opacity（默认
+      # 1.0 不透明）——noctalia 会给 bar 上报模糊区域，但底子不透就看不见。
       shell.panel.transparency_mode = "glass";
+
+      # bar 半透明，让 niri 的合成器模糊透出来（见 config.kdl 的 layer-rule）
+      bar.main.background_opacity = 0.8;
 
       # 台式机：默认 end 列表去掉电池和亮度（无电池、无背光）
       bar.main.end = [
@@ -42,10 +47,11 @@
         "session"
       ];
 
-      # 概览模糊壁纸强度（0-1）
+      # 概览模糊壁纸：noctalia 渲染模糊+着色副本进 overview backdrop
+      # （place-within-backdrop 规则见 home/config.kdl）。强度 0-1。
       backdrop = {
         enabled = true;
-        blur_intensity = 0.5;
+        blur_intensity = 0.8;
         tint_intensity = 0.3;
       };
 

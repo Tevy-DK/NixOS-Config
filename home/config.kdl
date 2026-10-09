@@ -122,17 +122,14 @@ overview {
     }
 }
 
-// ─── 壁纸进 overview backdrop ─────────────────────────
-// [backdrop] 开启时壁纸由 noctalia-backdrop 层渲染进 backdrop，Mod+D 概览和
-// 工作区切换时壁纸保持可见且带模糊；关掉 backdrop 后壁纸层叫 noctalia-wallpaper，
-// 同样放进来。两条都写，开关哪种状态都成立。backdrop 内的层不接收输入，壁纸无妨。
+// ─── 概览壁纸（noctalia 官方接入页 Option 1：Blurred Overview Wallpaper）──
+// [backdrop] 开启时 noctalia 渲染一块「模糊+着色的壁纸副本」在 noctalia-backdrop
+// 层，放进 overview backdrop 后只在概览/工作区切换时可见 —— DMS 的
+// dms:blurwallpaper 同款结构。清晰壁纸由 noctalia-wallpaper 层照常渲染在普通
+// 桌面（随工作区滚动），不要把它也放进 backdrop：backdrop 里的层会同时出现在
+// 概览里，清晰层叠在模糊副本上面，概览的模糊就被盖没了。
 layer-rule {
     match namespace=r#"^noctalia-backdrop"#
-    place-within-backdrop true
-}
-
-layer-rule {
-    match namespace=r#"^noctalia-wallpaper"#
     place-within-backdrop true
 }
 
@@ -239,7 +236,9 @@ window-rule {
 }
 
 window-rule {
-    // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值
+    // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值。
+    // 设置窗口是普通 toplevel，noctalia 只给 layer-shell 面板自动上报模糊区域，
+    // 窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
     match app-id=r#"^dev\.noctalia\.Noctalia$"#
     open-floating true
     default-column-width {
@@ -247,6 +246,10 @@ window-rule {
     }
     default-window-height {
         fixed 920
+    }
+    background-effect {
+        blur true
+        xray false
     }
 }
 
