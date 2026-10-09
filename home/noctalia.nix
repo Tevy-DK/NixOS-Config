@@ -33,7 +33,12 @@
       shell.panel.transparency_mode = "glass";
 
       # bar 半透明，让 niri 的合成器模糊透出来（见 config.kdl 的 layer-rule）
-      bar.main.background_opacity = 0.8;
+      bar.main.background_opacity = 0.6;
+
+      # 设置窗口背景透明（默认 false = 1.0 全不透明，niri 侧的 blur 规则会被
+      # 不透明底盖住看不见）；配合 config.kdl 里 dev.noctalia.Noctalia 的
+      # background-effect 才有毛玻璃
+      shell.settings_window_translucent = true;
 
       # 台式机：默认 end 列表去掉电池和亮度（无电池、无背光）
       bar.main.end = [
@@ -49,10 +54,12 @@
 
       # 概览模糊壁纸：noctalia 渲染模糊+着色副本进 overview backdrop
       # （place-within-backdrop 规则见 home/config.kdl）。强度 0-1。
+      # tint 往主题 Surface 色（深色）染：壁纸亮部多时把 blur_intensity 开大、
+      # tint 开小会让背景发白发亮，和工作区卡片里的清晰壁纸拉不开层次。
       backdrop = {
         enabled = true;
         blur_intensity = 0.8;
-        tint_intensity = 0.3;
+        tint_intensity = 0.5;
       };
 
       theme = {
