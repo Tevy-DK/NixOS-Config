@@ -1,6 +1,8 @@
 # --- gtk ---
-# 借鉴 koru：让 GTK 应用与桌面同一套视觉 —— 深底、方角、2px 强调色描边，
-# 配色全部来自全局 theme.nix。
+# 让 GTK 应用与桌面同一套视觉：配色全部来自全局 theme.nix；
+# 几何（圆角/阴影/边框）交给 libadwaita 原生 CSD + niri 的 layout.border，
+# 不再方角描边——那套 koru 方角样式让 GTK 窗口整窗画成不透明方板，
+# 看起来像跑在 XWayland 里，与 noctalia 玻璃风冲突。
 #
 # GTK3: adw-gtk3-dark 读取 libadwaita 命名色（非老的 @theme_* 名），两者都覆盖。
 # GTK4/libadwaita: 不认主题名，用原生 gtk-interface-color-scheme + 同套命名色。
@@ -44,36 +46,6 @@ let
     @define-color theme_unfocused_bg_color ${theme.bg};
     @define-color theme_unfocused_fg_color ${theme.muted};
   '';
-
-  # 方角 + 2px 强调色描边，与 niri 的窗口边框一致
-  extras = ''
-    window,
-    window.background,
-    headerbar,
-    .titlebar,
-    popover,
-    popover.background,
-    menu,
-    tooltip,
-    dialog,
-    messagedialog,
-    decoration {
-      border-radius: 0;
-    }
-
-    /* GTK3 CSD outline */
-    decoration {
-      border: 2px solid ${theme.accent};
-      box-shadow: none;
-    }
-
-    /* GTK4/libadwaita CSD outline */
-    window.csd {
-      border: 2px solid ${theme.accent};
-      border-radius: 0;
-      box-shadow: none;
-    }
-  '';
 in
 {
   # GTK 外观基础值统一 mkDefault：hyprland 档案里这些键由 caelestia.nix 显式
@@ -98,8 +70,8 @@ in
       package = pkgs.tela-icon-theme;
     };
 
-    gtk3.extraCss = colors + legacy + extras;
-    gtk4.extraCss = colors + extras;
+  gtk3.extraCss = colors + legacy;
+  gtk4.extraCss = colors;
 
     # GTK4 原生暗色（enum 的 nick 写法，libadwaita 才不告警）
     gtk4.colorScheme = null;

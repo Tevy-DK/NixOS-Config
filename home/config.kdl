@@ -223,6 +223,14 @@ window-rule {
 }
 
 window-rule {
+    // 全局几何圆角 8px（兑现文件头「圆角 8px」）：niri 的 border 块没有 radius
+    // 节点，窗口圆角只能走窗口规则 geometry-corner-radius，border/shadow 跟随它。
+    // clip-to-geometry 把窗口内容裁进圆角；不设的话只有边框是圆的。
+    geometry-corner-radius 8
+    clip-to-geometry true
+}
+
+window-rule {
     // 终端自带深底，别让 niri 的边框画在背景上
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     draw-border-with-background false
@@ -288,7 +296,7 @@ debug {
 // ─── 最近窗口 ─────────────────────────────────────────
 recent-windows {
     highlight {
-        // 圆角，与 border 的 radius 一致
+        // 圆角，与全局 geometry-corner-radius 窗口规则一致
         corner-radius 8
     }
 
