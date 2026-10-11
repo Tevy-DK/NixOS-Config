@@ -252,6 +252,19 @@ window-rule {
 }
 
 window-rule {
+    // nautilus 玻璃：窗口半透明由 gtk4 CSS 的 widget 级规则画进 surface
+    // （home/gtk.nix 的 glass——@define-color 带 alpha 在 GTK4 上是坏的，
+    // 别回退），niri 只管模糊、不叠 opacity 免得双重变暗
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    background-effect {
+        blur true
+        xray false
+        noise 0.01
+        saturation 1.5
+    }
+}
+
+window-rule {
     // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值。
     // 设置窗口是普通 toplevel，noctalia 只给 layer-shell 面板自动上报模糊区域，
     // 窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
