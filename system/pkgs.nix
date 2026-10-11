@@ -25,7 +25,7 @@
   playerctl        # CLI 媒体控制兜底（桌面键位走 noctalia msg media *）
   wireplumber      # PipeWire 会话管理，wpctl 也由它提供
   libnotify        # notify-send
-  fzf              # sysmenu 依赖
+  fzf              # cli-tools 模糊选择（zoxide/历史搜索）
   btop             # 系统监控
   ];
 }
