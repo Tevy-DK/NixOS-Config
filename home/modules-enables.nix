@@ -14,14 +14,12 @@
     fastfetch = true;
     ghostty = true;
     git = true;
-    gtk = true;         # niri 的 GTK 外观（adw-gtk3 + 方角描边）；hyprland 档案在 flake.nix 里覆盖为 false（GTK 交给 caelestia）
+    gtk = true;         # niri 的 GTK 外观（adw-gtk3 + 玻璃底色）；hyprland 档案在 flake.nix 里覆盖为 false（GTK 交给 caelestia）
     hyprland = false;   # Hyprland 用户层配置
-    launcher = true;    # fuzzel 启动器；niri 档案改用 noctalia 启动器后覆盖为 false，hyprland 用 caelestia 自带的
     niri = true;        # niri 用户层配置（工作环境）
     noctalia = true;    # noctalia 桌面外壳 v5（bar/启动器/通知/OSD/托盘/剪贴板/锁屏/壁纸/polkit），仅 niri 档案启用
     nvim = true;
     pkgs = true;
-    powermenu = true;   # fuzzel 电源菜单（关机/重启/登出）；niri 档案覆盖为 false（noctalia 会话面板接管，Mod+X）
     shell = true;
     starship = true;
     sysmenu = true;
