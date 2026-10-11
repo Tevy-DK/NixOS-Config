@@ -239,9 +239,13 @@ window-rule {
 window-rule {
     // 毛玻璃：终端/编辑器半透明 + 背景模糊（ghostty/vscodium 表面自带透明，
     // 模糊可直接透过）。app-id 用 (?i) 兜住 VS Code 系的 code/Code/codium/
-    // VSCodium/vscodium；xray false：采样身后内容而非壁纸
+    // VSCodium/vscodium；xray false：采样身后内容而非壁纸。
+    // draw-border-with-background false：与 nautilus 规则同理——border 默认
+    // 在窗口背后整面涂边框色（聚焦 #649AFA），不关掉 One Dark Pro 打 0.75
+    // 透明后会透出边框蓝，整窗发灰蓝
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     match app-id=r#"^(?i)(code|codium|vscodium)$"#
+    draw-border-with-background false
     background-effect {
         blur true
         xray false
