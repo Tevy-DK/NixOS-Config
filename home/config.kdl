@@ -810,7 +810,7 @@ binds {
         spawn "noctalia" "msg" "panel-toggle" "clipboard"
     }
 
-    Mod+Shift+W hotkey-overlay-title="Wallpaper Picker" {
+    Mod+Y hotkey-overlay-title="Wallpaper Picker" {
         spawn "noctalia" "msg" "panel-toggle" "wallpaper"
     }
 

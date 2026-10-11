@@ -34,7 +34,7 @@
       #              （娱乐环境）
       # 新桌面 = home/ 与 system/ 各加一个模块 + 这里加一行档案。
       desktopProfiles = {
-        niri = { niri = true; hyprland = false; caelestia = false; gtk = true; noctalia = true; };
+        niri = { niri = true; hyprland = false; caelestia = false; gtk = true; clipboard = false; noctalia = true; };
         hyprland = { niri = false; hyprland = true; caelestia = true; gtk = false; };
       };
 
