@@ -22,7 +22,6 @@
     pkgs = true;
     shell = true;
     starship = true;
-    sysmenu = false;    # Omarchy 式 fzf 管理中心，源码保留停用
     themes = true;
     vscodium = true;
     yazi = true;
