@@ -237,12 +237,11 @@ window-rule {
 }
 
 window-rule {
-    // 毛玻璃：终端/编辑器/文件管理器半透明 + 背景模糊。
-    // app-id 用 (?i) 兜住 VS Code 系的 code/Code/codium/VSCodium/vscodium；
-    // xray false 同上：采样身后内容而非壁纸
+    // 毛玻璃：终端/编辑器半透明 + 背景模糊（ghostty/vscodium 表面自带透明，
+    // 模糊可直接透过）。app-id 用 (?i) 兜住 VS Code 系的 code/Code/codium/
+    // VSCodium/vscodium；xray false：采样身后内容而非壁纸
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     match app-id=r#"^(?i)(code|codium|vscodium)$"#
-    match app-id=r#"^org\.gnome\.Nautilus$"#
     background-effect {
         blur true
         xray false
@@ -250,6 +249,20 @@ window-rule {
         saturation 1.5
     }
     opacity 0.75
+}
+
+window-rule {
+    // nautilus 玻璃：GTK4/libadwaita 默认整面画不透明底，模糊会被完全盖住
+    // （wiki Window-Effects：「窗口须半透明才能看到 background-effect」，
+    // opacity 压在最终合成上救不了模糊）。透明由 gtk4 CSS 的 alpha 底色画进
+    // surface（home/gtk.nix 的 glass），niri 只管模糊、不叠 opacity 免得双重变暗
+    match app-id=r#"^org\.gnome\.Nautilus$"#
+    background-effect {
+        blur true
+        xray false
+        noise 0.01
+        saturation 1.5
+    }
 }
 
 window-rule {
