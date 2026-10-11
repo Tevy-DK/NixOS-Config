@@ -1,26 +1,21 @@
 # --- gtk ---
-# 颜色不写死、玻璃独立成文件、HM 不碰 gtk.css（2026-10-11 终版，探针+嵌套
-# niri 实测）。
+# 配色唯一来源是全局 theme.nix；几何（圆角/阴影/边框）交给 libadwaita 原生
+# CSD + niri 的 layout.border。
 #
-# 配色归属：noctalia 的内置 GTK 模板（theme.templates.enable_builtin_templates
-# 默认 true）在每次壁纸/主题事件写 ~/.config/gtk-{3,4}.0/noctalia.css（M3 壁纸
-# 调色板），并用 apply.sh 改写 gtk.css（追加 @import；遇到 HM 只读软链会删链
-# 换本地文件）。gtk.css 的所有权归它——HM 此前三次部署都在这个文件上和它
-# 拔河（rebuild 反复提示覆盖），故 extraCss 全部撤除，HM 不再管 gtk.css。
+# 玻璃（2026-10-11 探针+嵌套 niri 实测定稿的机制）：niri 的 background-effect
+# 模糊只透过窗口自绘的半透明像素生效（不透明整面会完全盖住它；window-rule
+# 的 opacity 压在最终合成上也救不了），而 @define-color 带 alpha 的 rgba 在
+# GTK4 4.22 上是坏的（0.7 档静默失效回退不透明；alpha 0 的命名色会把
+# accent_bg 漏成整窗底色）。所以命名色全部不透明，透明写在 widget 级规则里：
+# window 一层 alpha(@window_bg_color, 0.7)，headerbar/侧栏/视图/卡片全透只留
+# 一层保全窗透明度均匀；弹层（popover/dialog）保持不透明色保可读性。文字/
+# 图标照常实心绘制，不受透明影响。niri 侧模糊在 config.kdl 的 nautilus
+# window-rule（不叠 opacity 免得双重变暗）。GTK3 不带玻璃（adw-gtk3 透明
+# 表现不稳）。
 #
-# 玻璃：写在独立的 glass.css（没有任何人抢这个文件名，HM 独占、版本可控，
-# 改透明度 rebuild 即可）。niri 的 background-effect 模糊只透过窗口自绘的
-# 半透明像素生效，而 @define-color 带 alpha 的 rgba 在 GTK4 4.22 上是坏的
-# （0.7 档静默失效回退不透明；alpha 0 命名色把 accent_bg 漏成整窗底色），
-# 所以透明走 widget 级规则：window 一层 alpha(@window_bg_color, 0.7)（引用
-# noctalia 调色板、随壁纸走），headerbar/侧栏/视图/卡片全透只留一层保均匀，
-# 弹层保持 noctalia 的不透明色。色值 @window_bg_color 由 gtk.css 顶部的
-# noctalia.css import 提供。niri 侧模糊在 config.kdl 的 nautilus window-rule。
-#
-# 机器上的一次性接线（noctalia 已创建 import-only 的 gtk.css 后执行一次）：
-#   sed -i '/noctalia\.css/a @import url("glass.css");' ~/.config/gtk-4.0/gtk.css
-# （@import 必须都在文件头部；此后 apply.sh 的幂等检查会跳过整个文件。）
-# GTK3 不带玻璃（adw-gtk3 透明表现不稳），颜色靠 noctalia 自己管的 import。
+# 历史：noctalia 的内置 GTK 模板曾在每次壁纸/主题事件改写 gtk.css（见
+# noctalia.nix，已停用），与其拔河导致 HM 反复提示覆盖、glass 部署三次失败，
+# 最终定为 theme.nix 固定调色板 + widget 级透明——flake 声明一切、完全可复现。
 {
   pkgs,
   lib,
@@ -28,10 +23,44 @@
   ...
 }:
 let
+  # libadwaita 命名色，GTK3（adw-gtk3）与 GTK4 共用；全部不透明，
+  # 透明度一律走下方 glass 的 widget 级规则，勿写进 @define-color
+  colors = ''
+    @define-color accent_color ${theme.accent};
+    @define-color accent_bg_color ${theme.accent};
+    @define-color accent_fg_color ${theme.black};
+    @define-color window_bg_color ${theme.bg};
+    @define-color window_fg_color ${theme.fg};
+    @define-color view_bg_color ${theme.bg};
+    @define-color view_fg_color ${theme.fg};
+    @define-color headerbar_bg_color ${theme.bg};
+    @define-color headerbar_fg_color ${theme.fg};
+    @define-color sidebar_bg_color ${theme.bg-alt};
+    @define-color sidebar_fg_color ${theme.fg};
+    @define-color card_bg_color ${theme.bg-alt};
+    @define-color card_fg_color ${theme.fg};
+    @define-color dialog_bg_color ${theme.bg};
+    @define-color dialog_fg_color ${theme.fg};
+    @define-color popover_bg_color ${theme.bg-alt};
+    @define-color popover_fg_color ${theme.fg};
+    @define-color borders ${theme.border};
+  '';
+
+  # 前 libadwaita 时代的 GTK3 名字（少量组件还在用）
+  legacy = ''
+    @define-color theme_bg_color ${theme.bg};
+    @define-color theme_fg_color ${theme.fg};
+    @define-color theme_base_color ${theme.bg};
+    @define-color theme_text_color ${theme.fg};
+    @define-color theme_selected_bg_color ${theme.accent};
+    @define-color theme_selected_fg_color ${theme.black};
+    @define-color theme_unfocused_bg_color ${theme.bg};
+    @define-color theme_unfocused_fg_color ${theme.muted};
+  '';
+
+  # GTK4 玻璃层：只留 window 一层 alpha，内层（headerbar/侧栏/视图/卡片）
+  # 全透，全窗透明度均匀；底色引用 theme.bg（蓝灰夜色，源自壁纸浅色块）
   glass = ''
-    /* 毛玻璃：底色引用 noctalia 调色板（gtk.css import 的 noctalia.css 提供），
-       只留 window 一层 alpha；勿把透明写进 @define-color（GTK4 上静默失效/
-       漏 accent，见文件头注释） */
     window.background { background-color: alpha(@window_bg_color, 0.7); }
     headerbar { background-color: transparent; }
     .sidebar-pane, .navigation-sidebar, .secondary-sidebar { background-color: transparent; }
@@ -62,14 +91,13 @@ in
       package = pkgs.tela-icon-theme;
     };
 
+    gtk3.extraCss = colors + legacy;
+    gtk4.extraCss = colors + glass;
+
     # GTK4 原生暗色（enum 的 nick 写法，libadwaita 才不告警）
     gtk4.colorScheme = null;
     gtk4.extraConfig."gtk-interface-color-scheme" = "dark";
   };
-
-  # 玻璃规则独立文件：gtk.css 归 noctalia（它按壁纸事件重写），这个文件名
-  # 无人争夺，HM 独占；机器侧一次性往 gtk.css 加 @import 接线（见文件头）
-  xdg.configFile."gtk-4.0/glass.css".text = glass;
 
   # GTK3 "另存为" 对话框（xdg-desktop-portal-gtk）把窗口尺寸存在 dconf 里
   dconf.enable = true;

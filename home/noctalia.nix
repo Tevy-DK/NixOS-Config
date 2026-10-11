@@ -64,6 +64,14 @@
       theme = {
         mode = "dark";
         source = "wallpaper"; # m3-tonal-spot 默认方案；builtin 可换 Noctalia/Catppuccin 等
+
+        # 停用 noctalia 的内置应用主题模板（gtk3/gtk4/ghostty/helix/kde 等全套）：
+        # 它会在每次壁纸/主题事件改写 ~/.config/gtk-{3,4}.0/gtk.css（追加
+        # @import，甚至把 HM 只读软链删链换本地文件），与 HM 永久拔河，且
+        # GTK 颜色随壁纸漂移不可复现。GTK 颜色归 home/gtk.nix 的 theme.nix
+        # 命名色（外壳面板仍跟随壁纸，互不相干）。若日后要某个模板，用
+        # theme.templates.builtin_ids 精确点名单个启用。
+        templates.enable_builtin_templates = false;
       };
 
       # 壁纸目录沿用原 awww 方案的 ~/Images；选图走 noctalia 壁纸面板
