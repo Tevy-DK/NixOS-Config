@@ -252,16 +252,19 @@ window-rule {
 }
 
 window-rule {
-    // nautilus 玻璃：窗口半透明由 gtk4 CSS 的 widget 级规则画进 surface
-    // （home/gtk.nix 的 glass——@define-color 带 alpha 在 GTK4 上是坏的，
-    // 别回退），niri 只管模糊、不叠 opacity 免得双重变暗
+    // nautilus 玻璃：与本机 DMS 配置同款（blur + opacity，GTK 零 CSS 参与）。
+    // draw-border-with-background false 是关键——niri 的 border 默认会在窗口
+    // 背后整面涂边框色（聚焦 #649AFA 蓝、失焦 #4A506B 灰，正是「聚焦变蓝/
+    // 失焦变灰、看不见模糊」的来源），关掉才透得出模糊后的壁纸
     match app-id=r#"^org\.gnome\.Nautilus$"#
+    clip-to-geometry true
+    draw-border-with-background false
     background-effect {
         blur true
-        xray false
         noise 0.01
         saturation 1.5
     }
+    opacity 0.75
 }
 
 window-rule {
