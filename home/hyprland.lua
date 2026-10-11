@@ -270,7 +270,6 @@ hl.bind(mainMod .. " + SPACE", hl.dsp.global("caelestia:launcher"))
 hl.bind(mainMod .. " + X", hl.dsp.global("caelestia:session"))
 hl.bind(mainMod .. " + SHIFT + ALT + S", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -z -m region"))
-hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("ghostty --class=com.dk.clipse -e clipse"))
 --hl.bind(mainMod .. " + TAB", function() hl.plugin.scrolloverview.overview("toggle all") end)
 
 
@@ -384,13 +383,6 @@ hl.window_rule({
     },
 
     no_focus = true,
-})
-
-hl.window_rule({
-    name  = "clipse",
-    match = { class = "com.dk.clipse" },
-    float  = true,
-    size  = "650 750",
 })
 
 -- Layer rules also return a handle.

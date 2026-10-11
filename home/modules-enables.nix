@@ -9,7 +9,6 @@
     caelestia = false;  # caelestia-shell（Hyprland 娱乐环境；flake.nix 按机器的 desktop 字段覆盖下面三项）
     cava = true;
     cli-tools = true;
-    clipboard = true;   # clipse 剪贴板历史；niri 档案在 flake.nix 里覆盖为 false（noctalia 自带剪贴板面板）
     cursor-theme = true;
     fastfetch = true;
     ghostty = true;
@@ -25,7 +24,6 @@
     sysmenu = true;
     themes = true;
     vscodium = true;
-    wallpaper = true;   # awww 壁纸 + fuzzel 选图（Mod+Shift+W）；niri 档案覆盖为 false（noctalia 壁纸引擎接管），hyprland 档案也覆盖为 false（caelestia 自带壁纸）
     yazi = true;
     zathura = true;
   };
