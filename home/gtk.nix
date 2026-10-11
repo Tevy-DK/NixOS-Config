@@ -1,74 +1,25 @@
 # --- gtk ---
-# 让 GTK 应用与桌面同一套视觉：配色全部来自全局 theme.nix；
-# 几何（圆角/阴影/边框）交给 libadwaita 原生 CSD + niri 的 layout.border，
-# 不再方角描边——那套 koru 方角样式让 GTK 窗口整窗画成不透明方板，
-# 看起来像跑在 XWayland 里，与 noctalia 玻璃风冲突。
-#
-# GTK3: adw-gtk3-dark 读取 libadwaita 命名色（非老的 @theme_* 名），两者都覆盖。
-# GTK4/libadwaita: 不认主题名，用原生 gtk-interface-color-scheme + 同套命名色。
+# GTK 的颜色不在这里写死，完全交给 noctalia：它内置 gtk3/gtk4 主题模板
+# （enableBuiltinTemplates 默认 true），从当前壁纸算 M3 调色板写
+# ~/.config/gtk-{3,4}.0/noctalia.css，并在 apply.sh 钩子里改写 gtk.css 追加
+# @import——每次壁纸/主题事件都会重写。这层曾经的三套写死方案（koru 方角
+# 描边 → theme.nix 命名色覆盖 → glass alpha 底色）全部与它打架：
+#   - HM 每次 rebuild 提示覆盖 gtk-3.0/gtk-4.0.css（noctalia 在背后改过，
+#     甚至会把 HM 的只读软链删掉换成本地文件）；
+#   - GTK4 4.22 实测 @define-color 不吃带 alpha 的 rgba（0.7 静默失效回退
+#     不透明色；alpha 0 的命名色更会把 accent_bg 漏成整窗底色，换壁纸就
+#     跟着 noctalia 调色板变色）。
+# 所以这里只留与颜色无关的基础项：adw-gtk3（noctalia 的 apply.sh 也会把
+# gtk-theme 设成 adw-gtk3-dark，正好一致）、字体、图标、深色偏好。
+# 若日后要重做毛玻璃：别动 @define-color，用 widget 级规则
+# （window.background { background-color: alpha(...) } + headerbar/侧栏
+# transparent），嵌套 niri 探针实测这条路是通的。
 {
   pkgs,
   lib,
   theme,
   ...
 }:
-let
-  # libadwaita 命名色，GTK3（adw-gtk3）与 GTK4 共用
-  colors = ''
-    @define-color accent_color ${theme.accent};
-    @define-color accent_bg_color ${theme.accent};
-    @define-color accent_fg_color ${theme.black};
-    @define-color window_bg_color ${theme.bg};
-    @define-color window_fg_color ${theme.fg};
-    @define-color view_bg_color ${theme.bg};
-    @define-color view_fg_color ${theme.fg};
-    @define-color headerbar_bg_color ${theme.bg};
-    @define-color headerbar_fg_color ${theme.fg};
-    @define-color sidebar_bg_color ${theme.bg-alt};
-    @define-color sidebar_fg_color ${theme.fg};
-    @define-color card_bg_color ${theme.bg-alt};
-    @define-color card_fg_color ${theme.fg};
-    @define-color dialog_bg_color ${theme.bg};
-    @define-color dialog_fg_color ${theme.fg};
-    @define-color popover_bg_color ${theme.bg-alt};
-    @define-color popover_fg_color ${theme.fg};
-    @define-color borders ${theme.border};
-  '';
-
-  # 前 libadwaita 时代的 GTK3 名字（少量组件还在用）
-  legacy = ''
-    @define-color theme_bg_color ${theme.bg};
-    @define-color theme_fg_color ${theme.fg};
-    @define-color theme_base_color ${theme.bg};
-    @define-color theme_text_color ${theme.fg};
-    @define-color theme_selected_bg_color ${theme.accent};
-    @define-color theme_selected_fg_color ${theme.black};
-    @define-color theme_unfocused_bg_color ${theme.bg};
-    @define-color theme_unfocused_fg_color ${theme.muted};
-  '';
-
-  # "#RRGGBB" → "R, G, B"，给 GTK4 的 rgba() 用（TOML 整数字面量支持 0x 前缀）
-  rgbOf = hex:
-    let
-      h = builtins.substring 1 6 hex;
-      chan = off: (builtins.fromTOML "v = 0x${builtins.substring off 2 h}").v;
-    in
-    "${toString (chan 0)}, ${toString (chan 2)}, ${toString (chan 4)}";
-
-  # GTK4 玻璃层（嵌套 niri 实测通过）：libadwaita 默认整面画不透明底，niri 的
-  # background-effect 模糊只透过窗口自绘的半透明像素生效（wiki Window-Effects：
-  # 「整面不透明会完全盖住效果」，window-rule 的 opacity 压在最终合成上救不了
-  # 模糊）。所以大面底色带 alpha 画进 surface；内层（headerbar/侧栏/视图/卡片）
-  # 全透、只留 window 一层 alpha，全窗透明度均匀；弹层（popover/dialog）保持
-  # colors 里的不透明值保可读性。GTK3 不带玻璃（adw-gtk3 透明表现不稳）。
-  glass = ''
-    @define-color window_bg_color rgba(${rgbOf theme.bg}, 0.7);
-    @define-color headerbar_bg_color rgba(${rgbOf theme.bg}, 0);
-    @define-color sidebar_bg_color rgba(${rgbOf theme.bg}, 0);
-    @define-color view_bg_color rgba(${rgbOf theme.bg}, 0);
-    @define-color card_bg_color rgba(${rgbOf theme.bg}, 0);
-  '';
-in
 {
   # GTK 外观基础值统一 mkDefault：hyprland 档案里这些键由 caelestia.nix 显式
   # 声明（两侧值相同）；只有 homeConfigurations.all 全模块求值时会同开，
@@ -91,9 +42,6 @@ in
       name = "Tela";
       package = pkgs.tela-icon-theme;
     };
-
-  gtk3.extraCss = colors + legacy;
-  gtk4.extraCss = colors + glass;
 
     # GTK4 原生暗色（enum 的 nick 写法，libadwaita 才不告警）
     gtk4.colorScheme = null;

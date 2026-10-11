@@ -252,20 +252,6 @@ window-rule {
 }
 
 window-rule {
-    // nautilus 玻璃：GTK4/libadwaita 默认整面画不透明底，模糊会被完全盖住
-    // （wiki Window-Effects：「窗口须半透明才能看到 background-effect」，
-    // opacity 压在最终合成上救不了模糊）。透明由 gtk4 CSS 的 alpha 底色画进
-    // surface（home/gtk.nix 的 glass），niri 只管模糊、不叠 opacity 免得双重变暗
-    match app-id=r#"^org\.gnome\.Nautilus$"#
-    background-effect {
-        blur true
-        xray false
-        noise 0.01
-        saturation 1.5
-    }
-}
-
-window-rule {
     // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值。
     // 设置窗口是普通 toplevel，noctalia 只给 layer-shell 面板自动上报模糊区域，
     // 窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
