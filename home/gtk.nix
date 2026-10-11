@@ -1,21 +1,20 @@
 # --- gtk ---
-# 配色唯一来源是全局 theme.nix；几何（圆角/阴影/边框）交给 libadwaita 原生
-# CSD + niri 的 layout.border。
+# GTK 不做任何配色：颜色一律是 libadwaita / adw-gtk3 的默认值（深色偏好下
+# window 默认 #222226 系）。字体/图标/主题名保留。
 #
-# 玻璃（2026-10-11 探针+嵌套 niri 实测定稿的机制）：niri 的 background-effect
-# 模糊只透过窗口自绘的半透明像素生效（不透明整面会完全盖住它；window-rule
-# 的 opacity 压在最终合成上也救不了），而 @define-color 带 alpha 的 rgba 在
+# 唯一的 CSS 是玻璃透明（透明不是配色）：niri 的 background-effect 模糊只
+# 透过窗口自绘的半透明像素生效（不透明整面会完全盖住它；window-rule 的
+# opacity 压在最终合成上也救不了），而 @define-color 带 alpha 的 rgba 在
 # GTK4 4.22 上是坏的（0.7 档静默失效回退不透明；alpha 0 的命名色会把
-# accent_bg 漏成整窗底色）。所以命名色全部不透明，透明写在 widget 级规则里：
-# window 一层 alpha(@window_bg_color, 0.7)，headerbar/侧栏/视图/卡片全透只留
-# 一层保全窗透明度均匀；弹层（popover/dialog）保持不透明色保可读性。文字/
-# 图标照常实心绘制，不受透明影响。niri 侧模糊在 config.kdl 的 nautilus
+# accent_bg 漏成整窗底色）。所以透明写在 widget 级规则里：window 一层
+# alpha(@window_bg_color, 0.7)——@window_bg_color 是 adwaita 自己的默认命名
+# 色（这里不覆盖它），headerbar/侧栏/视图/卡片全透只留一层保全窗透明度
+# 均匀。文字/图标照常实心绘制。niri 侧模糊在 config.kdl 的 nautilus
 # window-rule（不叠 opacity 免得双重变暗）。GTK3 不带玻璃（adw-gtk3 透明
 # 表现不稳）。
 #
-# 历史：noctalia 的内置 GTK 模板曾在每次壁纸/主题事件改写 gtk.css（见
-# noctalia.nix，已停用），与其拔河导致 HM 反复提示覆盖、glass 部署三次失败，
-# 最终定为 theme.nix 固定调色板 + widget 级透明——flake 声明一切、完全可复现。
+# 注意：壁纸偏暗时 0.7 的透出很微妙，玻璃可能「看不出」——存在感不足就调
+# 低 alpha（如 0.5）。勿把透明写进 @define-color（见上）。
 {
   pkgs,
   lib,
@@ -23,43 +22,6 @@
   ...
 }:
 let
-  # libadwaita 命名色，GTK3（adw-gtk3）与 GTK4 共用；全部不透明，
-  # 透明度一律走下方 glass 的 widget 级规则，勿写进 @define-color
-  colors = ''
-    @define-color accent_color ${theme.accent};
-    @define-color accent_bg_color ${theme.accent};
-    @define-color accent_fg_color ${theme.black};
-    @define-color window_bg_color ${theme.bg};
-    @define-color window_fg_color ${theme.fg};
-    @define-color view_bg_color ${theme.bg};
-    @define-color view_fg_color ${theme.fg};
-    @define-color headerbar_bg_color ${theme.bg};
-    @define-color headerbar_fg_color ${theme.fg};
-    @define-color sidebar_bg_color ${theme.bg-alt};
-    @define-color sidebar_fg_color ${theme.fg};
-    @define-color card_bg_color ${theme.bg-alt};
-    @define-color card_fg_color ${theme.fg};
-    @define-color dialog_bg_color ${theme.bg};
-    @define-color dialog_fg_color ${theme.fg};
-    @define-color popover_bg_color ${theme.bg-alt};
-    @define-color popover_fg_color ${theme.fg};
-    @define-color borders ${theme.border};
-  '';
-
-  # 前 libadwaita 时代的 GTK3 名字（少量组件还在用）
-  legacy = ''
-    @define-color theme_bg_color ${theme.bg};
-    @define-color theme_fg_color ${theme.fg};
-    @define-color theme_base_color ${theme.bg};
-    @define-color theme_text_color ${theme.fg};
-    @define-color theme_selected_bg_color ${theme.accent};
-    @define-color theme_selected_fg_color ${theme.black};
-    @define-color theme_unfocused_bg_color ${theme.bg};
-    @define-color theme_unfocused_fg_color ${theme.muted};
-  '';
-
-  # GTK4 玻璃层：只留 window 一层 alpha，内层（headerbar/侧栏/视图/卡片）
-  # 全透，全窗透明度均匀；底色引用 theme.bg（蓝灰夜色，源自壁纸浅色块）
   glass = ''
     window.background { background-color: alpha(@window_bg_color, 0.7); }
     headerbar { background-color: transparent; }
@@ -91,8 +53,7 @@ in
       package = pkgs.tela-icon-theme;
     };
 
-    gtk3.extraCss = colors + legacy;
-    gtk4.extraCss = colors + glass;
+    gtk4.extraCss = glass;
 
     # GTK4 原生暗色（enum 的 nick 写法，libadwaita 才不告警）
     gtk4.colorScheme = null;
