@@ -188,17 +188,50 @@ animations {
     }
 }
 
-// ─── 玻璃/模糊（niri ≥26.04，noctalia 官方推荐写法）──
-// noctalia 的面板/OSD 自己上报 blur 区域（ext-background-effects 协议），这里只
-// 纠 xray：false = 模糊采样身后的窗口内容而不是壁纸，避免圆角处漏出壁纸色点。
-// 要整层关掉 noctalia 的模糊：match namespace="^noctalia-" + blur false。
+// ─── 玻璃/模糊（niri ≥26.04）──
+// noctalia v5.1 源码穷举的全部 layer-shell namespace（layer-rule 按 namespace 匹配）：
+//   可见、自报 blur 区域（ext-background-effects，niri 默认就照办）：
+//     noctalia-bar-<name>          顶栏（bar.cpp）
+//     noctalia-panel               浮动面板：launcher/control-center/clipboard/
+//                                  wallpaper/session/setup-wizard/polkit 共用
+//                                  （panel_manager.cpp + persistent_panel_host.cpp）
+//     noctalia-attached-panel      贴边面板（panel_manager.cpp）
+//     noctalia-dock                dock（dock_geometry.cpp；默认 disabled）
+//     noctalia-notification        通知 toast（notification_toast.cpp）
+//     noctalia-osd                 音量/亮度 OSD（osd_overlay.cpp）
+//     noctalia-window-switcher     换窗器：自报卡片区域（window_switcher.cpp）
+//     noctalia-desktop-widget-<type>-<id>   桌面小部件，有可见底才报
+//                                          （desktop_widgets_host.cpp）
+//   可见、不自报 blur（background-effect 别强开，糊满屏不是本意）：
+//     noctalia-desktop-widgets-editor / noctalia-lockscreen-widgets-editor
+//                                  小部件编辑模式覆盖层
+//     noctalia-screenshot-region   截图区域选择（要看清屏幕）
+//     noctalia-annotate            截图标注（要看清底图）
+//     noctalia-idle-grace          idle 宽限提醒层
+//   隐形工具层，绝不能 blur（会凭空糊出一块矩形）：
+//     noctalia-panel-click-shield  面板开启时的输入盾
+//     noctalia-overview-launcher   概览 type-to-launch 键盘焦点层
+//     noctalia-screen-corner       屏幕圆角遮罩 ×4
+//     hot_corner_<top|bottom>_<left|right>   热角触发区（注意：无 noctalia- 前缀）
+//     noctalia-output-probe        输出探测瞬态表面
+//     "noctalia"                   LayerSurfaceConfig 默认值（现无组件用，前缀规则兜底）
+//   特殊：noctalia-wallpaper / noctalia-backdrop 壁纸层进 backdrop（见上），永不
+//   background-effect；锁屏本体走 ext_session_lock_v1，不是 layer-shell，
+//   niri layer-rule 管不到（毛玻璃底由 noctalia 自绘）。
+// toplevel 窗口（window-rule 按 app-id 匹配）只有一个：dev.noctalia.Noctalia
+// （设置窗口及其弹窗，toplevel_surface.h 默认值）。
+//
+// 前缀兜底规则只纠 xray（false = 模糊采样身后的窗口内容而不是壁纸，避免圆角漏
+// 壁纸色点）；blur 与否交给各表面自报区域决定——隐形的没报就不会糊。要整层关
+// 掉 noctalia 的模糊：match namespace="^noctalia-" + blur false。
 layer-rule {
-    match namespace=r#"^noctalia-(bar-[^"]+|notification|dock|panel|attached-panel|osd)$"#
+    match namespace=r#"^noctalia-"#
     background-effect {
         xray false
     }
 }
 
+// 换窗器例外：官方推荐 blur true，整面糊底衬卡片（卡片区域另由客户端自报）。
 layer-rule {
     match namespace=r#"noctalia-window-switcher"#
     background-effect {
@@ -272,11 +305,17 @@ window-rule {
 }
 
 window-rule {
-    // noctalia 设置窗口：浮窗，尺寸按官方 niri 接入页的推荐值。
-    // 设置窗口是普通 toplevel，noctalia 只给 layer-shell 面板自动上报模糊区域，
-    // 窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
+    // noctalia 设置窗口（toplevel 侧唯一 app-id，弹窗同 id）：浮窗，尺寸按官方
+    // niri 接入页的推荐值。设置窗口是普通 toplevel，noctalia 只给 layer-shell
+    // 面板自动上报模糊区域，窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
+    // 设置窗口开 shell.settings_window_translucent 后自绘 0.8 透明底，毛玻璃才
+    // 透得出；draw-border-with-background false 与 nautilus/ghostty 同理——
+    // border 默认在窗口背后整面涂边框色（聚焦 #649AFA），0.8 底会透出蓝灰。
+    // noise/saturation 对齐应用玻璃规则；透明度交给 noctalia 自绘的 0.8 底，
+    // niri 再叠 opacity 会把满窗文字洗白
     match app-id=r#"^dev\.noctalia\.Noctalia$"#
     open-floating true
+    draw-border-with-background false
     default-column-width {
         fixed 1080
     }
@@ -286,6 +325,8 @@ window-rule {
     background-effect {
         blur true
         xray false
+        noise 0.01
+        saturation 1.5
     }
 }
 
