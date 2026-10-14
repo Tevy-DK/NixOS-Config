@@ -17,9 +17,8 @@
   ...
 }:
 {
-  # GTK 外观基础值统一 mkDefault：hyprland 档案里这些键由 caelestia.nix 显式
-  # 声明（两侧值相同）；只有 homeConfigurations.all 全模块求值时会同开，
-  # theme/iconTheme 的 package 是 unique 类型，同名值也要分优先级
+  # GTK 外观基础值统一 mkDefault：homeConfigurations.all 全模块求值时会与其他
+  # 模块同开，theme/iconTheme 的 package 是 unique 类型，同名值也要分优先级
   gtk = {
     enable = true;
     colorScheme = lib.mkDefault "dark";

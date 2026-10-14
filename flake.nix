@@ -7,10 +7,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
@@ -25,17 +21,11 @@
 
       # 桌面环境档案：inventory 每台机器的 desktop 字段 → 用户层开关覆盖。
       # 与 modules-enables.nix 的基础面板合并（同名键以档案为准）：
-      #   niri     = niri + noctalia 外壳（bar/启动器/控制中心/通知/OSD/托盘/
-      #              剪贴板/锁屏/会话菜单/壁纸/polkit 全套）。自制品已全部删除：
-      #              fuzzel 启动器/powermenu/awww 壁纸/clipse 模块都不要了
-      #   hyprland = Hyprland + caelestia-shell，外壳/启动器/壁纸用 caelestia
-      #              自带的；GTK 外观由 caelestia theme.enableGtk 接管，
-      #              niri 的 gtk.nix（adw-gtk3 + 玻璃底色）不能进这个环境
-      #              （娱乐环境）
+      #   niri = niri + noctalia 外壳（bar/启动器/控制中心/通知/OSD/托盘/
+      #          剪贴板/锁屏/会话菜单/壁纸/polkit 全套），gtk.nix 出 GTK 外观
       # 新桌面 = home/ 与 system/ 各加一个模块 + 这里加一行档案。
       desktopProfiles = {
-        niri = { niri = true; hyprland = false; caelestia = false; gtk = true; clipboard = false; noctalia = true; };
-        hyprland = { niri = false; hyprland = true; caelestia = true; gtk = false; };
+        niri = { niri = true; gtk = true; noctalia = true; };
       };
 
       # 单台机器最终的用户层开关 = 基础面板 // 桌面档案（desktop 缺省为 niri）
