@@ -7,5 +7,6 @@
     tela-icon-theme
     obs-studio
     marktext
+    nautilus
   ];
 }
