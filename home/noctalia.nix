@@ -56,9 +56,9 @@
         thickness = 32;
       };
 
-      # 控制中心：整幅侧栏（full）+ 900px 宽
+      # 控制中心：紧凑侧栏（compact）+ 900px 宽
       control_center = {
-        sidebar = "full";
+        sidebar = "compact";
         width = 900;
       };
 
