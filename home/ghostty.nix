@@ -19,9 +19,12 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      # 配色走 ghostty 出厂默认（2026-10-16 起与 theme.nix 的 Nix-Periwinkle
-      # 解耦，用户要求）。theme.nix 只出字体/字号；毛玻璃（半透明+模糊）归
-      # config.kdl 的 niri 窗口规则，与配色无关
+      # 配色用 ghostty 自带 Nord 主题（2026-10-16 起与 theme.nix 的
+      # Nix-Periwinkle 解耦，用户要求）。theme.nix 只出字体/字号；毛玻璃
+      # （半透明+模糊）归 config.kdl 的 niri 窗口规则，与配色无关。
+      # 注意主题名运行时校验，写错 ghostty 直接起不来（自带清单见
+      # `ghostty +list-themes`，Nord 系还有 Nord Light/Nord Wave/Nordfox）
+      theme = "Nord";
       window-theme = "auto";                   # 跟随系统主题
 
       # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
