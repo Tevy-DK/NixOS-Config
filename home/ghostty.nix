@@ -1,13 +1,17 @@
-{ pkgs, theme, ... }:
+{ pkgs, lib, theme, ... }:
 
 let
-  # 使用 fetchFromGitHub 声明式地获取着色器仓库
+  # 1. 使用 fetchFromGitHub 声明式地获取着色器仓库
   cursorShaders = pkgs.fetchFromGitHub {
     owner = "sahaj-b";
     repo = "ghostty-cursor-shaders";
     rev = "0a274beac8b93ee6ce6b94402b7313a0417b8e38";
     hash = "sha256-B7B6K7Ee4uJlW8zzLP3ILgddnbcIQyNimY+rVllzbR0=";
   };
+
+  # 主题文件里的色值不带 #（HM 模块的官方写法）；palette 条目保留 #，
+  # 两种写法 ghostty 都认，跟模块 README 的示例保持一致
+  hex = c: lib.removePrefix "#" c;
 in {
   programs.ghostty = {
     enable = true;
@@ -19,12 +23,8 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      # 配色用 ghostty 自带 Nord 主题（2026-10-16 起与 theme.nix 的
-      # Nix-Periwinkle 解耦，用户要求）。theme.nix 只出字体/字号；毛玻璃
-      # （半透明+模糊）归 config.kdl 的 niri 窗口规则，与配色无关。
-      # 注意主题名运行时校验，写错 ghostty 直接起不来（自带清单见
-      # `ghostty +list-themes`，Nord 系还有 Nord Light/Nord Wave/Nordfox）
-      theme = "Nord";
+      # 自定义主题 Nix-Periwinkle：色值唯一来源是 theme.nix（见下方 themes）
+      theme = "Nix-Periwinkle";
       window-theme = "auto";                   # 跟随系统主题
 
       # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
@@ -98,6 +98,21 @@ in {
       confirm-close-surface = false;	#关掉倒霉的提醒
       custom-shader = "${cursorShaders}/cursor_warp.glsl";
       custom-shader-animation = "always";    #光标特效
+    };
+
+    # 自定义主题文件（~/.config/ghostty/themes/Nix-Periwinkle），全部取自 theme.nix
+    themes.Nix-Periwinkle = {
+      background = hex theme.bg;
+      foreground = hex theme.fg;
+      cursor-color = hex theme.cursor;
+      selection-background = hex theme.accent-bg;
+      selection-foreground = hex theme.fg;
+      palette = [
+        "0=${theme.ansi.black}"   "1=${theme.ansi.red}"     "2=${theme.ansi.green}"   "3=${theme.ansi.yellow}"
+        "4=${theme.ansi.blue}"    "5=${theme.ansi.magenta}" "6=${theme.ansi.cyan}"    "7=${theme.ansi.white}"
+        "8=${theme.ansi-bright.black}"  "9=${theme.ansi-bright.red}"    "10=${theme.ansi-bright.green}" "11=${theme.ansi-bright.yellow}"
+        "12=${theme.ansi-bright.blue}"  "13=${theme.ansi-bright.magenta}" "14=${theme.ansi-bright.cyan}" "15=${theme.ansi-bright.white}"
+      ];
     };
   };
 }

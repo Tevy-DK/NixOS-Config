@@ -10,7 +10,7 @@
 # 个别色做了明度/饱和度微调以适配深底。字号/字体仍是自己的。
 # 接入情况：
 #   - btop / fastfetch / zathura / gtk / fzf / bat / fuzzel / 光标：自动引用本文件
-#   - ghostty：2026-10-16 起解耦，走出厂配色，不再消费本文件（用户要求）
+#   - ghostty：home/ghostty.nix 把本文件渲染成自定义主题 Nix-Periwinkle
 #   - niri 的 config.kdl 是手写文件，暂无法插值，色值需与本文件手动保持一致
 {
   # --- 字体 ---
@@ -36,6 +36,8 @@
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
   accent-yellow-bright = "#C3CBFF"; # 强调文本的亮蓝紫（键名沿用旧结构）
   accent-deep = "#415E9A";          # logo 深蓝渐变起点：图表起点等深色装饰
+  accent-bg = "#414868";            # 选区背景（ghostty selection）；壁纸最亮块再提亮一档
+  cursor = "#DDE4F3";               # 光标颜色（ghostty cursor-color）
   black = "#1E2030";     # 最深表面；亮色强调上的文字；壁纸基底色
   border = "#4A506B";    # 非活动窗口边框（随底色提亮）
   urgent = "#D9827B";    # 紧急/警告
