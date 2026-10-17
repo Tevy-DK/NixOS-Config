@@ -8,5 +8,6 @@
     obs-studio
     marktext
     qq
+    nautilus
   ];
 }
