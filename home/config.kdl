@@ -219,6 +219,7 @@ animations {
 // 掉 noctalia 的模糊：match namespace="^noctalia-" + blur false。
 layer-rule {
     match namespace=r#"^noctalia-"#
+    match app-id=r#"^org\.gnome\.Nautilus$"#
     background-effect {
         xray false
     }
@@ -292,7 +293,6 @@ window-rule {
         saturation 1.5
     }
     opacity 0.75
-    xray false
 }
 
 window-rule {
