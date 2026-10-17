@@ -1,7 +1,24 @@
 # --- niri 用户层（工作环境）---
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 {
   xdg.configFile."niri/config.kdl".source = ./config.kdl;
+
+  # noctalia 的 niri 模板把壁纸调色板渲染成 ~/.config/niri/noctalia.kdl，
+  # config.kdl 末尾 include 它。首次启动（noctalia 还没跑过模板）时该文件
+  # 不存在，niri 的 include 读取失败会判整个配置无效——这里建一个空占位：
+  # 只在缺失时创建（test -f 守卫），绝不覆盖 noctalia 的运行时写入。
+  home.activation.noctaliaKdlBootstrap = lib.hm.dag.entryBefore ["writeBoundary"] ''
+    if [ ! -f "$HOME/.config/niri/noctalia.kdl" ]; then
+      mkdir -p "$HOME/.config/niri"
+      printf '%s\n' "// 占位文件：noctalia niri 模板首次应用前保持配置可解析" > "$HOME/.config/niri/noctalia.kdl"
+    fi
+  '';
 
   # 桌面外壳（bar/启动器/控制中心/通知/OSD/托盘/剪贴板/锁屏/电源菜单/壁纸/polkit）
   # 全部由 noctalia 接管：用户配置在 home/noctalia.nix（config.toml，构建期校验），

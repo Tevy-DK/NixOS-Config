@@ -16,8 +16,9 @@
 #   概览壁纸    backdrop.enabled = true 且 blur/tint 全 0：noctalia 的壁纸副本层
 #               是一份清晰壁纸，经 config.kdl 的 place-within-backdrop 收进
 #               backdrop，Mod+D 概览里壁纸保持可见且连续（DMS 同款构图）
-#   壁纸自动取色 theme.source = "wallpaper"：调色板从当前壁纸生成，
-#               与 theme.nix「颜色跟壁纸走」的思路一致
+#   壁纸自动取色 theme.source = "wallpaper"：调色板从当前壁纸生成，并经内置
+#               模板（gtk3/gtk4/niri/qt，见 templates 注释）分发到 GTK/Qt/niri
+#               配色——除终端工具链（theme.nix）外全桌面颜色跟壁纸走
 { pkgs, ... }:
 {
   programs.noctalia = {
@@ -149,15 +150,28 @@
         source = "wallpaper";
         wallpaper_scheme = "m3-fruit-salad";
 
-        # 停用 noctalia 的内置应用主题模板：enable_builtin_templates 是总开关，
-        # 为 false 时 builtin_ids 完全不生效（v5 源码 enabledBuiltinIds：总开关关
-        # 直接返回空集）——gtk3/gtk4/qt 只是设置界面记住的选项，照搬保真，不会
-        # 改写 ~/.config/gtk-{3,4}.0/gtk.css，与 home/gtk.nix 无拔河。GTK 颜色归
-        # home/gtk.nix 的 theme.nix 命名色（外壳面板仍跟随壁纸，互不相干）。
-        # 若日后真要启用模板，把总开关改 true（会开始改写 gtk.css，慎重）。
+        # 启用内置应用主题模板（2026-10-17 起用户拍板；enable_builtin_templates
+        # 是总开关，builtin_ids 精确点名）。noctalia 在壁纸/主题事件把调色板渲染
+        # 进对应文件：
+        #   gtk3/gtk4 → ~/.config/gtk-{3,4}.0/noctalia.css + apply.sh 在 gtk.css
+        #     追加 @import 并 gsettings 设 adw-gtk3(-dark)/prefer-dark。gtk.css 不
+        #     归 HM 管理（apply.sh 会把只读软链转成本地文件），gtk.nix 本就不做
+        #     配色、主题名 adw-gtk3-dark 与它一致 → 无拔河
+        #   niri → ~/.config/niri/noctalia.kdl（边框/聚焦环/tab-indicator/
+        #     insert-hint/最近窗口高亮颜色）。config.kdl 末尾静态 include 它，
+        #     niri 按字段合并、include 在后生效，并监听该文件自动 reload；
+        #     apply.sh 靠匹配 include 行决定追加与否（HM 软链追加不了，必须
+        #     静态写好）。niri.nix 有个 activation 在文件缺失时建空占位，
+        #     防止首次启动 include 失败
+        #   qt → ~/.config/qt{5,6}ct/colors/noctalia.conf。当前 platformTheme
+        #     仍是 gtk3（home/themes.nix），Qt 应用经 GTK 路线跟随壁纸色，
+        #     qtct 文件备用不冲突
+        # 历史教训：此前停用是因为模板改写 gtk.css 与 HM 拔河（gtk.nix 那时还
+        # 管颜色）——现在 gtk.css 已退出 HM 管理才敢开。日后加模板，先确认
+        # 目标文件不归 HM。
         templates = {
-          builtin_ids = [ "gtk3" "gtk4" "qt" ];
-          enable_builtin_templates = false;
+          builtin_ids = [ "gtk3" "gtk4" "niri" "qt" ];
+          enable_builtin_templates = true;
         };
       };
 

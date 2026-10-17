@@ -9,9 +9,12 @@
 #   紫蓝 #637DDF → #649AFA → #719EFA
 # 个别色做了明度/饱和度微调以适配深底。字号/字体仍是自己的。
 # 接入情况：
-#   - btop / fastfetch / zathura / gtk / fzf / bat / fuzzel / 光标：自动引用本文件
+#   - btop / fastfetch / zathura / fzf / bat / fuzzel / 光标：自动引用本文件
 #   - ghostty：home/ghostty.nix 把本文件渲染成自定义主题 Nix-Periwinkle
-#   - niri 的 config.kdl 是手写文件，暂无法插值，色值需与本文件手动保持一致
+#   - GTK/Qt/niri 窗口配色：2026-10-17 起由 noctalia 内置模板自动生成
+#     （跟壁纸取色，见 home/noctalia.nix 的 templates 注释），本文件不再参与
+#   - niri 的 config.kdl：颜色节点已交给 noctalia 模板；仅 overview 的
+#     backdrop 兜底色（= bg）是手写静态值
 {
   # --- 字体 ---
   font = "FiraCode Nerd Font";
@@ -31,7 +34,7 @@
   fg-bright = "#E6ECF8"; # 强调前景
   muted = "#9AA7C4";     # 次要可读文本
   muted-alt = "#737E9C"; # 装饰/禁用文本（随底色提亮，保持原可读档位）
-  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：窗口边框、聚焦、niri insert-hint
+  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：btop/fzf/fuzzel/Bibata 重着色等
   accent-2 = "#8B93F8";  # 交互强调（紫蓝再提亮）：菜单高亮、fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
   accent-yellow-bright = "#C3CBFF"; # 强调文本的亮蓝紫（键名沿用旧结构）
@@ -39,8 +42,6 @@
   accent-bg = "#414868";            # 选区背景（ghostty selection）；壁纸最亮块再提亮一档
   cursor = "#DDE4F3";               # 光标颜色（ghostty cursor-color）
   black = "#1E2030";     # 最深表面；亮色强调上的文字；壁纸基底色
-  border = "#4A506B";    # 非活动窗口边框（随底色提亮）
-  urgent = "#D9827B";    # 紧急/警告
 
   # --- ANSI 16 色（Nix Periwinkle 终端色；蓝/青直接取 logo 渐变）---
   # normal (0-7)

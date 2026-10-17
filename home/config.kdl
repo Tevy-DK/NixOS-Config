@@ -3,9 +3,11 @@
 // bar/启动器/控制中心/通知/OSD/托盘/剪贴板/锁屏/会话/壁纸/polkit 全在 noctalia
 // （用户配置 home/noctalia.nix，包与服务 system/niri.nix），niri 只管布局与键位。
 // 玻璃：noctalia 面板层 xray=false 走合成器模糊 + 全局 blur 调参；概览壁纸进 backdrop。
-// 圆角 8px + 1px 常亮边框。配色取自 system/theme.nix（NixOS logo 紫蓝系）；
-// kdl 是静态文件，色值需手动同步：
-//   bg #2E3246（overview backdrop 兜底色） · accent #649AFA · border #4A506B · urgent #D9827B
+// 圆角 8px + 1px 常亮边框。
+// 配色分工（2026-10-17 起）：边框/聚焦环/tab/插入提示/最近窗口高亮的颜色由
+// noctalia 内置 niri 模板自动生成（跟壁纸取色，本文件末尾 include 的
+// noctalia.kdl，niri 字段级合并、监听文件自动重载），这里不再手写色值；
+// 只保留模板不管的 overview backdrop 兜底色 #2E3246（theme.nix bg）。
 // ═══════════════════════════════════════════════════════
 
 // 输入法守护进程（waylandFrontend 模式需要会话内自启，同 koru）
@@ -57,10 +59,12 @@ output "HDMI-A-1" {
 }
 
 // ─── 布局（1px 常亮圆角边框 + 窗口阴影；顶部空间交给 noctalia bar）──
+// 颜色（active/inactive/urgent）不在这里写：noctalia.kdl（末尾 include）按壁纸
+// 调色板生成，niri 按字段合并、后写的赢——这里写了会被静默覆盖，白留。
 layout {
     // 工作区背景全透明：壁纸由 noctalia 渲染并经 place-within-backdrop 放在
     // backdrop 里（见下方 layer-rule），常规桌面靠这里透出来。
-    // 壁纸守护不在时，由 overview 的 backdrop-color（#2E3246）兜底。
+    // 壁纸守护不在时，由 overview 的 backdrop-color（theme.nix bg）兜底。
     background-color "transparent"
     gaps 8
 
@@ -74,7 +78,8 @@ layout {
         proportion 0.5
     }
 
-    // koru 的做法：focus-ring 关（不关会漏出 niri 默认的蓝色聚焦环）、border 常亮
+    // koru 的做法：focus-ring 关（不关会漏出 niri 默认的蓝色聚焦环）、border 常亮。
+    // noctalia 模板只给 focus-ring 上色，off 照旧生效，不冲突
     focus-ring {
         off
     }
@@ -82,9 +87,6 @@ layout {
     border {
         on
         width 1
-        active-color   "#649AFA"
-        inactive-color "#4A506B"
-        urgent-color   "#D9827B"
     }
 
     // 窗口阴影（noctalia 面板的影子由它自己的 [shell.shadow] 画，这里管应用窗口；
@@ -99,13 +101,6 @@ layout {
 
     tab-indicator {
         corner-radius  8
-        active-color   "#649AFA"
-        inactive-color "#4A506B"
-        urgent-color   "#D9827B"
-    }
-
-    insert-hint {
-        color "#649AFA80"
     }
 }
 
@@ -128,10 +123,8 @@ overview {
 // 概览卡片——概览里壁纸是一整块连续的，窗口直接浮在上面。noctalia 壁纸层
 // （noctalia-wallpaper）同样放进来，得到同款构图。
 // 与 DMS 的唯一差距：DMS 会在概览打开时把壁纸层原地自模糊（监听 niri 事件），
-// noctalia 的壁纸层没有这个钩子，静态模糊副本层（noctalia-backdrop）又只能
-// 常开（放上去桌面跟着糊），所以 [backdrop] 在 noctalia.nix 里关着——概览壁
-// 纸是清晰的。想要「模糊背景 + 清晰小卡片」的 Option 1 风格：打开 [backdrop]
-// 并删掉下面 noctalia-wallpaper 这条规则即可。
+// noctalia 的壁纸层没有这个钩子。[backdrop] 现已启用但 blur/tint 全 0——
+// noctalia-backdrop 副本层是一份清晰壁纸，进 backdrop 后概览壁纸依旧连续。
 layer-rule {
     match namespace=r#"^noctalia-backdrop"#
     place-within-backdrop true
@@ -273,7 +266,7 @@ window-rule {
     // ghostty 毛玻璃：终端半透明 + 背景模糊（ghostty 表面自带透明，模糊可
     // 直接透过）。vscodium 明确排除——全不透明、无模糊（用户要求）。
     // draw-border-with-background false：border 默认在窗口背后整面涂边框色
-    // （聚焦 #649AFA），任何带透明的窗口都必须关掉它
+    // （聚焦色，noctalia 模板随壁纸），任何带透明的窗口都必须关掉它
     match app-id=r#"^com\.mitchellh\.ghostty$"#
     draw-border-with-background false
     background-effect {
@@ -288,7 +281,7 @@ window-rule {
 window-rule {
     // nautilus 玻璃：与本机 DMS 配置同款（blur + opacity，GTK 零 CSS 参与）。
     // draw-border-with-background false 是关键——niri 的 border 默认会在窗口
-    // 背后整面涂边框色（聚焦 #649AFA 蓝、失焦 #4A506B 灰，正是「聚焦变蓝/
+    // 背后整面涂边框色（聚焦蓝/失焦灰，noctalia 模板随壁纸，正是「聚焦变蓝/
     // 失焦变灰、看不见模糊」的来源），关掉才透得出模糊后的壁纸
     match app-id=r#"^org\.gnome\.Nautilus$"#
     clip-to-geometry true
@@ -307,7 +300,7 @@ window-rule {
     // 面板自动上报模糊区域，窗口侧的模糊要在这里显式开（官方文档 Blur 节的写法）。
     // 设置窗口开 shell.settings_window_translucent 后自绘 0.8 透明底，毛玻璃才
     // 透得出；draw-border-with-background false 与 nautilus/ghostty 同理——
-    // border 默认在窗口背后整面涂边框色（聚焦 #649AFA），0.8 底会透出蓝灰。
+    // border 默认在窗口背后整面涂边框色（聚焦色随壁纸），0.8 底会透出蓝灰。
     // noise/saturation 对齐应用玻璃规则；透明度交给 noctalia 自绘的 0.8 底，
     // niri 再叠 opacity 会把满窗文字洗白
     match app-id=r#"^dev\.noctalia\.Noctalia$"#
@@ -353,7 +346,8 @@ debug {
 // ─── 最近窗口 ─────────────────────────────────────────
 recent-windows {
     highlight {
-        // 圆角，与全局 geometry-corner-radius 窗口规则一致
+        // 圆角，与全局 geometry-corner-radius 窗口规则一致；高亮颜色由
+        // noctalia.kdl（末尾 include）按壁纸调色板生成
         corner-radius 8
     }
 
@@ -907,3 +901,12 @@ binds {
         spawn "noctalia" "msg" "brightness-down"
     }
 }
+
+// ─── noctalia 自动主题 ────────────────────────────────
+// noctalia 的 niri 模板把壁纸调色板渲染成 ~/.config/niri/noctalia.kdl（边框/
+// 聚焦环/tab-indicator/insert-hint/最近窗口高亮的颜色），niri 字段级合并、
+// include 在文件末尾（后解析者赢），并监听本文件与 include 目标——noctalia
+// 换壁纸重写 noctalia.kdl 后无需手动 reload。这行 include 必须保留且靠后：
+// noctalia 的 apply.sh 靠匹配它决定是否追加（HM 的 config.kdl 是只读软链，
+// 它追加不了，全靠这里静态写好）。
+include "noctalia.kdl"
