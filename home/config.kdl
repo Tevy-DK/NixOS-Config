@@ -290,6 +290,7 @@ window-rule {
         blur true
         noise 0.01
         saturation 1.5
+        xray false
     }
     opacity 0.75
 }
