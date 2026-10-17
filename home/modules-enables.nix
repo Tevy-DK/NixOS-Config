@@ -23,5 +23,6 @@
     vscodium = true;
     yazi = true;
     zathura = true;
+    xdg = true;
   };
 }

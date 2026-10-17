@@ -17,6 +17,5 @@
     ./services.nix
     ./settings.nix
     ./shell.nix
-    ./xdg.nix
   ] ++ lib.optional (desktop == "niri") ./niri.nix;
 }
