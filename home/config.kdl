@@ -292,6 +292,7 @@ window-rule {
         saturation 1.5
     }
     opacity 0.75
+    xray true
 }
 
 window-rule {
