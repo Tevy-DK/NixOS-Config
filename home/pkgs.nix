@@ -9,6 +9,5 @@
     marktext
     qq
     nautilus
-    oh-my-posh  # 提示符引擎（命令 omp）
   ];
 }
