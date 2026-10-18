@@ -7,9 +7,16 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # AI 编程代理包集（opencode2-desktop / oh-my-opencode 等，每日自动更新）。
+    # 跟随本仓 nixpkgs：包实际由 consumers 的 nixpkgs 构建（见 overlays.default），
+    # 无需保留上游锁定的第二份 nixpkgs
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, llm-agents, ... }@inputs:
     let
       # 全局主题：颜色/字号/光标的唯一来源，system 与 home 两层共用
       theme = import ./system/theme.nix;
@@ -54,7 +61,14 @@
           modules = [ ./home/default.nix ];
         };
     in {
-      overlays.default = final: prev: {
+      # llm-agents 的包经 shared-nixpkgs overlay 注入 pkgs.llm-agents 命名空间，
+    # 用消费者（本仓）的 nixpkgs 构建 → 本仓 allowUnfree 等配置对其生效
+    # （oh-my-opencode 是 unfree，直接引上游 packages 输出会在求值期被拒）。
+    # 嵌入（nixpkgs.overlays）与独立（mkHomeConfig）两条路径都用 self.overlays.default，
+    # 在这里合成一次即全覆盖。
+    overlays.default = nixpkgs.lib.composeExtensions
+      llm-agents.overlays.shared-nixpkgs
+      (final: prev: {
         yaziPlugins = prev.yaziPlugins // {
           mount = prev.yaziPlugins.mount.overrideAttrs (old: {
             postPatch = (old.postPatch or "") + ''
@@ -63,7 +77,7 @@
             '';
           });
         };
-      };
+      });
 
       # 多机器（借鉴 koru）：hosts/inventory.nix 每个条目自动生成一套系统。
       # 层级：hosts/<名字>/（主机层）+ ./system（系统层）+ ./home（用户层）。

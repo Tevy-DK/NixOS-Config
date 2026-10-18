@@ -16,6 +16,7 @@
     niri = true;        # niri 用户层配置（工作环境）
     noctalia = true;    # noctalia 桌面外壳 v5（bar/启动器/通知/OSD/托盘/剪贴板/锁屏/壁纸/polkit）
     nvim = true;
+    opencode = true;    # OpenCode 2 桌面客户端 + OmO 多模型编排器（llm-agents.nix）
     pkgs = true;
     shell = true;
     starship = true;
