@@ -1,0 +1,105 @@
+[backdrop]
+blur_intensity = 0.0
+enabled = true
+tint_intensity = 0.0
+
+[bar.main]
+background_opacity = 0.59999999999999998
+end = [ "media", "tray", "notifications", "clipboard", "network", "volume", "control-center", "session" ]
+margin_edge = 4
+margin_ends = 400
+reserve_space = false
+smart_auto_hide = true
+thickness = 32
+
+[control_center]
+sidebar = "compact"
+width = 900
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = false
+schema_version = 2
+widget_order = [ "lockscreen-login-box@HDMI-A-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 960.0
+    cy = 898.0
+    output = "HDMI-A-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[shell]
+niri_overview_type_to_launch_enabled = true
+panel_anchor_bar = "main"
+polkit_agent = true
+settings_window_translucent = true
+
+    [shell.launcher]
+    layout = "simple"
+
+    [shell.panel]
+    control_center_placement = "floating"
+    floating_layer = "top"
+    session_placement = "floating"
+    session_position = "center"
+    shadow = false
+    transparency_mode = "glass"
+    wallpaper_placement = "floating"
+    wallpaper_position = "center"
+
+    [shell.session]
+    show_shortcuts = false
+
+    [shell.shadow]
+    direction = "center"
+
+[theme]
+builtin = "Catppuccin"
+community_palette = "Oxocarbon"
+mode = "dark"
+source = "wallpaper"
+wallpaper_scheme = "m3-fruit-salad"
+
+    [theme.templates]
+    builtin_ids = [ "gtk3", "gtk4", "niri", "qt" ]
+    enable_builtin_templates = true
+
+[wallpaper]
+directory = "~/Images"
+
+    [wallpaper.default]
+    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
+
+    [wallpaper.last]
+    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
+
+    [wallpaper.monitors.HDMI-A-1]
+    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
