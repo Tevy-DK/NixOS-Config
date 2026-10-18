@@ -28,6 +28,7 @@ in {
         ms-vscode.makefile-tools
         ms-ceintl.vscode-language-pack-zh-hans
       ];
+      mutableUserSettings = true;
       userSettings = vscodesettings;
     };
   };
