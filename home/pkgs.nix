@@ -9,5 +9,6 @@
     marktext
     qq
     nautilus
+    nautilus-python
   ];
 }
