@@ -18,5 +18,6 @@
     ./settings.nix
     ./shell.nix
     ./sunshine.nix
+    ./appimage-run.nix
   ] ++ lib.optional (desktop == "niri") ./niri.nix;
 }
