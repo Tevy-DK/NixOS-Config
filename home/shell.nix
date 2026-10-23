@@ -20,6 +20,7 @@
     shellAliases = {
       nrs = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
       nfu = "cd /etc/nixos; and nix flake update";
+      ncgd = "sudo nix-collect-garbage -d";
     };
   };
 }
