@@ -8,6 +8,7 @@
     obs-studio
     marktext
     qq
+    wechat
     nautilus
     nautilus-python
   ];

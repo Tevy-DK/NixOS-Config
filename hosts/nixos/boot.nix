@@ -3,7 +3,7 @@
   boot.loader = {
     grub = {
       enable = true;
-      device = "/dev/sda";
+      device = "/dev/nvme0n1";
       efiSupport = true;
       efiInstallAsRemovable = true;
     };
