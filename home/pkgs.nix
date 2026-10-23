@@ -11,5 +11,6 @@
     wechat
     nautilus
     nautilus-python
+    uv
   ];
 }
