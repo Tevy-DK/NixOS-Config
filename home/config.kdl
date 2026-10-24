@@ -3,7 +3,7 @@
 // bar/启动器/控制中心/通知/OSD/托盘/剪贴板/锁屏/会话/壁纸/polkit 全在 noctalia
 // （用户配置 home/noctalia.nix，包与服务 system/niri.nix），niri 只管布局与键位。
 // 玻璃：noctalia 面板层 xray=false 走合成器模糊 + 全局 blur 调参；概览壁纸进 backdrop。
-// 圆角 8px + 1px 常亮边框。
+// 圆角 12px + 1px 常亮边框。
 // 配色分工（2026-10-17 起）：边框/聚焦环/tab/插入提示/最近窗口高亮的颜色由
 // noctalia 内置 niri 模板自动生成（跟壁纸取色，本文件末尾 include 的
 // noctalia.kdl，niri 字段级合并、监听文件自动重载），这里不再手写色值；
@@ -252,7 +252,7 @@ window-rule {
     // 全局几何圆角 8px（兑现文件头「圆角 8px」）：niri 的 border 块没有 radius
     // 节点，窗口圆角只能走窗口规则 geometry-corner-radius，border/shadow 跟随它。
     // clip-to-geometry 把窗口内容裁进圆角；不设的话只有边框是圆的。
-    geometry-corner-radius 8
+    geometry-corner-radius 12
     clip-to-geometry true
 }
 

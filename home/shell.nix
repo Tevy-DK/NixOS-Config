@@ -12,7 +12,7 @@
     interactiveShellInit = ''
       set fish_greeting ""
     '';
-    # 可执行文件路径
+    # PATH
     shellInit = ''
       fish_add_path ~/.local/bin
     '';
