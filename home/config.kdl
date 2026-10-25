@@ -335,7 +335,7 @@ window-rule {
 window-rule {
     // 门户与文件管理器浮动
     match app-id=r#"^xdg-desktop-portal$"#
-    match app-id=r#"^org\.gnome\.Nautilus$"#
+    //match app-id=r#"^org\.gnome\.Nautilus$"#
     open-floating true
 }
 
