@@ -377,7 +377,8 @@ binds {
     }
 
     Mod+E hotkey-overlay-title="Yazi File Manager" {
-        spawn "ghostty" "-e" "yazi"
+        //spawn "ghostty" "-e" "yazi"
+        spawn "nautilus"
     }
 
     Mod+T hotkey-overlay-title="Open Terminal" {
