@@ -9,6 +9,7 @@
     ./fcitx5.nix
     ./fonts.nix
     ./journal.nix
+    ./greeter.nix
     ./memory.nix
     ./network.nix
     ./nix-ld.nix
