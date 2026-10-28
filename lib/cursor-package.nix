@@ -1,13 +1,19 @@
-# 全局光标包：Bibata Modern 按主题重着色 —— 深色填充（theme.black）+
-# 主题蓝描边（theme.accent）。
+# 全局光标包：Bibata Modern 按深浅色重着色成两套 ——
+#   dark  = 黑体（#000000）+ 白边（#FFFFFF）
+#   light = 白体（#FFFFFF）+ 黑边（#000000）
+# 两套主题打包在同一 derivation 里，安装后同时可用，由
+# home/cursor-theme.nix 的 cursor-theme-sync.service 跟随 noctalia 深浅色切换。
 #
 # 系统层（noctalia-greeter 登录页，system/greeter.nix）与用户层
 # （home.pointerCursor，home/cursor-theme.nix）共用这一份 derivation：
-# 同一个 pkgs + theme 求出同一个 store path，登录页和桌面会话里的光标完全一致。
+# 同一个 pkgs + theme 求出同一个 store path，登录页和桌面会话里的光标包一致。
 { pkgs, theme }:
 
+let
+  inherit (theme) cursor-name-dark cursor-name-light;
+in
 pkgs.stdenvNoCC.mkDerivation {
-  pname = "bibata-cursors-dk";
+  pname = "bibata-cursors-mono";
   version = "2.0.7";
 
   src = pkgs.fetchFromGitHub {
@@ -30,17 +36,33 @@ pkgs.stdenvNoCC.mkDerivation {
   buildPhase = ''
     runHook preBuild
 
-    # 给琥珀色位图重新上色：填充换成 theme.black，白边换成 theme.accent
+    # 两套都从 Amber 位图改色：Amber 的主体是 #FF8300，描边是 #FFFFFF。
     mkdir -p $PWD/bitmaps
-    cp -r $bitmaps/Bibata-Modern-Amber $PWD/bitmaps/Bibata-Modern-DK
-    chmod -R u+w $PWD/bitmaps/Bibata-Modern-DK
-    find $PWD/bitmaps/Bibata-Modern-DK -name '*.png' -exec convert {} -fuzz 15% -fill '${theme.black}' -opaque '#FF8300' -type TrueColorMatte PNG32:{} \;
-    find $PWD/bitmaps/Bibata-Modern-DK -name '*.png' -exec convert {} -fuzz 12% -fill '${theme.accent}' -opaque '#FFFFFF' -type TrueColorMatte PNG32:{} \;
+    cp -r $bitmaps/Bibata-Modern-Amber $PWD/bitmaps/${cursor-name-dark}
+    cp -r $bitmaps/Bibata-Modern-Amber $PWD/bitmaps/${cursor-name-light}
+    chmod -R u+w $PWD/bitmaps/${cursor-name-dark} $PWD/bitmaps/${cursor-name-light}
+
+    # dark：只把主体橙色换成黑色，原有白描边保留。
+    find $PWD/bitmaps/${cursor-name-dark} -name '*.png' \
+      -exec convert {} -fuzz 15% -fill '#000000' -opaque '#FF8300' -type TrueColorMatte PNG32:{} \;
+
+    # light：先把白描边压成黑色，再把主体染成白色。顺序不能反 ——
+    # 先染主体会把新生成的白色主体在下一步一并压黑。
+    find $PWD/bitmaps/${cursor-name-light} -name '*.png' \
+      -exec convert {} -fuzz 12% -fill '#000000' -opaque '#FFFFFF' -type TrueColorMatte PNG32:{} \;
+    find $PWD/bitmaps/${cursor-name-light} -name '*.png' \
+      -exec convert {} -fuzz 15% -fill '#FFFFFF' -opaque '#FF8300' -type TrueColorMatte PNG32:{} \;
 
     ctgen configs/normal/x.build.toml -p x11 \
-      -d $PWD/bitmaps/Bibata-Modern-DK \
-      -n 'Bibata-Modern-DK' \
-      -c 'Bibata Modern recolored to the global theme accent' \
+      -d $PWD/bitmaps/${cursor-name-dark} \
+      -n '${cursor-name-dark}' \
+      -c 'Bibata Modern dark: black body, white outline' \
+      -o $PWD/themes
+
+    ctgen configs/normal/x.build.toml -p x11 \
+      -d $PWD/bitmaps/${cursor-name-light} \
+      -n '${cursor-name-light}' \
+      -c 'Bibata Modern light: white body, black outline' \
       -o $PWD/themes
 
     runHook postBuild
@@ -49,12 +71,13 @@ pkgs.stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     install -dm 0755 $out/share/icons
-    cp -rf $PWD/themes/Bibata-Modern-DK $out/share/icons/
+    cp -rf $PWD/themes/${cursor-name-dark} $out/share/icons/
+    cp -rf $PWD/themes/${cursor-name-light} $out/share/icons/
     runHook postInstall
   '';
 
   meta = with pkgs.lib; {
-    description = "Bibata Modern cursor recolored to the global theme colors";
+    description = "Bibata Modern recolored in black/white for dark and light schemes";
     homepage = "https://github.com/ful1e5/Bibata_Cursor";
     license = licenses.gpl3Only;
     platforms = platforms.linux;

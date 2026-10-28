@@ -16,7 +16,8 @@
 #     Sync 传来的 path（源码 mergeWallpaperAppearance）。首次 Sync 之前登录页
 #     至少是主题底色，不是默认黑。
 #   - 光标 / 键盘 / 默认 session 是确定值，声明式写死：光标与 theme.nix 同一份
-#     Bibata-Modern-DK（lib/cursor-package.nix，会话里 home.pointerCursor 用它）。
+#     Bibata 两套重着色包里的 dark variant（lib/cursor-package.nix；
+#     会话里 home.pointerCursor 用它作启动兜底，之后随深浅色切换）。
 #   - 首次需要在 shell 里跑一次 Sync（设置 → Security → Noctalia Greeter →
 #     Sync Now，或打开 Auto-Sync）；passwordlessSyncUsers 让本人这台机器免
 #     管理员认证，之后换壁纸/改配色会自动跟进。
@@ -29,10 +30,11 @@ in
   services.displayManager.noctalia-greeter = {
     enable = true;
 
-    # 光标与 theme.nix 一致；模块会据此补 settings.cursor.theme / .path
+    # 光标包与 theme.nix 一致；登录页没有运行时深浅切换，固定用 dark variant。
+    # 模块会据此补 settings.cursor.theme / .path。
     cursorTheme = {
       package = cursor;
-      name = theme.cursor-name;
+      name = theme.cursor-name-dark;
     };
 
     # 允许本机用户把 shell 外观同步到登录页而不弹管理员认证

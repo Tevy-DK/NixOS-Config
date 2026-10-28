@@ -104,9 +104,12 @@ layout {
     }
 }
 
-// ─── 光标（与 home/cursor-theme.nix 的重着色主题同名）──
+// ─── 光标 ─────────────────────────────────────────────
+// 兜底：cursor-theme-sync.service 还没写入 cursor.kdl 时用深色 variant。
+// 实际主题由服务按 noctalia 深浅色重写 cursor.kdl（文件末尾 include），
+// niri 监听 include 目标并自动重载，这里不用跟模式变。
 cursor {
-    xcursor-theme "Bibata-Modern-DK"
+    xcursor-theme "Bibata-Modern-Dark"
     xcursor-size 24
 }
 
@@ -912,3 +915,8 @@ binds {
 // noctalia 的 apply.sh 靠匹配它决定是否追加（HM 的 config.kdl 是只读软链，
 // 它追加不了，全靠这里静态写好）。
 include "noctalia.kdl"
+
+// 光标跟随 noctalia 深浅色：cursor-theme-sync.service 重写该文件（dark=黑体
+// 白边 / light=白体黑边），niri 自动重载。optional 允许服务首次写入前缺失。
+// 必须放在上面的兜底 cursor 块之后——include 是位置性的，后解析者赢。
+include optional=true "cursor.kdl"

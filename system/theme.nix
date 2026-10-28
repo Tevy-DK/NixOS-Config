@@ -23,8 +23,12 @@
   font-size-bar = 12; # fuzzel / zathura 等小界面字号
 
   # --- 光标 ---
-  # Bibata 按本主题重着色（深色填充 + 紫蓝描边），见 home/cursor-theme.nix
-  cursor-name = "Bibata-Modern-DK";
+  # Bibata 两套重着色（见 lib/cursor-package.nix）：
+  #   dark  = 黑体白边   light = 白体黑边
+  # 桌面会话里由 home/cursor-theme.nix 的服务按 noctalia 深浅色自动切换；
+  # 登录页没有运行时切换，固定用 dark。
+  cursor-name-dark = "Bibata-Modern-Dark";
+  cursor-name-light = "Bibata-Modern-Light";
   cursor-size = 24;
 
   # --- 语义色（Nix Periwinkle）---
