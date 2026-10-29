@@ -87,7 +87,7 @@ settings_window_translucent = true
 [theme]
 builtin = "Catppuccin"
 community_palette = "Oxocarbon"
-mode = "dark"
+mode = "light"
 source = "wallpaper"
 wallpaper_scheme = "m3-fruit-salad"
 
@@ -99,10 +99,10 @@ wallpaper_scheme = "m3-fruit-salad"
 directory = "~/Images"
 
     [wallpaper.default]
-    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
+    path = "/home/dk/Images/【哲风壁纸】二次元-原神-水中.png"
 
     [wallpaper.last]
-    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
+    path = "/home/dk/Images/【哲风壁纸】二次元-原神-水中.png"
 
     [wallpaper.monitors.HDMI-A-1]
-    path = "/home/dk/Images/c1b1a1d3a1e93e5d0f33e6ae37269ba3cc10fc55.png"
+    path = "/home/dk/Images/【哲风壁纸】二次元-原神-水中.png"
