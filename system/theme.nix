@@ -14,6 +14,8 @@
 #     浅色色板见文件末尾 terminal-light（仅终端 light 主题使用）
 #   - GTK/Qt/niri 窗口配色：2026-10-17 起由 noctalia 内置模板自动生成
 #     （跟壁纸取色，见 home/noctalia.nix 的 templates 注释），本文件不再参与
+#   - GTK 主题名：home/gtk.nix 用 gtk-theme 作静态兜底，会话里由
+#     cursor-theme-sync 按 noctalia 深浅色在 gtk-theme / gtk-theme-dark 间切换
 #   - niri 的 config.kdl：颜色节点已交给 noctalia 模板；仅 overview 的
 #     backdrop 兜底色（= bg）是手写静态值
 {
@@ -31,6 +33,12 @@
   cursor-name-dark = "Bibata-Modern-Dark";
   cursor-name-light = "Bibata-Modern-Light";
   cursor-size = 24;
+
+  # --- GTK ---
+  # adw-gtk3 浅色是 HM 的静态兜底；运行期由 home/cursor-theme.nix 的
+  # cursor-theme-sync 按 noctalia 模式切到 gtk-theme-dark。
+  gtk-theme = "adw-gtk3";
+  gtk-theme-dark = "adw-gtk3-dark";
 
   # --- 语义色（Nix Periwinkle）---
   bg = "#2E3246";        # 主背景；壁纸浅色块（雪花亮带）；niri backdrop 兜底 / zathura / btop
