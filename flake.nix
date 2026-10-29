@@ -14,6 +14,11 @@
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # 自建 flake：SJMCL（SJMC Minecraft 启动器），用户级安装见 home/pkgs.nix
+    sjmcl-flake = {
+      url = "git+ssh://git@github.com/Tevy-DK/sjmcl-flake.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, llm-agents, ... }@inputs:

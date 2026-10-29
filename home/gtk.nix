@@ -43,6 +43,13 @@
     gtk4.extraConfig."gtk-interface-color-scheme" = "dark";
   };
 
+  # cursor-theme-sync 会把这两个文件从 store 软链落成本地可写文件并按深/浅色
+  # 改写 cursor 行（home/cursor-theme.nix）。HM 激活默认拒绝覆盖非软链文件，
+  # 会报 "would be clobbered" 并让 home-manager-<user>.service 整体失败；
+  # 声明 force 后每次 switch 都还原软链，服务 2s 内再把新 cursor 写回去。
+  xdg.configFile."gtk-3.0/settings.ini".force = true;
+  xdg.configFile."gtk-4.0/settings.ini".force = true;
+
   # GTK3 "另存为" 对话框（xdg-desktop-portal-gtk）把窗口尺寸存在 dconf 里
   dconf.enable = true;
   dconf.settings."org/gtk/settings/file-chooser".window-size = lib.hm.gvariant.mkTuple [
