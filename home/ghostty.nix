@@ -12,6 +12,29 @@ let
   # 主题文件里的色值不带 #（HM 模块的官方写法）；palette 条目保留 #，
   # 两种写法 ghostty 都认，跟模块 README 的示例保持一致
   hex = c: lib.removePrefix "#" c;
+
+  # 深/浅两套主题共用同一套字段，只有色板来源不同。深色继续用 theme.nix
+  # 顶层的 Nix Periwinkle；浅色用 terminal-light（只给终端用）。
+  dark = {
+    inherit (theme) bg fg cursor ansi ansi-bright;
+    selection-bg = theme.accent-bg;
+    selection-fg = theme.fg;
+  };
+  light = theme.terminal-light;
+
+  mkTheme = c: {
+    background = hex c.bg;
+    foreground = hex c.fg;
+    cursor-color = hex c.cursor;
+    selection-background = hex c.selection-bg;
+    selection-foreground = hex c.selection-fg;
+    palette = [
+      "0=${c.ansi.black}"   "1=${c.ansi.red}"     "2=${c.ansi.green}"   "3=${c.ansi.yellow}"
+      "4=${c.ansi.blue}"    "5=${c.ansi.magenta}" "6=${c.ansi.cyan}"    "7=${c.ansi.white}"
+      "8=${c.ansi-bright.black}"  "9=${c.ansi-bright.red}"    "10=${c.ansi-bright.green}" "11=${c.ansi-bright.yellow}"
+      "12=${c.ansi-bright.blue}"  "13=${c.ansi-bright.magenta}" "14=${c.ansi-bright.cyan}"  "15=${c.ansi-bright.white}"
+    ];
+  };
 in {
   programs.ghostty = {
     enable = true;
@@ -23,8 +46,11 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      # 自定义主题 Nix-Periwinkle：色值唯一来源是 theme.nix（见下方 themes）
-      theme = "Nix-Periwinkle";
+      # 浅/深成对主题：色值唯一来源是 theme.nix（见下方 themes）。
+      # ghostty 通过 xdg-desktop-portal 的 org.freedesktop.appearance
+      # color-scheme 跟随系统深浅色；noctalia 的 sync_color_scheme 正好把
+      # 当前模式写进 dconf，portal-gtk 再转发，所以不需要额外的切换服务。
+      theme = "light:Nix-Periwinkle-Light,dark:Nix-Periwinkle-Dark";
       window-theme = "auto";                   # 跟随系统主题
 
       # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
@@ -39,6 +65,10 @@ in {
       cursor-style = "bar";                    # 细条光标，更现代
       cursor-style-blink = true;               # 允许闪烁
       cursor-opacity = 0.8;                    # 光标透明度
+
+      # 深浅色切换会让 ghostty 重载主题，默认弹「配置已重新加载」toast；
+      # 自动切换一天弹好几次太吵，只关这一条，其他通知保持默认。
+      app-notifications = "no-config-reload";
 
       mouse-hide-while-typing = true;          # 打字时自动隐藏鼠标
       copy-on-select = "clipboard";            # 选中即复制到系统剪贴板
@@ -100,19 +130,25 @@ in {
       custom-shader-animation = "always";    #光标特效
     };
 
-    # 自定义主题文件（~/.config/ghostty/themes/Nix-Periwinkle），全部取自 theme.nix
-    themes.Nix-Periwinkle = {
-      background = hex theme.bg;
-      foreground = hex theme.fg;
-      cursor-color = hex theme.cursor;
-      selection-background = hex theme.accent-bg;
-      selection-foreground = hex theme.fg;
-      palette = [
-        "0=${theme.ansi.black}"   "1=${theme.ansi.red}"     "2=${theme.ansi.green}"   "3=${theme.ansi.yellow}"
-        "4=${theme.ansi.blue}"    "5=${theme.ansi.magenta}" "6=${theme.ansi.cyan}"    "7=${theme.ansi.white}"
-        "8=${theme.ansi-bright.black}"  "9=${theme.ansi-bright.red}"    "10=${theme.ansi-bright.green}" "11=${theme.ansi-bright.yellow}"
-        "12=${theme.ansi-bright.blue}"  "13=${theme.ansi-bright.magenta}" "14=${theme.ansi-bright.cyan}" "15=${theme.ansi-bright.white}"
-      ];
+    # 自定义主题文件（~/.config/ghostty/themes/），全部取自 theme.nix
+    themes = {
+      Nix-Periwinkle-Dark = mkTheme dark;
+      Nix-Periwinkle-Light = mkTheme light;
     };
   };
+
+  # Ghostty 不监听配置文件，重建后已经开着的实例不会加载新的成对主题，
+  # 要手动按 ctrl+shift+comma。这里在 HM 激活完成后通过 app 级
+  # org.gtk.Actions 调 reload-config；没在跑（或没有 session bus）就跳过。
+  # nixos-rebuild 的 home-manager-<user>.service 环境里没有会话变量，显式补。
+  home.activation.ghosttyReload = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+    if [ -S "$XDG_RUNTIME_DIR/bus" ]; then
+      ${lib.getExe' pkgs.systemd "busctl"} --user --timeout=2 call \
+        com.mitchellh.ghostty /com/mitchellh/ghostty \
+        org.gtk.Actions Activate sava{sv} reload-config 0 0 \
+        >/dev/null 2>&1 || true
+    fi
+  '';
 }
