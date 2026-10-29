@@ -8,6 +8,7 @@
 }:
 {
   xdg.configFile."niri/config.kdl".source = ./config.kdl;
+  xdg.configFile."niri/border.kdl".source = ./border.kdl;
 
   # noctalia 的 niri 模板把壁纸调色板渲染成 ~/.config/niri/noctalia.kdl，
   # config.kdl 末尾 include 它。首次启动（noctalia 还没跑过模板）时该文件

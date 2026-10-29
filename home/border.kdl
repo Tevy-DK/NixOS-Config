@@ -1,0 +1,10 @@
+// 窗口边框覆盖：config.kdl 在 noctalia.kdl 之后 include 本文件。
+// noctalia 的 niri 模板按壁纸/深浅色生成 active/inactive；浅色模式的
+// inactive 接近纯白（实测 #f7f9ff），贴着玻璃窗口看很刺眼。这里只把失焦
+// 边框改成全透明，深/浅色一致；聚焦边框保留模板的强调色，继续当焦点指示。
+// 不要在这里写 active-color —— 会盖掉跟随壁纸的焦点色。
+layout {
+    border {
+        inactive-color "#00000000"
+    }
+}

@@ -916,6 +916,10 @@ binds {
 // 它追加不了，全靠这里静态写好）。
 include "noctalia.kdl"
 
+// 边框覆盖：失焦边框透明（深/浅色一致），放在 noctalia 之后覆盖模板色。
+// 聚焦边框不在这里写，继续用 noctalia 跟随壁纸的强调色。
+include "border.kdl"
+
 // 光标跟随 noctalia 深浅色：cursor-theme-sync.service 重写该文件（dark=黑体
 // 白边 / light=白体黑边），niri 自动重载。optional 允许服务首次写入前缺失。
 // 必须放在上面的兜底 cursor 块之后——include 是位置性的，后解析者赢。
