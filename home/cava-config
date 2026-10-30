@@ -212,31 +212,12 @@
 
 [color]
 
-# Colors can be one of seven predefined: black, blue, cyan, green, magenta, red, white, yellow.
-# Or defined by hex code '#xxxxxx' (hex code must be within ''). User defined colors requires
-# a terminal that can change color definitions such as Gnome-terminal or rxvt.
-# default is to keep current terminal color
-background = default
-foreground = default
-
-# SDL and sdl_glsl only support hex code colors, these are the default:
-; background = '#111111'
-; foreground = '#33ffff'
-
-
-# Gradient mode, only hex defined colors are supported,
-# background must also be defined in hex or remain commented out. 1 = on, 0 = off.
-# You can define as many as 8 different colors. They range from bottom to top of screen
-gradient = 2
-gradient_count = 8
-gradient_color_1 = '#3349cc'
-gradient_color_2 = '#336fcc'
-gradient_color_3 = '#3395cc'
-gradient_color_4 = '#33bccc'
-gradient_color_5 = '#33a3cc'
-gradient_color_6 = '#5b6dcc'
-gradient_color_7 = '#8a4dcc'
-gradient_color_8 = '#a833cc'
+# 配色由 Noctalia 的 cava 内置模板生成到
+#   $XDG_CONFIG_HOME/cava/themes/noctalia
+# cava 设置 theme 后会整份改用主题文件里的 [color]，所以这里不要再写死
+# background/foreground/gradient；Noctalia 的 apply.sh 检测到 theme 已经是
+# "noctalia" 就不会修改本文件（HM 管理的只读 store 软链）。
+theme = "noctalia"
 
 
 

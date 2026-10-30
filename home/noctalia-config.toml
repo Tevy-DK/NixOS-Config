@@ -16,6 +16,10 @@ thickness = 32
 sidebar = "compact"
 width = 900
 
+[hooks]
+started = "/nix/store/bnalharv0xzkly7nqx0p9rfsqj0b0frb-cursor-theme-sync/bin/cursor-theme-sync --apply"
+theme_mode_changed = "/nix/store/bnalharv0xzkly7nqx0p9rfsqj0b0frb-cursor-theme-sync/bin/cursor-theme-sync --mode \"$NOCTALIA_THEME_MODE\""
+
 [location]
 auto_locate = true
 
@@ -41,7 +45,7 @@ widget_order = [ "lockscreen-login-box@HDMI-A-1" ]
     type = "login_box"
 
         [lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
-        background_color = "surface_variant"
+        background_color = "surface_container"
         background_opacity = 0.88
         background_radius = 12.0
         center_password_text = false
@@ -55,6 +59,9 @@ widget_order = [ "lockscreen-login-box@HDMI-A-1" ]
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
+
+[plugins]
+enabled = [ "vn1k/cursor" ]
 
 [shell]
 niri_overview_type_to_launch_enabled = true
@@ -89,10 +96,11 @@ builtin = "Catppuccin"
 community_palette = "Oxocarbon"
 mode = "light"
 source = "wallpaper"
+sync_color_scheme = true
 wallpaper_scheme = "m3-fruit-salad"
 
     [theme.templates]
-    builtin_ids = [ "gtk3", "gtk4", "niri", "qt" ]
+    builtin_ids = [ "btop", "cava", "gtk3", "gtk4", "niri", "qt" ]
     enable_builtin_templates = true
 
 [wallpaper]

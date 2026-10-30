@@ -12,7 +12,8 @@
     fastfetch = true;
     ghostty = true;
     git = true;
-    gtk = true;         # GTK 外观（adw-gtk3 + 玻璃底色）
+    gtk = true;         # GTK 字体/图标/光标包；配色与主题名由 noctalia 模板
+    mpv = true;
     niri = true;        # niri 用户层配置（工作环境）
     noctalia = true;    # noctalia 桌面外壳 v5（bar/启动器/通知/OSD/托盘/剪贴板/锁屏/壁纸/polkit）
     nvim = true;
@@ -21,6 +22,7 @@
     pkgs = true;
     shell = true;
     starship = true;
+    swayimg = true;
     themes = true;
     vscodium = true;
     yazi = true;

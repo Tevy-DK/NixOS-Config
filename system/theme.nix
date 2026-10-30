@@ -9,13 +9,10 @@
 #   紫蓝 #637DDF → #649AFA → #719EFA
 # 个别色做了明度/饱和度微调以适配深底。字号/字体仍是自己的。
 # 接入情况：
-#   - btop / fastfetch / zathura / fzf / bat / fuzzel / 光标：自动引用本文件
-#   - ghostty：home/ghostty.nix 渲染成 Nix-Periwinkle-Dark / -Light 成对主题，
-#     浅色色板见文件末尾 terminal-light（仅终端 light 主题使用）
-#   - GTK/Qt/niri 窗口配色：2026-10-17 起由 noctalia 内置模板自动生成
-#     （跟壁纸取色，见 home/noctalia.nix 的 templates 注释），本文件不再参与
-#   - GTK 主题名：home/gtk.nix 用 gtk-theme 作静态兜底，会话里由
-#     cursor-theme-sync 按 noctalia 深浅色在 gtk-theme / gtk-theme-dark 间切换
+#   - fastfetch / zathura / fzf / bat / fuzzel / 光标包：引用本文件
+#   - ghostty/btop/cava：配色由 noctalia 内置模板生成（壁纸取色），本文件不参与
+#   - GTK/Qt/niri 窗口配色：由 noctalia 内置模板生成（见 home/noctalia.nix）
+#   - GTK 主题名：由 noctalia 的 gtk 模板按模式选 adw-gtk3 / adw-gtk3-dark
 #   - niri 的 config.kdl：颜色节点已交给 noctalia 模板；仅 overview 的
 #     backdrop 兜底色（= bg）是手写静态值
 {
@@ -28,36 +25,30 @@
   # --- 光标 ---
   # Bibata 两套重着色（见 lib/cursor-package.nix）：
   #   dark  = 黑体白边   light = 白体黑边
-  # 桌面会话里由 home/cursor-theme.nix 的服务按 noctalia 深浅色自动切换；
+  # 桌面会话由 Noctalia hooks 触发 cursor-theme-sync 按解析后的模式切换；
   # 登录页没有运行时切换，固定用 dark。
   cursor-name-dark = "Bibata-Modern-Dark";
   cursor-name-light = "Bibata-Modern-Light";
+  # 稳定别名：cursor-theme-sync 在 ~/.local/share/icons 维护一个指向当前
+  # dark/light 主题的符号链接。XCURSOR_THEME 固定写别名，niri 每次 spawn
+  # 子进程时都会重新读取，不必因为模式切换而重启 niri。已经在运行的旧进程
+  # 若还持有具体 dark/light 名字，需要重启一次才会改用别名。
+  cursor-alias = "Bibata-Modern-Current";
   cursor-size = 24;
 
-  # --- GTK ---
-  # adw-gtk3 浅色是 HM 的静态兜底；运行期由 home/cursor-theme.nix 的
-  # cursor-theme-sync 按 noctalia 模式切到 gtk-theme-dark。
-  gtk-theme = "adw-gtk3";
-  gtk-theme-dark = "adw-gtk3-dark";
-
   # --- 语义色（Nix Periwinkle）---
-  bg = "#2E3246";        # 主背景；壁纸浅色块（雪花亮带）；niri backdrop 兜底 / zathura / btop
+  bg = "#2E3246";        # 主背景；壁纸浅色块（雪花亮带）；niri backdrop 兜底 / zathura
   bg-alt = "#393D52";    # 凸起表面（选中项 / 侧栏）；壁纸轮廓高光色
   fg = "#D4DCEC";        # 主前景
   fg-bright = "#E6ECF8"; # 强调前景
   muted = "#9AA7C4";     # 次要可读文本
   muted-alt = "#737E9C"; # 装饰/禁用文本（随底色提亮，保持原可读档位）
-  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：btop/fzf/fuzzel/Bibata 重着色等
+  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：fzf/fuzzel 等
   accent-2 = "#8B93F8";  # 交互强调（紫蓝再提亮）：菜单高亮、fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
-  accent-yellow-bright = "#C3CBFF"; # 强调文本的亮蓝紫（键名沿用旧结构）
-  accent-deep = "#415E9A";          # logo 深蓝渐变起点：图表起点等深色装饰
-  accent-bg = "#414868";            # 选区背景（ghostty selection）；壁纸最亮块再提亮一档
-  cursor = "#DDE4F3";               # 光标颜色（ghostty cursor-color）
   black = "#1E2030";     # 最深表面；亮色强调上的文字；壁纸基底色
 
-  # --- ANSI 16 色（Nix Periwinkle 终端色；蓝/青直接取 logo 渐变）---
-  # normal (0-7)
+  # --- ANSI normal 8 色（Nix Periwinkle 终端色；蓝/青直接取 logo 渐变）---
   ansi = {
     black = "#393D52";
     red = "#CC8388";
@@ -68,47 +59,5 @@
     cyan = "#7EB1DD";
     white = "#D4DCEC";
   };
-  # bright (8-15)
-  ansi-bright = {
-    black = "#646C90";
-    red = "#DDA1A0";
-    green = "#A9D4B3";
-    yellow = "#EBD3A2";
-    blue = "#9DC4FD";
-    magenta = "#BEAEEF";
-    cyan = "#A5D1EC";
-    white = "#E6ECF8";
-  };
 
-  # --- 终端浅色 variant（ghostty 的 light theme 专用）---
-  # 其他消费者（btop/zathura/fzf 等）仍用上面的深色语义色；这份色板只给
-  # ghostty 的 paired theme 用。普通 ANSI 色对 #EDF0F8 的对比度均 ≥ 4.5，
-  # bright 组刻意压深（浅底上「更亮」会变得更难读）。
-  terminal-light = {
-    bg = "#EDF0F8";
-    fg = "#2E3246";
-    cursor = "#415E9A";
-    selection-bg = "#C7D4F2";
-    selection-fg = "#1E2030";
-    ansi = {
-      black = "#393D52";
-      red = "#A84A52";
-      green = "#356E47";
-      yellow = "#7E5C12";
-      blue = "#355FB8";
-      magenta = "#7659B8";
-      cyan = "#266B79";
-      white = "#C6CFE2";
-    };
-    ansi-bright = {
-      black = "#5B6488";
-      red = "#9A3F49";
-      green = "#2F6441";
-      yellow = "#6F510D";
-      blue = "#2F55A8";
-      magenta = "#684BA8";
-      cyan = "#215E6B";
-      white = "#B8C4DA";
-    };
-  };
 }

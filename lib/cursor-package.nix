@@ -1,8 +1,8 @@
 # 全局光标包：Bibata Modern 按深浅色重着色成两套 ——
 #   dark  = 黑体（#000000）+ 白边（#FFFFFF）
 #   light = 白体（#FFFFFF）+ 黑边（#000000）
-# 两套主题打包在同一 derivation 里，安装后同时可用，由
-# home/cursor-theme.nix 的 cursor-theme-sync.service 跟随 noctalia 深浅色切换。
+# 两套主题打包在同一 derivation 里，安装后同时可用，由 Noctalia 的
+# started / theme_mode_changed hooks 触发 cursor-theme-sync 切换。
 #
 # 系统层（noctalia-greeter 登录页，system/greeter.nix）与用户层
 # （home.pointerCursor，home/cursor-theme.nix）共用这一份 derivation：

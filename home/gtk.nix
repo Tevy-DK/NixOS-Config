@@ -1,7 +1,15 @@
 # --- gtk ---
-# GTK 不做任何配色、也不做任何透明 CSS：外观即 libadwaita / adw-gtk3 的
-# 默认值。字体/图标/基础主题名保留；深/浅色由 noctalia 决定，运行期由
-# home/cursor-theme.nix 的 cursor-theme-sync 写进 settings.ini 与 dconf。
+# GTK 配色/主题名交给 Noctalia 的 gtk3/gtk4 内置模板：
+#   - 模板生成 ~/.config/gtk-{3,4}.0/noctalia.css，并把 @import 加进 gtk.css
+#   - apply.sh 按模式用 gsettings/dconf 选 adw-gtk3 / adw-gtk3-dark
+#   - [theme].sync_color_scheme 负责 org.gnome.desktop.interface.color-scheme
+# Home Manager 只保留字体、图标、光标包和 settings.ini 结构：
+#   - gtk.theme = null：不再往 settings.ini/dconf 写固定 gtk-theme-name，
+#     否则每次 HM 激活都会把 Noctalia 当前的深浅主题覆盖回浅色。
+#   - gtk.colorScheme = null：不写 prefer-dark / color-scheme。
+#   - home.pointerCursor.gtk.enable = false（见 home/cursor-theme.nix）：
+#     光标名/尺寸由 cursor-theme-sync 按 Noctalia 模式写入，HM 不抢同一个键。
+# adw-gtk3 仍显式安装：Noctalia 的 gtk apply.sh 靠它找 adw-gtk3 / dark 变体。
 #
 # nautilus 的玻璃完全由 niri 的窗口规则提供（与本项目作者 Fedora 机器上
 # DMS 的配置同款）：background-effect 模糊 + opacity 0.75 +
@@ -23,16 +31,13 @@
   gtk = {
     enable = true;
 
-    # 必须是 null：写 "dark" 时 HM 每次激活都会向 settings.ini 写
-    # gtk-application-prefer-dark-theme、向 dconf 写 color-scheme=prefer-dark，
-    # 把 noctalia 当前的浅色重置掉。模式由 cursor-theme-sync 在运行期写入。
-    colorScheme = lib.mkDefault null;
+    # 主题名由 Noctalia 模板按模式选（adw-gtk3 / adw-gtk3-dark），HM 不写。
+    theme = lib.mkDefault null;
 
-    # 浅色基础主题（静态兜底）；深色变体由 cursor-theme-sync 切换。
-    theme = lib.mkDefault {
-      name = theme.gtk-theme;
-      package = pkgs.adw-gtk3;
-    };
+    # 必须是 null：写 "dark"/"light" 时 HM 每次激活都会向 settings.ini 写
+    # gtk-application-prefer-dark-theme、向 dconf 写 color-scheme，把 Noctalia
+    # 当前的模式重置掉。模式由 Noctalia 的 sync_color_scheme 维护。
+    colorScheme = lib.mkDefault null;
 
     font = lib.mkDefault {
       name = theme.font;
@@ -43,16 +48,17 @@
       name = "Tela";
       package = pkgs.tela-icon-theme;
     };
-
-    # GTK4 的 gtk-interface-color-scheme 同样交给 cursor-theme-sync 按模式写；
-    # 这里不要写死 "dark"（stateVersion 26.05 起 gtk4.theme 默认也是 null）。
   };
 
-  # cursor-theme-sync 会把这两个文件从 store 软链落成本地可写文件，并在
-  # noctalia 模式变化或 HM 激活还原软链后写回 cursor 与 GTK 深浅色键
-  # （home/cursor-theme.nix）。HM 激活默认拒绝覆盖非软链文件，会报
-  # "would be clobbered" 并让 home-manager-<user>.service 整体失败；
-  # 声明 force 后每次 switch 都还原软链，服务 2s 内再把当前模式的键写回去。
+  # gtk.theme = null 后 HM 不再自动安装 adw-gtk3；Noctalia 的 apply.sh 需要它
+  # 在 XDG_DATA_DIRS 里找主题目录，所以显式装一份。
+  home.packages = [ pkgs.adw-gtk3 ];
+
+  # cursor-theme-sync 会把这两个文件从 store 软链落成本地可写文件，并只补
+  # gtk-cursor-theme-name / gtk-cursor-theme-size。HM 激活默认拒绝覆盖非软链
+  # 文件，会报 "would be clobbered" 并让 home-manager-<user>.service 整体失败；
+  # 声明 force 后每次 switch 都还原软链，再由 cursor-theme-sync 的激活钩子
+  # 把当前模式的 cursor 键写回去（见 home/cursor-theme.nix）。
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;
 

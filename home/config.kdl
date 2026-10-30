@@ -105,9 +105,9 @@ layout {
 }
 
 // ─── 光标 ─────────────────────────────────────────────
-// 兜底：cursor-theme-sync.service 还没写入 cursor.kdl 时用深色 variant。
-// 实际主题由服务按 noctalia 深浅色重写 cursor.kdl（文件末尾 include），
-// niri 监听 include 目标并自动重载，这里不用跟模式变。
+// 兜底：Noctalia hooks 调 cursor-theme-sync 写入 cursor.kdl 之前用深色 variant。
+// 实际主题由 cursor-theme-sync --apply/--mode 重写 cursor.kdl（文件末尾
+// include），niri 监听 include 目标并自动重载，这里不用跟模式变。
 cursor {
     xcursor-theme "Bibata-Modern-Dark"
     xcursor-size 24
@@ -140,6 +140,11 @@ layer-rule {
 
 environment {
     XDG_CURRENT_DESKTOP "niri"
+
+    // 稳定别名：cursor-theme-sync 维护 ~/.local/share/icons/Bibata-Modern-Current
+    // 指向当前 dark/light 主题。niri 在每次 spawn 时读取这里覆盖子进程环境，
+    // 所以不需要重启 niri 或改写它启动时继承的旧 XCURSOR_THEME。
+    XCURSOR_THEME "Bibata-Modern-Current"
 }
 
 hotkey-overlay {
@@ -380,8 +385,7 @@ binds {
     }
 
     Mod+E hotkey-overlay-title="Yazi File Manager" {
-        //spawn "ghostty" "-e" "yazi"
-        spawn "nautilus"
+        spawn "ghostty" "-e" "yazi"
     }
 
     Mod+T hotkey-overlay-title="Open Terminal" {
@@ -920,7 +924,8 @@ include "noctalia.kdl"
 // 聚焦边框不在这里写，继续用 noctalia 跟随壁纸的强调色。
 include "border.kdl"
 
-// 光标跟随 noctalia 深浅色：cursor-theme-sync.service 重写该文件（dark=黑体
-// 白边 / light=白体黑边），niri 自动重载。optional 允许服务首次写入前缺失。
+// 光标跟随 noctalia 深浅色：Noctalia 的 started / theme_mode_changed hooks
+// 调 cursor-theme-sync 重写该文件（dark=黑体白边 / light=白体黑边），niri
+// 自动重载。optional 允许脚本首次写入前缺失。
 // 必须放在上面的兜底 cursor 块之后——include 是位置性的，后解析者赢。
 include optional=true "cursor.kdl"

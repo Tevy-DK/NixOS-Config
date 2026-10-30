@@ -1,4 +1,4 @@
-{ pkgs, lib, theme, ... }:
+{ pkgs, lib, config, theme, ... }:
 
 let
   # 1. 使用 fetchFromGitHub 声明式地获取着色器仓库
@@ -9,32 +9,6 @@ let
     hash = "sha256-B7B6K7Ee4uJlW8zzLP3ILgddnbcIQyNimY+rVllzbR0=";
   };
 
-  # 主题文件里的色值不带 #（HM 模块的官方写法）；palette 条目保留 #，
-  # 两种写法 ghostty 都认，跟模块 README 的示例保持一致
-  hex = c: lib.removePrefix "#" c;
-
-  # 深/浅两套主题共用同一套字段，只有色板来源不同。深色继续用 theme.nix
-  # 顶层的 Nix Periwinkle；浅色用 terminal-light（只给终端用）。
-  dark = {
-    inherit (theme) bg fg cursor ansi ansi-bright;
-    selection-bg = theme.accent-bg;
-    selection-fg = theme.fg;
-  };
-  light = theme.terminal-light;
-
-  mkTheme = c: {
-    background = hex c.bg;
-    foreground = hex c.fg;
-    cursor-color = hex c.cursor;
-    selection-background = hex c.selection-bg;
-    selection-foreground = hex c.selection-fg;
-    palette = [
-      "0=${c.ansi.black}"   "1=${c.ansi.red}"     "2=${c.ansi.green}"   "3=${c.ansi.yellow}"
-      "4=${c.ansi.blue}"    "5=${c.ansi.magenta}" "6=${c.ansi.cyan}"    "7=${c.ansi.white}"
-      "8=${c.ansi-bright.black}"  "9=${c.ansi-bright.red}"    "10=${c.ansi-bright.green}" "11=${c.ansi-bright.yellow}"
-      "12=${c.ansi-bright.blue}"  "13=${c.ansi-bright.magenta}" "14=${c.ansi-bright.cyan}"  "15=${c.ansi-bright.white}"
-    ];
-  };
 in {
   programs.ghostty = {
     enable = true;
@@ -46,11 +20,13 @@ in {
     enableZshIntegration = true;
 
     settings = {
-      # 浅/深成对主题：色值唯一来源是 theme.nix（见下方 themes）。
-      # ghostty 通过 xdg-desktop-portal 的 org.freedesktop.appearance
-      # color-scheme 跟随系统深浅色；noctalia 的 sync_color_scheme 正好把
-      # 当前模式写进 dconf，portal-gtk 再转发，所以不需要额外的切换服务。
-      theme = "light:Nix-Periwinkle-Light,dark:Nix-Periwinkle-Dark";
+      # 配色交给 Noctalia 的 ghostty user 模板（home/noctalia.nix）：它生成
+      # ~/.config/ghostty/themes/noctalia（背景/前景/ANSI 16 色 + selection-*），
+      # 并把 cursor-color/cursor-text 改成 primary/on_primary，避免默认的
+      # foreground 光标在深色主题下看起来是白色。模式/壁纸变化时重新生成并 reload。
+      # 这里必须写 "noctalia"：Noctalia 的 apply.sh 用它判断是否还需要改配置；
+      # HM 的 config 是只读 store 软链，不能让 apply.sh 去写。
+      theme = "noctalia";
       window-theme = "auto";                   # 跟随系统主题
 
       # 不用 GTK 满配标题栏，改走合成器的简单装饰（niri 下就是自己的边框），
@@ -130,16 +106,28 @@ in {
       custom-shader-animation = "always";    #光标特效
     };
 
-    # 自定义主题文件（~/.config/ghostty/themes/），全部取自 theme.nix
-    themes = {
-      Nix-Periwinkle-Dark = mkTheme dark;
-      Nix-Periwinkle-Light = mkTheme light;
-    };
+    # 不再声明 themes：~/.config/ghostty/themes/noctalia 是 Noctalia 运行时
+    # 生成的文件，HM 只负责主配置（theme = "noctalia"），避免两边同时管理。
   };
 
-  # Ghostty 不监听配置文件，重建后已经开着的实例不会加载新的成对主题，
-  # 要手动按 ctrl+shift+comma。这里在 HM 激活完成后通过 app 级
-  # org.gtk.Actions 调 reload-config；没在跑（或没有 session bus）就跳过。
+  # Noctalia 的 ghostty 模板运行时才生成 themes/noctalia；HM 的 config
+  # onChange 会用 ghostty +validate-config 校验。首次激活时该文件可能还不
+  # 存在，校验会失败并让 home-manager-<user>.service 整体失败。这里只在
+  # 文件缺失时放一个注释占位（与 home/niri.nix 的 noctalia.kdl 占位同款）；
+  # 文件一旦存在就不再触碰，Noctalia 生成的真实主题会覆盖它。
+  home.activation.ghosttyNoctaliaThemeBootstrap =
+    lib.hm.dag.entryBetween [ "onFilesChange" ] [ "linkGeneration" ] ''
+      theme_file=${lib.escapeShellArg "${config.xdg.configHome}/ghostty/themes/noctalia"}
+      if [ ! -e "$theme_file" ]; then
+        mkdir -p "$(dirname "$theme_file")"
+        printf '%s\n' '# Placeholder: Noctalia generates this theme on first apply.' > "$theme_file"
+      fi
+    '';
+
+  # Ghostty 不监听配置文件，HM 改完配置后已运行的实例需要显式 reload。
+  # 这里在激活完成后通过 app 级 org.gtk.Actions 调 reload-config；没在跑
+  # （或没有 session bus）就跳过。Noctalia 生成/更新主题时由它自己的
+  # ghostty reload 脚本负责，两条路径互不依赖，重复调用 reload 是幂等的。
   # nixos-rebuild 的 home-manager-<user>.service 环境里没有会话变量，显式补。
   home.activation.ghosttyReload = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
