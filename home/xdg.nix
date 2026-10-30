@@ -3,9 +3,10 @@
 let
   chrome = "google-chrome.desktop";
 
-  # Yazi 是终端文件管理器；上游 yazi.desktop 是 Terminal=true，niri/portal
-  # 找不到终端启动器时不会打开。这里提供一个显式在 Ghostty 里运行的入口，
-  # 同时保留 yazi 的 MIME 关联。
+  # Yazi 是终端文件管理器；上游 yazi.desktop 是 Terminal=true，xdg-open 的
+  # 通用启动路径不会替它找终端，直接执行 `yazi %f` 会失败。这里提供一个显式
+  # 在 Ghostty 里运行的入口并设为 inode/directory 默认；入口 noDisplay，菜单
+  # 里只保留上游条目，避免出现两个 Yazi。
   yaziFileManager = "yazi-file-manager";
   yaziDesktop = "${yaziFileManager}.desktop";
   ghostty = config.programs.ghostty.package;
@@ -36,6 +37,7 @@ in
       comment = "Terminal file manager in Ghostty";
       exec = "${lib.getExe ghostty} -e ${lib.getExe yazi} %f";
       terminal = false;
+      noDisplay = true;
       mimeType = [ "inode/directory" ];
       categories = [ "System" "FileManager" ];
     };
