@@ -89,14 +89,9 @@ layout {
         width 1
     }
 
-    // 窗口阴影（noctalia 面板的影子由它自己的 [shell.shadow] 画，这里管应用窗口；
-    // layout.shadow 必须写 on 才生效）
+    // 窗口阴影全局关闭（noctalia 面板的影子由它自己的 [shell.shadow] 画，不在这里）
     shadow {
-        on
-        softness 30
-        spread 5
-        offset x=0 y=5
-        color "#0007"
+        off
     }
 
     tab-indicator {
