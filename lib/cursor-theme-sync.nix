@@ -4,14 +4,16 @@
 #   started            → cursor-theme-sync --apply
 #   theme_mode_changed → cursor-theme-sync --mode "$NOCTALIA_THEME_MODE"
 # Home Manager 激活后也调用一次 --apply，把被激活流程还原的 settings.ini
-# 光标键补回去（不会写 GTK 主题色/color-scheme）。
+# 光标键和 gtk-theme-name 补回去（不会写 GTK 颜色/color-scheme）。
 #
-# 只写光标相关的东西：
+# 只写模式相关的显式配置：
 #   - ~/.config/niri/cursor.kdl（niri include 监听该文件）
 #   - gtk-{3,4}.0/settings.ini 的 gtk-cursor-theme-name / gtk-cursor-theme-size
+#     和 gtk-theme-name（X11/无 XSETTINGS 的 GTK 应用只认 settings.ini）
 #   - dconf 的 cursor-theme / cursor-size
-# GTK 主题名、prefer-dark、color-scheme 全部留给 Noctalia 的 GTK 模板和
-# [theme].sync_color_scheme 管理。
+# prefer-dark、color-scheme 仍留给 Noctalia 的 GTK 模板和
+# [theme].sync_color_scheme 管理；gtk-theme-name 只是把 Noctalia 按模式选中的
+# adw-gtk3 变体镜像给 X11 应用，不是另一份颜色来源。
 { pkgs, theme }:
 
 let
@@ -156,13 +158,26 @@ pkgs.writeShellApplication {
       printf 'updated %s: %s\n' "$file" "$key"
     }
 
+    # Noctalia 的 GTK 模板只把主题名写进 dconf/GSettings；X11 和没有
+    # XSETTINGS 的会话里 GTK 读 settings.ini。按模式映射成模板会选的变体。
+    gtk_theme_name() {
+      case "$1" in
+        light) printf '%s\n' adw-gtk3 ;;
+        dark) printf '%s\n' adw-gtk3-dark ;;
+        *) return 1 ;;
+      esac
+    }
+
     write_gtk() {
       cursor="$1"
+      mode="$2"
+      gtk_theme="$(gtk_theme_name "$mode")" || return 1
       for version in 3 4; do
         file="''${XDG_CONFIG_HOME:-$HOME/.config}/gtk-$version.0/settings.ini"
         materialize_ini "$file"
         set_ini "$file" gtk-cursor-theme-name "$cursor"
         set_ini "$file" gtk-cursor-theme-size "$size"
+        set_ini "$file" gtk-theme-name "$gtk_theme"
       done
     }
 
@@ -191,7 +206,7 @@ pkgs.writeShellApplication {
       rc=0
       write_alias "$cursor" || rc=1
       write_niri "$cursor"
-      write_gtk "$cursor"
+      write_gtk "$cursor" "$mode" || rc=1
 
       dconf_set /org/gnome/desktop/interface/cursor-theme "'$cursor'" || rc=1
       dconf_set /org/gnome/desktop/interface/cursor-size "$size" || rc=1

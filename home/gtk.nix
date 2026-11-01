@@ -6,6 +6,8 @@
 # Home Manager 只保留字体、图标、光标包和 settings.ini 结构：
 #   - gtk.theme = null：不再往 settings.ini/dconf 写固定 gtk-theme-name，
 #     否则每次 HM 激活都会把 Noctalia 当前的深浅主题覆盖回浅色。
+#     实际的 gtk-theme-name 由 cursor-theme-sync 按 Noctalia 模式镜像进
+#     settings.ini，供 X11 / 无 XSETTINGS 的 GTK 应用使用。
 #   - gtk.colorScheme = null：不写 prefer-dark / color-scheme。
 #   - home.pointerCursor.gtk.enable = false（见 home/cursor-theme.nix）：
 #     光标名/尺寸由 cursor-theme-sync 按 Noctalia 模式写入，HM 不抢同一个键。

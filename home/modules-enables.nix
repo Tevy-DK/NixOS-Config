@@ -10,6 +10,7 @@
     cli-tools = true;
     cursor-theme = true;
     fastfetch = true;
+    flatpak = true;
     ghostty = true;
     git = true;
     gtk = true;         # GTK 字体/图标/光标包；配色与主题名由 noctalia 模板
@@ -26,6 +27,7 @@
     vscodium = true;
     yazi = true;
     zathura = true;
+    x11 = true;
     xdg = true;
   };
 }

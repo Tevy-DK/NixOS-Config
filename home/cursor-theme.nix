@@ -10,11 +10,12 @@
 #   Home Manager 激活            → cursor-theme-sync --apply（补回被还原的 settings.ini）
 # Hook 在 home/noctalia.nix 里用 lib.getExe 注入 Store 路径，不依赖 PATH。
 #
-# 脚本只负责光标相关设置：
+# 脚本负责模式相关的显式配置：
 #   1. ~/.config/niri/cursor.kdl —— niri 的 include 监听该文件，重载后
 #      合成器和它拉起的客户端都换用新主题（niri 自己会设置 XCURSOR_THEME）
-#   2. ~/.config/gtk-{3,4}.0/settings.ini —— 只写 gtk-cursor-theme-name /
-#      gtk-cursor-theme-size；GTK 主题名、prefer-dark、color-scheme 归 Noctalia
+#   2. ~/.config/gtk-{3,4}.0/settings.ini —— 光标键，以及按模式映射的
+#      gtk-theme-name（X11/无 XSETTINGS 的 GTK 应用读这里）；GTK 配色、
+#      prefer-dark、color-scheme 归 Noctalia
 #   3. dconf —— 只写 cursor-theme / cursor-size
 { pkgs, lib, theme, ... }:
 let
