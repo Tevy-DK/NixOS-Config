@@ -1,9 +1,29 @@
-{ config, pkgs, ...}:
+{ config, lib, pkgs, ...}:
+let
+  # starship 的 fish 集成启动时会把 `command -v starship` 解析到的绝对路径
+  # 写死进 fish_prompt/fish_right_prompt。PATH 中 ~/.nix-profile/bin 排在
+  # 系统 profile 之前，而 home-manager 激活会重写该 profile（useUserPackages
+  # 的新一代可能不再包含 bin/），于是激活前打开的 shell 在 nrs 之后提示
+  # "未知的命令：/home/dk/.nix-profile/bin/starship"。
+  # 改为构建时用 store 里的 starship 生成完整初始化脚本，提示符不再依赖
+  # 可变的 profile 路径。
+  starship = config.programs.starship.package;
+  starshipFishInit = pkgs.runCommandLocal "starship-fish-init" { } ''
+    PATH=${lib.makeBinPath [ starship ]} \
+      ${lib.getExe starship} init fish --print-full-init > "$out"
+  '';
+in
 {
   programs.starship = {
     enable = true;
-    enableFishIntegration = true;
+    enableFishIntegration = false;
   };
+
+  programs.fish.interactiveShellInit = ''
+    if test "$TERM" != dumb
+      source ${starshipFishInit}
+    end
+  '';
   xdg.configFile."starship.toml".text = ''
 "$schema" = 'https://starship.rs/config-schema.json'
 
