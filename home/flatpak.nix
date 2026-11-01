@@ -22,6 +22,8 @@ let
     "~/.themes:ro"
   ];
 
+  # Flatpak X11 应用走 XIM；沙箱里没有 fcitx 的 GTK/Qt 模块，但 XIM server
+  # 在宿主 XWayland 上，明确传入避免依赖启动环境的继承。
   override = ''
     [Context]
     filesystems=${filesystems};
@@ -30,6 +32,7 @@ let
     XCURSOR_THEME=${theme.cursor-alias}
     XCURSOR_SIZE=${toString theme.cursor-size}
     XCURSOR_PATH=${cursorPackage}/share/icons:/run/host/user-share/icons:/run/host/share/icons
+    XMODIFIERS=@im=fcitx
   '';
 in
 {

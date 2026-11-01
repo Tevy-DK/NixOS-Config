@@ -50,6 +50,13 @@
       name = "Tela";
       package = pkgs.tela-icon-theme;
     };
+
+    # X11/XWayland 的 GTK 应用读取 settings.ini 的 gtk-im-module；Wayland
+    # 下 GTK 优先 text-input-v3，不受这几项影响。不要改成 GTK_IM_MODULE
+    # 环境变量：它会泄漏进 Flatpak 沙箱，而沙箱里没有 fcitx GTK 模块。
+    gtk2.extraConfig = ''gtk-im-module="fcitx"'';
+    gtk3.extraConfig.gtk-im-module = "fcitx";
+    gtk4.extraConfig.gtk-im-module = "fcitx";
   };
 
   # gtk.theme = null 后 HM 不再自动安装 adw-gtk3；Noctalia 的 apply.sh 需要它
