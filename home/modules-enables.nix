@@ -8,7 +8,7 @@
     btop = true;
     cava = true;
     cli-tools = true;
-    command-code = true; # Command Code 桌面客户端（Electron，Tevy-DK-attic）
+    command-code = false; # 目前不用；需要时改回 true（包仍在 Tevy-DK-attic）
     cursor-theme = true;
     fastfetch = true;
     flatpak = true;
