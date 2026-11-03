@@ -16,10 +16,6 @@ thickness = 32
 sidebar = "compact"
 width = 900
 
-[hooks]
-started = "/nix/store/bnalharv0xzkly7nqx0p9rfsqj0b0frb-cursor-theme-sync/bin/cursor-theme-sync --apply"
-theme_mode_changed = "/nix/store/bnalharv0xzkly7nqx0p9rfsqj0b0frb-cursor-theme-sync/bin/cursor-theme-sync --mode \"$NOCTALIA_THEME_MODE\""
-
 [location]
 auto_locate = true
 
@@ -59,9 +55,6 @@ widget_order = [ "lockscreen-login-box@HDMI-A-1" ]
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
-
-[plugins]
-enabled = [ "vn1k/cursor" ]
 
 [shell]
 niri_overview_type_to_launch_enabled = true

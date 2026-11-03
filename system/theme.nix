@@ -9,7 +9,7 @@
 #   紫蓝 #637DDF → #649AFA → #719EFA
 # 个别色做了明度/饱和度微调以适配深底。字号/字体仍是自己的。
 # 接入情况：
-#   - fastfetch / zathura / fzf / bat / fuzzel / 光标包：引用本文件
+#   - fastfetch / zathura / fzf / bat / fuzzel / 光标名与尺寸：引用本文件
 #   - ghostty/btop/cava：配色由 noctalia 内置模板生成（壁纸取色），本文件不参与
 #   - GTK/Qt/niri 窗口配色：由 noctalia 内置模板生成（见 home/noctalia.nix）
 #   - GTK 主题名：由 noctalia 的 gtk 模板按模式选 adw-gtk3 / adw-gtk3-dark
@@ -23,17 +23,8 @@
   font-size-bar = 12; # fuzzel / zathura 等小界面字号
 
   # --- 光标 ---
-  # Bibata 两套重着色（见 lib/cursor-package.nix）：
-  #   dark  = 黑体白边   light = 白体黑边
-  # 桌面会话由 Noctalia hooks 触发 cursor-theme-sync 按解析后的模式切换；
-  # 登录页没有运行时切换，固定用 dark。
-  cursor-name-dark = "Bibata-Modern-Dark";
-  cursor-name-light = "Bibata-Modern-Light";
-  # 稳定别名：cursor-theme-sync 在 ~/.local/share/icons 维护一个指向当前
-  # dark/light 主题的符号链接。XCURSOR_THEME 固定写别名，niri 每次 spawn
-  # 子进程时都会重新读取，不必因为模式切换而重启 niri。已经在运行的旧进程
-  # 若还持有具体 dark/light 名字，需要重启一次才会改用别名。
-  cursor-alias = "Bibata-Modern-Current";
+  # 原版 Bibata Modern Ice（nixpkgs 的 bibata-cursors），固定不随模式切换。
+  cursor-name = "Bibata-Modern-Ice";
   cursor-size = 24;
 
   # --- 语义色（Nix Periwinkle）---

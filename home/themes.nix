@@ -1,5 +1,5 @@
 # ./home/themes.nix
-# 光标已移交 home/cursor-theme.nix（重着色 Bibata + Noctalia hooks 同步），
+# 光标固定在 home/cursor-theme.nix（原版 Bibata Modern Ice，无模式切换），
 # GTK 外观已移交 home/gtk.nix + Noctalia 的 gtk3/gtk4 模板。
 # 这里只保留 Qt 平台主题：gtk3 路线让 Qt 应用跟随 GTK 设置（adw-gtk3 由
 # Noctalia 模板按模式选择，CSS 由 noctalia.css 注入）——Qt 颜色间接跟壁纸走；

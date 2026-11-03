@@ -3,14 +3,14 @@
 #   - 模板生成 ~/.config/gtk-{3,4}.0/noctalia.css，并把 @import 加进 gtk.css
 #   - apply.sh 按模式用 gsettings/dconf 选 adw-gtk3 / adw-gtk3-dark
 #   - [theme].sync_color_scheme 负责 org.gnome.desktop.interface.color-scheme
-# Home Manager 只保留字体、图标、光标包和 settings.ini 结构：
+# Home Manager 只保留字体、图标、光标和 settings.ini 结构：
 #   - gtk.theme = null：不再往 settings.ini/dconf 写固定 gtk-theme-name，
-#     否则每次 HM 激活都会把 Noctalia 当前的深浅主题覆盖回浅色。
-#     实际的 gtk-theme-name 由 cursor-theme-sync 按 Noctalia 模式镜像进
-#     settings.ini，供 X11 / 无 XSETTINGS 的 GTK 应用使用。
+#     否则每次 HM 激活都会把 Noctalia 当前的深浅主题覆盖回固定值。
+#     Noctalia 模板只写 dconf/GSettings；X11/XWayland 的 GTK 应用读
+#     settings.ini，由 lib/gtk-theme-sync.nix 按模式补 gtk-theme-name。
 #   - gtk.colorScheme = null：不写 prefer-dark / color-scheme。
-#   - home.pointerCursor.gtk.enable = false（见 home/cursor-theme.nix）：
-#     光标名/尺寸由 cursor-theme-sync 按 Noctalia 模式写入，HM 不抢同一个键。
+#   - home.pointerCursor.gtk.enable = true（见 home/cursor-theme.nix）：
+#     光标固定 Bibata Modern Ice，HM 直接写 settings.ini 和 dconf 的 cursor 键。
 # adw-gtk3 仍显式安装：Noctalia 的 gtk apply.sh 靠它找 adw-gtk3 / dark 变体。
 #
 # nautilus 的玻璃完全由 niri 的窗口规则提供（与本项目作者 Fedora 机器上
@@ -27,6 +27,9 @@
   theme,
   ...
 }:
+let
+  gtkThemeSync = import ../lib/gtk-theme-sync.nix { inherit pkgs; };
+in
 {
   # GTK 外观基础值统一 mkDefault：homeConfigurations.all 全模块求值时会与其他
   # 模块同开，theme/iconTheme 的 package 是 unique 类型，同名值也要分优先级
@@ -61,15 +64,30 @@
 
   # gtk.theme = null 后 HM 不再自动安装 adw-gtk3；Noctalia 的 apply.sh 需要它
   # 在 XDG_DATA_DIRS 里找主题目录，所以显式装一份。
-  home.packages = [ pkgs.adw-gtk3 ];
+  home.packages = [ pkgs.adw-gtk3 gtkThemeSync ];
 
-  # cursor-theme-sync 会把这两个文件从 store 软链落成本地可写文件，并只补
-  # gtk-cursor-theme-name / gtk-cursor-theme-size。HM 激活默认拒绝覆盖非软链
-  # 文件，会报 "would be clobbered" 并让 home-manager-<user>.service 整体失败；
-  # 声明 force 后每次 switch 都还原软链，再由 cursor-theme-sync 的激活钩子
-  # 把当前模式的 cursor 键写回去（见 home/cursor-theme.nix）。
+  # gtk-theme-sync 会把这两个文件从 store 软链落成本地可写文件，只补
+  # gtk-theme-name。HM 激活默认拒绝覆盖非软链文件，会报 "would be clobbered"
+  # 并让 home-manager-<user>.service 整体失败；声明 force 后每次 switch 都
+  # 还原软链，再由下面的激活钩子/Noctalia hook 补回当前模式的主题名。
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;
+
+  # HM 激活把 settings.ini 还原成 store 软链后 gtk-theme-name 会丢；用当前
+  # Noctalia 模式补一次。Noctalia 没在跑时只告警，started hook 会再同步。
+  home.activation.gtkThemeSyncApply = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    export XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export DBUS_SESSION_BUS_ADDRESS="''${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+    # nixos-rebuild 的用户服务环境不保证带 WAYLAND_DISPLAY；Noctalia IPC
+    # 靠它找 socket。先从 systemd 用户管理器环境补，不自己扫描 socket。
+    if [ -z "''${WAYLAND_DISPLAY:-}" ]; then
+      WAYLAND_DISPLAY="$(${lib.getExe' pkgs.systemd "systemctl"} --user show-environment 2>/dev/null | ${lib.getExe' pkgs.gnused "sed"} -n 's/^WAYLAND_DISPLAY=//p')"
+      export WAYLAND_DISPLAY
+    fi
+    if ! ${lib.getExe gtkThemeSync} --apply; then
+      echo "gtk-theme-sync: Noctalia IPC unavailable; GTK theme will resync on next start or theme change" >&2
+    fi
+  '';
 
   # GTK3 "另存为" 对话框（xdg-desktop-portal-gtk）把窗口尺寸存在 dconf 里
   dconf.enable = true;

@@ -6,12 +6,12 @@
 #   - GTK 应用通过 portal 拿到宿主 adw-gtk3(-dark) 名称却找不到主题文件。
 # 全局 override 只补这两块：
 #   1. filesystems 暴露光标包、adw-gtk3、Tela 图标包和 ~/.themes；
-#   2. XCURSOR_* 固定到稳定别名，XCURSOR_PATH 先指向光标包本体，
-#      再回落到宿主 share。GTK 主题名不写死：仍由 portal 从宿主 GSettings
-#      读取，避免把沙箱里的深浅模式锁死。
+#   2. XCURSOR_* 固定到原版 Bibata Modern Ice，XCURSOR_PATH 先指向光标包
+#      本体，再回落到宿主 share。GTK 主题名不写死：仍由 portal 从宿主
+#      GSettings 读取，避免把沙箱里的深浅模式锁死。
 { lib, pkgs, theme, ... }:
 let
-  cursorPackage = import ../lib/cursor-package.nix { inherit pkgs theme; };
+  cursorPackage = pkgs.bibata-cursors;
   tela = pkgs.tela-icon-theme;
   adw = pkgs.adw-gtk3;
 
@@ -29,7 +29,7 @@ let
     filesystems=${filesystems};
 
     [Environment]
-    XCURSOR_THEME=${theme.cursor-alias}
+    XCURSOR_THEME=${theme.cursor-name}
     XCURSOR_SIZE=${toString theme.cursor-size}
     XCURSOR_PATH=${cursorPackage}/share/icons:/run/host/user-share/icons:/run/host/share/icons
     XMODIFIERS=@im=fcitx

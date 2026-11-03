@@ -13,7 +13,7 @@
     flatpak = true;
     ghostty = true;
     git = true;
-    gtk = true;         # GTK 字体/图标/光标包；配色与主题名由 noctalia 模板
+    gtk = true;         # GTK 字体/图标；配色与主题名由 noctalia 模板
     mpv = true;
     niri = true;        # niri 用户层配置（工作环境）
     noctalia = true;    # noctalia 桌面外壳 v5（bar/启动器/通知/OSD/托盘/剪贴板/锁屏/壁纸/polkit）
