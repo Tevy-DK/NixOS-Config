@@ -9,6 +9,7 @@
     cava = true;
     cli-tools = true;
     cursor-theme = true;
+    distrobox = true;
     fastfetch = true;
     flatpak = true;
     ghostty = true;

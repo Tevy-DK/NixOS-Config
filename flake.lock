@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793974853,
-        "narHash": "sha256-C3RtFYJA8JbJB/Ql/RburlsmEwsteeYYEkFORDIEeuo=",
+        "lastModified": 1794018791,
+        "narHash": "sha256-ISuCM+Rwo3C/+fI/or5WJoeFRNZvJS4fthG3pY8dSlk=",
         "owner": "Tevy-DK",
         "repo": "Tevy-DK-attic",
-        "rev": "cfc595477833760082c5d9c281e3c8f55866aaab",
+        "rev": "abfb2366b3b0c4d038079a3e4578a0c03445a465",
         "type": "github"
       },
       "original": {
