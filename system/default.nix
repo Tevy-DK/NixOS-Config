@@ -14,6 +14,7 @@
     ./network.nix
     ./nix-ld.nix
     ./pkgs.nix
+    ./podman.nix
     ./security.nix
     ./services.nix
     ./settings.nix
