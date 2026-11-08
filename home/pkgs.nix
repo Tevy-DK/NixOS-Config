@@ -16,5 +16,7 @@
     # 自建 flake：Motrix 下载器与 balenaEtcher 镜像写入工具
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.motrix
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.etcher
+    # 自建 flake：DSH 桌面端（转发 moraxyc/deepseek-harness.nix 构建）
+    inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.dsh-desktop
   ];
 }

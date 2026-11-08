@@ -1,5 +1,50 @@
 {
   "nodes": {
+    "deepseek-harness": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "tevy-dk-attic",
+          "nixpkgs"
+        ],
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1794133066,
+        "narHash": "sha256-aDsvKfzvDD3TpAAf7S4FXRFQHN3jGs0StAL0jsB+lWM=",
+        "owner": "moraxyc",
+        "repo": "deepseek-harness.nix",
+        "rev": "103931749003e91fc625013f7e0aeac2941b66cf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "moraxyc",
+        "repo": "deepseek-harness.nix",
+        "type": "github"
+      }
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "tevy-dk-attic",
+          "deepseek-harness",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793576659,
+        "narHash": "sha256-V1h85lUaJBQoHFrB2vpXZOE0Ju1MYSnIpsehoVZYlDo=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "ea2630b7470978622c7689a1ff75d2b389175399",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -43,18 +88,34 @@
         "tevy-dk-attic": "tevy-dk-attic"
       }
     },
+    "systems": {
+      "locked": {
+        "lastModified": 1776166891,
+        "narHash": "sha256-bI8yrEGjrohR5hkQox7UrxDH7XqrYMwI8SL/LrJ1+S8=",
+        "owner": "nix-systems",
+        "repo": "triplet",
+        "rev": "6de7bc09397911ce03636afbcf6118745ab2cda0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "triplet",
+        "type": "github"
+      }
+    },
     "tevy-dk-attic": {
       "inputs": {
+        "deepseek-harness": "deepseek-harness",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1794018791,
-        "narHash": "sha256-ISuCM+Rwo3C/+fI/or5WJoeFRNZvJS4fthG3pY8dSlk=",
+        "lastModified": 1794135230,
+        "narHash": "sha256-5v75/wp0XHh/+7HWt+nI2R/tZa27LVK44nWe2qHQthk=",
         "owner": "Tevy-DK",
         "repo": "Tevy-DK-attic",
-        "rev": "abfb2366b3b0c4d038079a3e4578a0c03445a465",
+        "rev": "fd7479d9545d31e179a479be36f930c8fa321f68",
         "type": "github"
       },
       "original": {
