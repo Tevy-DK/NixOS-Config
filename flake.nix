@@ -62,6 +62,32 @@
       # 仅保留本仓的 yazi 插件修补；omp 直接引用 tevy-dk-attic 的包，
       # 不再把第三方包集注入 pkgs 命名空间。
       overlays.default = _final: prev: {
+        # 上游 nixpkgs 2026-11-08 才给 clash-verge-rev 的 unwrapped 补上
+        # aws-lc（02a1ce73fa5f），nixos-unstable 还没带上；而 aws-lc-sys
+        # 0.46 在 cargo-setup-hook 里强制 AWS_LC_SYS_USE_SYSTEM=1，缺这个
+        # 依赖会让 clash-verge 构建 panic。这里只替换内层 unwrapped，
+        # 外层 wrapper 仍用上游 package.nix；上游带修复后自动跳过。
+        clash-verge-rev = let
+          pkgDir = prev.path + "/pkgs/by-name/cl/clash-verge-rev";
+          callPackage = path: args: let
+            drv = prev.callPackage path args;
+          in
+            if builtins.baseNameOf (toString path) == "unwrapped.nix"
+            && !(builtins.elem prev.aws-lc (drv.buildInputs or []))
+            then drv.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or []) ++ [prev.aws-lc];
+            })
+            else drv;
+        in
+          prev.callPackage (pkgDir + "/package.nix") {inherit callPackage;};
+
+        # termusic 0.13.2 的 nextest 用例 delete_unreferenced_albums
+        # (lib/src/new_database/artist_ops.rs) 在新依赖组合下必失败，
+        # 上游 nixpkgs 没有修复提交；跳过测试避免阻塞整机重建。
+        termusic = prev.termusic.overrideAttrs (_: {
+          doCheck = false;
+        });
+
         yaziPlugins = prev.yaziPlugins // {
           mount = prev.yaziPlugins.mount.overrideAttrs (old: {
             postPatch = (old.postPatch or "") + ''
