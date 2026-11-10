@@ -22,11 +22,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1794042290,
-        "narHash": "sha256-ziZn2PvCJE5JEEpqTdxXwJpPB+L3YqoCpTAMCzyaP3U=",
+        "lastModified": 1793726008,
+        "narHash": "sha256-jQp1wKvbwWdLBASTXkSi/VYmDJ5AbBi1WvcMt9HWJC8=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
         "type": "github"
       },
       "original": {
@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794222048,
-        "narHash": "sha256-RtZExzM6OKnxUA0p2kxA4nYjssT/b2BhYz580CUzOls=",
+        "lastModified": 1794018791,
+        "narHash": "sha256-ISuCM+Rwo3C/+fI/or5WJoeFRNZvJS4fthG3pY8dSlk=",
         "owner": "Tevy-DK",
         "repo": "Tevy-DK-attic",
-        "rev": "3c19a890d75efae80d34a931b549b13e0182b1d2",
+        "rev": "abfb2366b3b0c4d038079a3e4578a0c03445a465",
         "type": "github"
       },
       "original": {
