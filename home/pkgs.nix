@@ -1,7 +1,7 @@
 { pkgs, config, inputs, ... }:
 {
   home.packages = with pkgs; [
-    termusic
+    #termusic
     google-chrome
     tela-icon-theme
     obs-studio
@@ -16,5 +16,7 @@
     # 自建 flake：Motrix 下载器与 balenaEtcher 镜像写入工具
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.motrix
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.etcher
+    chatgpt
+    cc-switch
   ];
 }

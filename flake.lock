@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793979366,
-        "narHash": "sha256-7OoWDsYO9teiPxl0QdlS5lYE20Pue8/5mpscSL32FUA=",
+        "lastModified": 1794278858,
+        "narHash": "sha256-rkrJwLgLSHBnXfgoSKIDa+2LLGdTqynsV3GAxOTGhUU=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "2c0c1f01521469cf0271180c453c79782d53c2f6",
+        "rev": "82ce401aa350502897c3f2e85f384d61cd3b0b6d",
         "type": "github"
       },
       "original": {
@@ -22,11 +22,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1793726008,
-        "narHash": "sha256-jQp1wKvbwWdLBASTXkSi/VYmDJ5AbBi1WvcMt9HWJC8=",
+        "lastModified": 1794386569,
+        "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
+        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
         "type": "github"
       },
       "original": {
@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794018791,
-        "narHash": "sha256-ISuCM+Rwo3C/+fI/or5WJoeFRNZvJS4fthG3pY8dSlk=",
+        "lastModified": 1794550370,
+        "narHash": "sha256-cuybJp9Z6ouiP3OowAZt6yH3IidkKAlTWuV0VAroTw0=",
         "owner": "Tevy-DK",
         "repo": "Tevy-DK-attic",
-        "rev": "abfb2366b3b0c4d038079a3e4578a0c03445a465",
+        "rev": "1dc50defa4539fabe9eb167b22fbdba8d04364ac",
         "type": "github"
       },
       "original": {
