@@ -17,7 +17,9 @@
 #     backdrop 兜底色（= bg）是手写静态值
 {
   # --- 字体 ---
-  font = "FiraCode Nerd Font";
+  # Cascadia Code 的 Nerd 补丁变体（ghostty / GTK / mpv / zathura / swayimg）；
+  # Fira Code 只在 VSCodium 内使用，见 home/vscodium.nix
+  font = "Cascadia Code NF";
   font-size = 12;     # 终端字号
   font-size-ui = 11;  # GTK 界面字号
   font-size-bar = 12; # fuzzel / zathura 等小界面字号
