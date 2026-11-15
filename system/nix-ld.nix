@@ -15,10 +15,12 @@
     bzip2
     xz
     zstd
+    lz4                   # liblz4.so.1
     libffi
     ncurses
     readline
-    libxcrypt             # libcrypt.so.1，老程序常直接依赖
+    libxcrypt             # libcrypt.so.2
+    libxcrypt-legacy      # libcrypt.so.1，老程序硬依赖
     expat
     icu
     libxml2
@@ -79,11 +81,14 @@
     freetype
     fontconfig
     harfbuzz
+    fribidi               # libfribidi.so.0，双向文本整形
     cairo
     pango
     gdk-pixbuf
+    librsvg               # librsvg-2.so.2，gdk-pixbuf 的 SVG 加载
     glib
     gtk3
+    gtk4                  # libgtk-4.so.1
     at-spi2-core          # 同时提供 atk / at-spi2-atk
 
     # 音频 / 输入 / 游戏
@@ -103,5 +108,6 @@
     libpng
     libjpeg
     libtiff
+    libwebp               # libwebp.so.7，图像代码常 dlopen
   ];
 }
