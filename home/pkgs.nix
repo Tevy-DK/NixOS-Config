@@ -16,7 +16,5 @@
     # 自建 flake：Motrix 下载器与 balenaEtcher 镜像写入工具
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.motrix
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.etcher
-    chatgpt
-    cc-switch
   ];
 }
