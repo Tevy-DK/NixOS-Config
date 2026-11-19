@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, hostname, ... }:
 
 {
   home.sessionVariables = {
@@ -24,9 +24,15 @@
       end
     '';
     # 命令别名
+    #   nrs = 重建当前 hostname 对应的 NixOS 配置
+    #   nrn = 切到 desktop-niri 工作环境
+    #   nrh = 切到 desktop-hyprland 娱乐环境
+    # 两台机器的 hostname 与 flake 输出同名，切换后 nrs 自动指向当前桌面。
     shellAliases = {
-      nrs = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
-      nfu = "cd /etc/nixos; and nix flake update";
+      nrs = "sudo nixos-rebuild switch --flake /etc/nixos#${hostname}";
+      nrn = "sudo nixos-rebuild switch --flake /etc/nixos#desktop-niri";
+      nrh = "sudo nixos-rebuild switch --flake /etc/nixos#desktop-hyprland";
+      nfu = "nix flake update --flake /etc/nixos";
       ncgd = "sudo nix-collect-garbage -d";
     };
   };
