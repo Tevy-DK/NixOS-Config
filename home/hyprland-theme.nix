@@ -1,4 +1,6 @@
 # --- Hyprland 桌面外观（跟随 Caelestia 壁纸方案）---
+# 主题归属：btop/cava/ghostty 主题选择（写入者：本模块；主题文件写入者：
+#   Caelestia CLI 与 lib/caelestia-apps.nix 的 postHook）。
 # Caelestia 是 Hyprland 的唯一调色板来源：它写
 #   ~/.config/btop/themes/caelestia.theme
 #   ~/.config/gtk-{3,4}.0/gtk.css

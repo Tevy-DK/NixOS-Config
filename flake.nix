@@ -16,10 +16,11 @@
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
-      # 全局主题按桌面环境选：两者都是“颜色/字体/光标的唯一来源”，
-      # 但消费方不同。niri 的窗口配色由 Noctalia 从壁纸生成，本文件只供
-      # fastfetch/zathura 等静态工具；hyprland 的 Caelestia 没有模板分发，
-      # 全部应用 + 合成器边框都读 theme-hyprland.nix。
+      # 全局主题按桌面环境选：字体/光标共享，配色各有写入者。
+      # niri：运行期配色由 Noctalia 从壁纸生成，theme.nix 只供
+      # fastfetch/zathura 等静态工具；hyprland：运行期配色由 Caelestia
+      # 壁纸方案接管（gtk/hypr/btop + postHook 的 ghostty/cava），
+      # theme-hyprland.nix 是静态兜底与 fastfetch/zathura/mpv/fzf/bat 的色源。
       themes = {
         niri = import ./system/theme.nix;
         hyprland = import ./system/theme-hyprland.nix;
@@ -36,7 +37,7 @@
       # 桌面环境档案：inventory 每台机器的 desktop 字段 → 用户层开关覆盖。
       # 与 modules-enables.nix 的基础面板合并（同名键以档案为准）：
       #   niri     = niri + noctalia 外壳（工作环境）
-      #   hyprland = Hyprland + caelestia + clipse 剪贴板 + 静态主题（娱乐环境）
+      #   hyprland = Hyprland + caelestia + clipse 剪贴板（Caelestia 壁纸配色）
       # 两个档案显式互斥，避免任一模块混入另一台机器。
       # 新桌面 = home/ 与 system/ 各加一个模块 + 这里加一行档案。
       desktopProfiles = {

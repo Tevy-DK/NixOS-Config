@@ -1,4 +1,8 @@
 # 全局主题：颜色与字号的唯一来源。
+# 主题归属：niri 运行期应用配色（写入者：Noctalia 模板；HM 只声明
+#   gtk.css 的 noctalia import 行）。本文件只服务静态消费方：
+#   fastfetch/zathura/fzf/bat/fuzzel、光标与字体；
+#   hyprland 的静态兜底见 system/theme-hyprland.nix。
 #
 # 调色板：Nix Periwinkle —— 蓝灰夜色底 + NixOS logo 的紫蓝主强调。
 # 背景/表面族色值取自壁纸（wallhaven-x6x3gz，深蓝底 + 几何雪花）的浅色块：

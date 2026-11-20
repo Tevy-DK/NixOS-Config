@@ -1,17 +1,18 @@
-# 全局主题（desktop-hyprland）：Nix Periwinkle。
+# 全局主题（desktop-hyprland）：Nix Periwinkle，静态兜底。
+# 主题归属：Hyprland 运行期应用配色（写入者：Caelestia 壁纸方案 ——
+#   gtk/hypr/btop 由 Caelestia CLI 写，ghostty/cava 由 lib/caelestia-apps.nix
+#   的 postHook 写，home/hyprland.lua 读 hypr/scheme/current.lua 画边框）。
+# 本文件是静态兜底 + fastfetch/zathura/mpv/fzf/bat 的色源：Caelestia 的
+# 深浅模式切换时这几个工具不跟随；scheme.json/current.lua 缺失时
+# caelestia-apps 也用它兜底。
 #
-# desktop-niri 的配色由 Noctalia 从壁纸生成（见 system/theme.nix 的注释），
-# Caelestia Shell 没有同款“把调色板分发给所有应用”的声明式模板，所以
-# Hyprland 机器继续用同一代的静态 theme.nix：颜色在这里是唯一来源，
-# home/hyprland-theme.nix 把它渲染给 btop/cava/ghostty，
-# home/hyprland.nix 把普通 Hyprland 边框色替换进 home/hyprland.lua；
-# borders-plus-plus 的两层边框使用 Lua 里的静态半透明玻璃色，不参与求值。
+# borders-plus-plus 的玻璃边框是写死的半透明白（home/hyprland.lua），
+# 不参与这里求值。
 #
-# 与 system/theme.nix 的差异只有三处：
-#   1. 补齐旧版消费方要的派生色（accent-deep/accent-bg/cursor/border/
-#      ansi-bright），niri 侧已由 Noctalia 模板接管，不需要这些键；
-#   2. 字体/光标沿用当前值，避免和共享的 home/*.nix 分叉；
-#   3. 注释写明消费方，删掉已不存在的 fuzzel/GTK 颜色链路。
+# 与 system/theme.nix 的差异只有两处：
+#   1. 补齐 caelestia-apps 兜底要的派生色（accent-deep/accent-bg/cursor/
+#      border/ansi-bright），niri 侧已由 Noctalia 模板接管，不需要这些键；
+#   2. 字体/光标沿用当前值，避免和共享的 home/*.nix 分叉。
 {
   # --- 字体 ---
   # 与 desktop-niri 保持一致：Cascadia Code 的 Nerd 补丁变体。
