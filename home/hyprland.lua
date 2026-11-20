@@ -17,10 +17,6 @@
 -- Create your files separately and then require them like this:
 -- require("myColors")
 
--- borders-plus-plus：加载与配置都在本文件。插件 .so 路径由 HM 求值注入，
--- 避免把插件配置写进 home/hyprland.nix。
-hl.plugin.load("@bordersPlusPlus@")
-
 ------------------
 ---- MONITORS ----
 ------------------
@@ -154,9 +150,8 @@ hl.config({
 
 -- borders-plus-plus（nixpkgs 的 hyprlandPlugins.borders-plus-plus）：
 -- 在 general/decoration 的 1px 主边框外再画两层玻璃质感边框。
--- 插件加载声明在 home/hyprland.nix（HM 需要在 require 本文件前
--- hl.plugin.load）；这里只放插件自己的配置，颜色是静态半透明白，
--- 不再从 theme 求值。
+-- home/hyprland.nix 只声明插件包，HM 在 require 本文件前执行
+-- hl.plugin.load；这里只放插件参数，颜色是静态半透明白，不做 theme 求值。
 hl.config({
     plugin = {
         borders_plus_plus = {
