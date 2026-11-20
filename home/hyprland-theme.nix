@@ -48,7 +48,11 @@ in
   # 不误删 Caelestia 已经生成的可用文件（重放随后会重建它）。
   home.activation.themeResidueCleanupHyprland =
     lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-      rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+      rm -f -- ${lib.escapeShellArgs (
+        residue.noctaliaArtifacts
+        ++ residue.caelestiaDisabledArtifacts
+        ++ residue.legacyThemeArtifacts
+      )}
       for v in 3 4; do
         f="${config.xdg.configHome}/gtk-$v.0/gtk.css"
         if [ -L "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then

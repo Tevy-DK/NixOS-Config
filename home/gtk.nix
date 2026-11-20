@@ -95,7 +95,11 @@ in
   # caelestia.theme 等。每次激活先清掉；scheme.json/wallpaper/sequences.txt
   # 是用户状态，不在此列（见 lib/theme-residue.nix）。
   home.activation.themeResidueCleanupNiri = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-    rm -f -- ${lib.escapeShellArgs residue.caelestiaArtifacts}
+    rm -f -- ${lib.escapeShellArgs (
+      residue.caelestiaRuntimeArtifacts
+      ++ residue.caelestiaDisabledArtifacts
+      ++ residue.legacyThemeArtifacts
+    )}
   '';
 
   # HM 激活把 settings.ini 还原成 store 软链后 gtk-theme-name 会丢；用当前

@@ -441,19 +441,25 @@ in {
     (cfg "niri/noctalia.kdl")
   ];
 
-  # niri 档案删除：Caelestia 运行时产物。不删 scheme.json / wallpaper /
-  # sequences.txt：它们是 Hyprland 的用户状态，niri 不读，删了会丢方案。
-  caelestiaArtifacts = [
+  # Caelestia 在 Hyprland 上主动产出、niri 必须删除的文件。
+  # 不含 scheme.json / wallpaper / sequences.txt：那是用户状态，删了会丢方案。
+  caelestiaRuntimeArtifacts = [
     (cfg "hypr/scheme/current.conf")
     (cfg "hypr/scheme/current.lua")
-    (cfg "qtengine/caelestia.colors")
-    (cfg "qtengine/config.json")
     (cfg "btop/themes/caelestia.theme")
     (cfg "cava/themes/caelestia")
     (cfg "ghostty/themes/caelestia")
+    (cfg "gtk-3.0/thunar.css")
+    (cfg "gtk-4.0/thunar.css")
+  ];
+
+  # cli.json 里已关闭的生产者留下的产物：两个档案都要删。
+  caelestiaDisabledArtifacts = [
     (cfg "htop/htoprc")
     (cfg "fuzzel/fuzzel.ini")
     (cfg "nvtop/nvtop.colors")
+    (cfg "qtengine/caelestia.colors")
+    (cfg "qtengine/config.json")
     (cfg "spicetify/Themes/caelestia/color.ini")
     (cfg "Equicord/themes/caelestia.theme.css")
     (cfg "Vencord/themes/caelestia.theme.css")
@@ -462,11 +468,13 @@ in {
     (cfg "vesktop/themes/caelestia.theme.css")
     (cfg "legcord/themes/caelestia.theme.css")
     (cfg "zed/themes/caelestia.json")
-    (cfg "gtk-3.0/thunar.css")
-    (cfg "gtk-4.0/thunar.css")
-    # 已关闭的生产者（enablePandora/enableWarp = false）留下的旧残留。
     (data "PandoraLauncher/themes/caelestia.json")
     (data "warp-terminal/themes/caelestia.yaml")
+  ];
+
+  # 旧代遗留、ghostty 不读的文件（生效的是 config）。
+  legacyThemeArtifacts = [
+    (cfg "ghostty/config.ghostty")
   ];
 }
 ```
@@ -478,9 +486,13 @@ in {
 ```nix
 home.activation.themeResidueCleanupHyprland =
   lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-    rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+    rm -f -- ${lib.escapeShellArgs (
+      residue.noctaliaArtifacts
+      ++ residue.caelestiaDisabledArtifacts
+      ++ residue.legacyThemeArtifacts
+    )}
     for v in 3 4; do
-      f="$HOME/.config/gtk-$v.0/gtk.css"
+      f="${config.xdg.configHome}/gtk-$v.0/gtk.css"
       if [ -L "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then
         rm -f -- "$f"
       fi
@@ -492,7 +504,11 @@ home.activation.themeResidueCleanupHyprland =
 
 ```nix
 home.activation.themeResidueCleanupNiri = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-  rm -f -- ${lib.escapeShellArgs residue.caelestiaArtifacts}
+  rm -f -- ${lib.escapeShellArgs (
+    residue.caelestiaRuntimeArtifacts
+    ++ residue.caelestiaDisabledArtifacts
+    ++ residue.legacyThemeArtifacts
+  )}
 '';
 ```
 
