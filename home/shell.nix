@@ -30,8 +30,8 @@
     # 两台机器的 hostname 与 flake 输出同名，切换后 nrs 自动指向当前桌面。
     shellAliases = {
       nrs = "sudo nixos-rebuild switch --flake /etc/nixos#${hostname}";
-      nrn = "sudo nixos-rebuild switch --flake /etc/nixos#desktop-niri";
-      nrh = "sudo nixos-rebuild switch --flake /etc/nixos#desktop-hyprland";
+      nrn = "sudo nixos-rebuild boot --flake /etc/nixos#desktop-niri";
+      nrh = "sudo nixos-rebuild boot --flake /etc/nixos#desktop-hyprland";
       nfu = "nix flake update --flake /etc/nixos";
       ncgd = "sudo nix-collect-garbage -d";
     };
