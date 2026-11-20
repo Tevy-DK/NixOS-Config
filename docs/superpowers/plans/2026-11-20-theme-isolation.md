@@ -410,21 +410,25 @@ git commit -m "refactor(gtk): gtk.css 归 niri，主题名/模式归 Caelestia"
 - Modify: `home/cava.nix`
 
 **Interfaces:**
-- `import ../lib/theme-residue.nix { inherit (config.xdg) configHome; }` → `{ noctaliaArtifacts :: [string]; caelestiaArtifacts :: [string]; }`，绝对路径。
-- 两处 activation 名都是 `themeResidueCleanup`，挂在 `lib.hm.dag.entryBefore [ "linkGeneration" ]`。
+- `import ../lib/theme-residue.nix { inherit (config.xdg) configHome dataHome; }` → `{ noctaliaArtifacts :: [string]; caelestiaArtifacts :: [string]; }`，绝对路径。
+- 两处 activation 名分别是 `themeResidueCleanupNiri`（`home/gtk.nix`）和
+  `themeResidueCleanupHyprland`（`home/hyprland-theme.nix`），都挂在
+  `lib.hm.dag.entryBefore [ "linkGeneration" ]`。名字必须不同，否则
+  `homeConfigurations.all` 同时加载两个模块时 option 冲突。
+- `gtk.css` 不在通用删除表里：Hyprland 侧做定向清理，只删软链或内容仍含
+  `noctalia.css` 的文件，避免误删 Caelestia 已生成的可用文件。
 
 - [ ] **Step 1: 建 `lib/theme-residue.nix`**
 
 ```nix
-{ configHome }:
+{ configHome, dataHome }:
 let
   cfg = p: "${configHome}/${p}";
+  data = p: "${dataHome}/${p}";
 in {
-  # Hyprland 档案删除：Noctalia 运行时产物。gtk.css 是 niri 的 import 文件，
-  # 在 Hyprland 上由 Caelestia 重新生成，所以一并删除。
+  # Hyprland 档案删除：Noctalia 运行时产物。gtk.css 不在这里：
+  # 它由 home/hyprland-theme.nix 定向删除（仅软链/含 noctalia.css 的文件）。
   noctaliaArtifacts = [
-    (cfg "gtk-3.0/gtk.css")
-    (cfg "gtk-4.0/gtk.css")
     (cfg "gtk-3.0/noctalia.css")
     (cfg "gtk-3.0/noctalia-extensions.css")
     (cfg "gtk-4.0/noctalia.css")
@@ -460,24 +464,44 @@ in {
     (cfg "zed/themes/caelestia.json")
     (cfg "gtk-3.0/thunar.css")
     (cfg "gtk-4.0/thunar.css")
+    # 已关闭的生产者（enablePandora/enableWarp = false）留下的旧残留。
+    (data "PandoraLauncher/themes/caelestia.json")
+    (data "warp-terminal/themes/caelestia.yaml")
   ];
 }
 ```
 
 - [ ] **Step 2: 挂 activation**
 
-`home/hyprland-theme.nix`：
+`home/hyprland-theme.nix`（定向删 gtk.css，只删 niri 的 import/软链）：
 
 ```nix
-home.activation.themeResidueCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-  rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+home.activation.themeResidueCleanupHyprland =
+  lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+    for v in 3 4; do
+      f="$HOME/.config/gtk-$v.0/gtk.css"
+      if [ -L "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then
+        rm -f -- "$f"
+      fi
+    done
+  '';
+```
+
+`home/gtk.nix`：
+
+```nix
+home.activation.themeResidueCleanupNiri = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+  rm -f -- ${lib.escapeShellArgs residue.caelestiaArtifacts}
 '';
 ```
 
-`home/gtk.nix` 同样一段，换成 `residue.caelestiaArtifacts`。两处 `let` 里：
+两处 `let` 里：
 
 ```nix
-residue = import ../lib/theme-residue.nix { inherit (config.xdg) configHome; };
+residue = import ../lib/theme-residue.nix {
+  inherit (config.xdg) configHome dataHome;
+};
 ```
 
 两个模块都要加 `config` 参数。

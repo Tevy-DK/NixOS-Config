@@ -4,14 +4,17 @@
 # Caelestia 是 Hyprland 的唯一调色板来源：它写
 #   ~/.config/btop/themes/caelestia.theme
 #   ~/.config/gtk-{3,4}.0/gtk.css
-#   ~/.config/hypr/scheme/current.lua
+#   ~/.config/hypr/scheme/current.lua（Lua 配置）或 current.conf（其它情况，
+#     包括没有 HYPRLAND_INSTANCE_SIGNATURE 的 HM 激活期重放）
 # 并由 lib/caelestia-apps.nix 的 postHook 写
 #   ~/.config/ghostty/themes/caelestia
 #   ~/.config/cava/themes/caelestia
 # 这里只声明“用哪个主题”，不生成主题文件；niri 档案不加载本模块。
 { config, lib, ... }:
 let
-  residue = import ../lib/theme-residue.nix { inherit (config.xdg) configHome; };
+  residue = import ../lib/theme-residue.nix {
+    inherit (config.xdg) configHome dataHome;
+  };
 in
 {
   # btop：主题文件归 Caelestia（enableBtop），HM 只选主题名。
@@ -40,10 +43,17 @@ in
       fi
     '';
 
-  # 共享 HOME 下 niri 写入的 Noctalia 产物对 Hyprland 是污染：gtk.css 的
-  # noctalia import、noctalia.theme 等。每次激活先清掉，保证本档案的
-  # rg noctalia ~/.config/... 干净；Caelestia 随后生成自己的文件。
-  home.activation.themeResidueCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-    rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
-  '';
+  # 共享 HOME 下 niri 写入的 Noctalia 产物对 Hyprland 是污染：noctalia.css、
+  # noctalia.theme 等。每次激活先清掉；gtk.css 只删 niri 的 import/软链，
+  # 不误删 Caelestia 已经生成的可用文件（重放随后会重建它）。
+  home.activation.themeResidueCleanupHyprland =
+    lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+      rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+      for v in 3 4; do
+        f="$HOME/.config/gtk-$v.0/gtk.css"
+        if [ -L "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then
+          rm -f -- "$f"
+        fi
+      done
+    '';
 }

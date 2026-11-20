@@ -30,7 +30,9 @@
 }:
 let
   gtkThemeSync = import ../lib/gtk-theme-sync.nix { inherit pkgs; };
-  residue = import ../lib/theme-residue.nix { inherit (config.xdg) configHome; };
+  residue = import ../lib/theme-residue.nix {
+    inherit (config.xdg) configHome dataHome;
+  };
 in
 {
   # GTK 外观基础值统一 mkDefault：homeConfigurations.all 全模块求值时会与其他
@@ -92,7 +94,7 @@ in
   # 共享 HOME 下 Hyprland/Caelestia 的运行时产物对 niri 是污染：current.lua、
   # caelestia.theme 等。每次激活先清掉；scheme.json/wallpaper/sequences.txt
   # 是用户状态，不在此列（见 lib/theme-residue.nix）。
-  home.activation.themeResidueCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+  home.activation.themeResidueCleanupNiri = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
     rm -f -- ${lib.escapeShellArgs residue.caelestiaArtifacts}
   '';
 

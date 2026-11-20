@@ -17,15 +17,29 @@
 -- Create your files separately and then require them like this:
 -- require("myColors")
 
--- 调色板：Caelestia 的 apply_hypr 生成 ~/.config/hypr/scheme/current.lua，
--- 键名即 scheme 颜色（primary/outline/...）。首次启动或清场后文件不存在，
--- 用 system/theme-hyprland.nix 的静态深色兜底，不能让配置解析失败。
+-- 调色板：Caelestia 的 apply_hypr 生成 ~/.config/hypr/scheme/current.lua
+--（Lua 配置）或 current.conf（否则）。HM 激活期的重放没有
+-- HYPRLAND_INSTANCE_SIGNATURE，可能只产出 current.conf，所以两种都读。
+-- 都不存在时用 system/theme-hyprland.nix 的静态深色兜底，避免解析失败。
 local cfg_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local function read_conf(p)
+  local f = io.open(p)
+  if not f then return nil end
+  local out = {}
+  for line in f:lines() do
+    local k, v = line:match("^%$(%w+)%s*=%s*(%x+)")
+    if k then out[k] = v end
+  end
+  f:close()
+  return next(out) and out or nil
+end
 local ok, scheme = pcall(dofile, cfg_home .. "/hypr/scheme/current.lua")
-local t = ok and scheme or {
-  primary = "649afa", secondary = "8b93f8", tertiary = "9d8fe0",
-  outline = "737e9c", surface = "2e3246", onSurface = "d4dcec",
-}
+local t = (ok and type(scheme) == "table" and scheme)
+  or read_conf(cfg_home .. "/hypr/scheme/current.conf")
+  or {
+    primary = "649afa", secondary = "8b93f8", tertiary = "9d8fe0",
+    outline = "737e9c", surface = "2e3246", onSurface = "d4dcec",
+  }
 local function rgba(c, a) return "rgba(" .. c .. a .. ")" end
 
 ------------------

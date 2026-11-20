@@ -10,8 +10,8 @@
 # 不参与这里求值。
 #
 # 与 system/theme.nix 的差异只有两处：
-#   1. 补齐 caelestia-apps 兜底要的派生色（accent-deep/accent-bg/cursor/
-#      border/ansi-bright），niri 侧已由 Noctalia 模板接管，不需要这些键；
+#   1. 补齐 caelestia-apps 静态兜底要的 ansi-bright（niri 侧由 Noctalia
+#      模板接管，不需要这个键）；
 #   2. 字体/光标沿用当前值，避免和共享的 home/*.nix 分叉。
 {
   # --- 字体 ---
@@ -37,11 +37,7 @@
   accent = "#649AFA";    # 主强调；Hyprland 活动边框
   accent-2 = "#8B93F8";  # 交互强调；fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
-  accent-deep = "#415E9A";          # logo 深蓝渐变起点；btop 图表起点
-  accent-bg = "#414868";            # 选区背景；壁纸最亮块再提亮一档
-  cursor = "#DDE4F3";               # 光标颜色；ghostty cursor-color
   black = "#1E2030";                # 最深表面；壁纸基底
-  border = "#4A506B";               # 非活动窗口边框
 
   # --- ANSI normal 8 色（Nix Periwinkle 终端色；蓝/青取自 logo 渐变）---
   ansi = {

@@ -1,4 +1,4 @@
-# 全局主题：颜色与字号的唯一来源。
+# 全局主题（desktop-niri）：Nix Periwinkle 静态值与字体字号。
 # 主题归属：niri 运行期应用配色（写入者：Noctalia 模板；HM 只声明
 #   gtk.css 的 noctalia import 行）。本文件只服务静态消费方：
 #   fastfetch/zathura/fzf/bat/fuzzel、光标与字体；

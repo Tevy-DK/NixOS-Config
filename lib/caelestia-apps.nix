@@ -75,8 +75,23 @@ pkgs.writeShellApplication {
           flavour="$(jq -r '.flavour // empty' "$state")"
           variant="$(jq -r '.variant // empty' "$state")"
         else
-          mode="$(jq -r '.mode' ${fallbackFile})"
-          colours="$(jq -c '.colours' ${fallbackFile})"
+          # 首次激活/清场后没有方案：用 Caelestia 自己的默认方案播种，
+          # 让模板生成完整 gtk/thunar/btop/hypr 产物，而不是只补半套。
+          ${caelestia} scheme set --name catppuccin --flavour mocha \
+            --mode dark --variant tonalspot || true
+          if [ -r "$state" ] && jq -e . "$state" >/dev/null 2>&1; then
+            have_state=1
+            mode="$(jq -r '.mode' "$state")"
+            colours="$(jq -c '.colours' "$state")"
+            name="$(jq -r '.name // empty' "$state")"
+            flavour="$(jq -r '.flavour // empty' "$state")"
+            variant="$(jq -r '.variant // empty' "$state")"
+          else
+            # 播种也失败（无会话总线等）：退回静态深色兜底，至少把
+            # ghostty/cava/dconf 写成可读主题。
+            mode="$(jq -r '.mode' ${fallbackFile})"
+            colours="$(jq -c '.colours' ${fallbackFile})"
+          fi
         fi
         ;;
       *)
@@ -138,11 +153,38 @@ pkgs.writeShellApplication {
         if [ -n "$flavour" ]; then
           set -- "$@" --flavour "$flavour"
         fi
-        ${caelestia} "$@" || true
+        status=0
+        ${caelestia} "$@" || status=$?
+        if [ "$status" -ne 0 ]; then
+          echo "caelestia-apps: 方案重放失败（exit $status），继续激活" >&2
+        fi
       else
         echo "caelestia-apps: scheme.json 缺 name/mode/variant，跳过方案重放" >&2
       fi
     fi
+
+    # 最后兜底：重放失败或模板异常时 gtk.css 不能缺，也不能残留 niri 的
+    # noctalia import。用临时文件 + mv 覆盖，旧路径是软链时也不会写进 store。
+    for v in 3 4; do
+      f="$cfg/gtk-$v.0/gtk.css"
+      if [ ! -s "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then
+        mkdir -p "$cfg/gtk-$v.0"
+        tmp="$(mktemp "$cfg/gtk-$v.0/.gtk.css.XXXXXX")"
+        {
+          printf '@define-color accent_color #%s;\n' "$(get primary)"
+          printf '@define-color accent_bg_color #%s;\n' "$(get primary)"
+          printf '@define-color accent_fg_color #%s;\n' "$(get onPrimary)"
+          printf '@define-color window_bg_color #%s;\n' "$(get background)"
+          printf '@define-color window_fg_color #%s;\n' "$(get onBackground)"
+          printf '@define-color view_bg_color #%s;\n' "$(get background)"
+          printf '@define-color view_fg_color #%s;\n' "$(get onBackground)"
+          printf '@define-color headerbar_bg_color #%s;\n' "$(get surfaceContainerHigh)"
+          printf '@define-color headerbar_fg_color #%s;\n' "$(get onBackground)"
+          printf '@define-color card_bg_color #%s;\n' "$(get surfaceContainerHigh)"
+        } > "$tmp"
+        mv -f "$tmp" "$f"
+      fi
+    done
 
     # 运行中的实例重载；不在跑就跳过。
     busctl --user --timeout=2 call com.mitchellh.ghostty /com/mitchellh/ghostty \
