@@ -1,4 +1,4 @@
-{ pkgs, lib, config, theme, ... }:
+{ pkgs, lib, config, desktop, theme, ... }:
 
 let
   # 1. 使用 fetchFromGitHub 声明式地获取着色器仓库
@@ -26,6 +26,7 @@ in {
       # foreground 光标在深色主题下看起来是白色。模式/壁纸变化时重新生成并 reload。
       # 这里必须写 "noctalia"：Noctalia 的 apply.sh 用它判断是否还需要改配置；
       # HM 的 config 是只读 store 软链，不能让 apply.sh 去写。
+      # Hyprland 档案由 home/hyprland-theme.nix mkForce 成 "caelestia"。
       theme = "noctalia";
       window-theme = "auto";                   # 跟随系统主题
 
@@ -115,14 +116,16 @@ in {
   # 存在，校验会失败并让 home-manager-<user>.service 整体失败。这里只在
   # 文件缺失时放一个注释占位（与 home/niri.nix 的 noctalia.kdl 占位同款）；
   # 文件一旦存在就不再触碰，Noctalia 生成的真实主题会覆盖它。
+  # 仅 niri：Hyprland 的主题是 themes/caelestia，占位在
+  # home/hyprland-theme.nix 的 caelestiaGhosttyThemeBootstrap。
   home.activation.ghosttyNoctaliaThemeBootstrap =
-    lib.hm.dag.entryBetween [ "onFilesChange" ] [ "linkGeneration" ] ''
+    lib.mkIf (desktop == "niri") (lib.hm.dag.entryBetween [ "onFilesChange" ] [ "linkGeneration" ] ''
       theme_file=${lib.escapeShellArg "${config.xdg.configHome}/ghostty/themes/noctalia"}
       if [ ! -e "$theme_file" ]; then
         mkdir -p "$(dirname "$theme_file")"
         printf '%s\n' '# Placeholder: Noctalia generates this theme on first apply.' > "$theme_file"
       fi
-    '';
+    '');
 
   # Ghostty 不监听配置文件，HM 改完配置后已运行的实例需要显式 reload。
   # 这里在激活完成后通过 app 级 org.gtk.Actions 调 reload-config；没在跑
