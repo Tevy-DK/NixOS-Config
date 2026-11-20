@@ -51,9 +51,8 @@ local fileManager = "yazi"
 --
 hl.on("hyprland.start", function ()
     hl.exec_cmd("fcitx5")
-    -- 绝对路径，不依赖 HM 包是否已进入 Hyprland 的 PATH。
-    -- -n 避免重复启动；配置文件由 HM 的 caelestia/shell.json 管理。
-    hl.exec_cmd("@caelestiaShell@ -n")
+    -- caelestia：禁用了它的 systemd 单元（home/caelestia.nix），由 Hyprland 直接拉起
+    hl.exec_cmd("caelestia shell -d")
 end)
 
 
@@ -99,10 +98,8 @@ hl.config({
         border_size = 1,
 
         col = {
-            -- 颜色由 home/hyprland.nix 从 system/theme-hyprland.nix 注入；
-            -- 占位符不是合法 Hyprland 颜色，只用于本仓 HM 求值。
-            active_border   = { colors = {"@accent@", "@accent-2@"}, angle = 45 },
-            inactive_border = "@border@",
+            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
+            inactive_border = "rgba(595959aa)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -126,7 +123,7 @@ hl.config({
             enabled      = true,
             range        = 4,
             render_power = 3,
-            color        = @shadow@,
+            color        = 0xee1a1a1a,
         },
 
         blur = {
@@ -139,33 +136,12 @@ hl.config({
             input_methods = false,
         },
         active_border = {
-            colors = { "@accent-bright@", "@accent@", "@accent-2@" },
+            colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
         },
     },
 
     animations = {
         enabled = true,
-    },
-})
-
--- borders-plus-plus（nixpkgs 的 hyprlandPlugins.borders-plus-plus）：
--- 在 general/decoration 的 1px 主边框外再画两层玻璃质感边框。
--- home/hyprland.nix 只声明插件包，HM 在 require 本文件前执行
--- hl.plugin.load；这里只放插件参数，颜色是静态半透明白，不做 theme 求值。
-hl.config({
-    plugin = {
-        borders_plus_plus = {
-            add_borders = 2,
-            natural_rounding = true,
-
-            col = {
-                border_1 = "rgba(ffffff26)", -- 外层高光，约 15% 不透明
-                border_2 = "rgba(ffffff12)", -- 内层薄边，约 7% 不透明
-            },
-
-            border_size_1 = 2,
-            border_size_2 = 1,
-        },
     },
 })
 

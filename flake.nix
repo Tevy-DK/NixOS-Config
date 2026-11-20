@@ -130,6 +130,9 @@
               ];
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              # Hyprland 首次启动会先写自己的 hyprland.lua；HM 激活遇到
+              # 普通文件时不再整体失败，而是备份到 .hm-backup 后建立链接。
+              home-manager.backupFileExtension = "hm-backup";
               home-manager.extraSpecialArgs = {
                 inherit inputs theme enabled desktop;
                 inherit (cfg) username;
