@@ -3,8 +3,8 @@
 # 只在 desktop = "hyprland" 的机器上随 home/hyprland.nix 一起启用。
 # 包直接取 nixpkgs 的 caelestia-shell / caelestia-cli，不再引上游 flake。
 # shell.json 整份来自 ./shell.json；cli.json 选择性开启：Caelestia 是壁纸
-# 调色板源，只把颜色分发给它有模板的消费方（hypr/GTK/终端/btop），cava/
-# fuzzel 等由 lib/caelestia-apps.nix 的 postHook 写入主题文件，不覆盖 HM 配置。
+# 调色板源，只把颜色分发给它有模板的消费方（hypr/GTK/终端/btop），cava
+# 等由 lib/caelestia-apps.nix 的 postHook 写入主题文件，不覆盖 HM 配置。
 #
 # GTK 外观：与 niri 的 gtk.nix 互斥（flake.nix 档案开关）。gtk.css/thunar.css
 # 与 dconf 的 GTK 键由 Caelestia 的 apply_gtk 写；主题名按 mode 由

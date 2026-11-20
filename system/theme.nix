@@ -1,7 +1,7 @@
 # 全局主题（desktop-niri）：Nix Periwinkle 静态值与字体字号。
 # 主题归属：niri 运行期应用配色（写入者：Noctalia 模板；HM 只声明
 #   gtk.css 的 noctalia import 行）。本文件只服务静态消费方：
-#   fastfetch/zathura/fzf/bat/fuzzel、光标与字体；
+#   fastfetch/zathura/fzf/bat、光标与字体；
 #   hyprland 的静态兜底见 system/theme-hyprland.nix。
 #
 # 调色板：Nix Periwinkle —— 蓝灰夜色底 + NixOS logo 的紫蓝主强调。
@@ -13,7 +13,7 @@
 #   紫蓝 #637DDF → #649AFA → #719EFA
 # 个别色做了明度/饱和度微调以适配深底。字号/字体仍是自己的。
 # 接入情况：
-#   - fastfetch / zathura / fzf / bat / fuzzel / 光标名与尺寸：引用本文件
+#   - fastfetch / zathura / fzf / bat / 光标名与尺寸：引用本文件
 #   - ghostty/btop/cava：配色由 noctalia 内置模板生成（壁纸取色），本文件不参与
 #   - GTK/Qt/niri 窗口配色：由 noctalia 内置模板生成（见 home/noctalia.nix）
 #   - GTK 主题名：由 noctalia 的 gtk 模板按模式选 adw-gtk3 / adw-gtk3-dark
@@ -26,7 +26,7 @@
   font = "Cascadia Code NF";
   font-size = 12;     # 终端字号
   font-size-ui = 11;  # GTK 界面字号
-  font-size-bar = 12; # fuzzel / zathura 等小界面字号
+  font-size-bar = 12; # zathura / swayimg 等小界面字号
 
   # --- 光标 ---
   # 原版 Bibata Modern Ice（nixpkgs 的 bibata-cursors），固定不随模式切换。
@@ -40,7 +40,7 @@
   fg-bright = "#E6ECF8"; # 强调前景
   muted = "#9AA7C4";     # 次要可读文本
   muted-alt = "#737E9C"; # 装饰/禁用文本（随底色提亮，保持原可读档位）
-  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：fzf/fuzzel 等
+  accent = "#649AFA";    # 主强调（logo 紫蓝渐变中段）：fzf 等
   accent-2 = "#8B93F8";  # 交互强调（紫蓝再提亮）：菜单高亮、fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
   black = "#1E2030";     # 最深表面；亮色强调上的文字；壁纸基底色

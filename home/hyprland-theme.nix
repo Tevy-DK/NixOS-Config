@@ -1,7 +1,7 @@
 # --- Hyprland 桌面外观（跟随 Caelestia 壁纸方案）---
 # 主题归属：btop/cava/ghostty 主题选择（写入者：本模块；主题文件写入者：
 #   Caelestia CLI 与 lib/caelestia-apps.nix 的 postHook）。
-# Caelestia 是 Hyprland 的唯一调色板来源：它写
+# Caelestia 是 Hyprland 的运行期唯一调色板来源：它写
 #   ~/.config/btop/themes/caelestia.theme
 #   ~/.config/gtk-{3,4}.0/gtk.css
 #   ~/.config/hypr/scheme/current.lua（Lua 配置）或 current.conf（其它情况，
@@ -50,7 +50,7 @@ in
     lib.hm.dag.entryBefore [ "linkGeneration" ] ''
       rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
       for v in 3 4; do
-        f="$HOME/.config/gtk-$v.0/gtk.css"
+        f="${config.xdg.configHome}/gtk-$v.0/gtk.css"
         if [ -L "$f" ] || grep -q 'noctalia.css' "$f" 2>/dev/null; then
           rm -f -- "$f"
         fi

@@ -27,7 +27,7 @@ local function read_conf(p)
   if not f then return nil end
   local out = {}
   for line in f:lines() do
-    local k, v = line:match("^%$(%w+)%s*=%s*(%x+)")
+    local k, v = line:match("^%$([%w_]+)%s*=%s*(%x+)")
     if k then out[k] = v end
   end
   f:close()

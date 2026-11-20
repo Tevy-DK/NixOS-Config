@@ -28,13 +28,13 @@
   cursor-size = 24;
 
   # --- 语义色（Nix Periwinkle）---
-  bg = "#2E3246";        # 主背景；zathura / btop / Hyprland shadow
+  bg = "#2E3246";        # 主背景；zathura 等静态消费（btop/Hyprland 运行期归 Caelestia）
   bg-alt = "#393D52";    # 凸起表面（选中项 / 侧栏）
   fg = "#D4DCEC";        # 主前景
   fg-bright = "#E6ECF8"; # 强调前景
   muted = "#9AA7C4";     # 次要可读文本
-  muted-alt = "#737E9C"; # 装饰/禁用文本；btop 边框
-  accent = "#649AFA";    # 主强调；Hyprland 活动边框
+  muted-alt = "#737E9C"; # 装饰/禁用文本（btop 边框运行期归 Caelestia）
+  accent = "#649AFA";    # 主强调；fzf 等静态消费（Hyprland 活动边框运行期归 Caelestia）
   accent-2 = "#8B93F8";  # 交互强调；fzf 提示、zathura 搜索
   accent-bright = "#9DC4FD";        # 更亮的蓝，稀疏高亮
   black = "#1E2030";                # 最深表面；壁纸基底

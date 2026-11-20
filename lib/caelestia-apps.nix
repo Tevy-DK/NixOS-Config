@@ -43,6 +43,7 @@ pkgs.writeShellApplication {
   # hyprland 提供 hyprctl（末尾 reload 边框）；caelestia-cli 用于重放方案。
   runtimeInputs = [
     pkgs.coreutils
+    pkgs.gnugrep
     pkgs.jq
     pkgs.dconf
     pkgs.systemd
@@ -89,6 +90,7 @@ pkgs.writeShellApplication {
           else
             # 播种也失败（无会话总线等）：退回静态深色兜底，至少把
             # ghostty/cava/dconf 写成可读主题。
+            echo "caelestia-apps: 无法播种默认方案，使用静态兜底" >&2
             mode="$(jq -r '.mode' ${fallbackFile})"
             colours="$(jq -c '.colours' ${fallbackFile})"
           fi
@@ -142,9 +144,10 @@ pkgs.writeShellApplication {
     # X11/XWayland 的 GTK 只读 settings.ini；复用 niri 的同一脚本。
     gtk-theme-sync --mode "$mode" || true
 
-    # 激活清场会删掉 gtk.css / thunar.css / btop 主题 / hypr/scheme/current.lua，
-    # 而本脚本只补 ghostty/cava。状态文件存在时用同一方案重放一次，
-    # 让 Caelestia 的 apply_colours 重新生成上述产物并刷新边框。
+    # 激活清场会删掉 thunar.css / btop 主题 / hypr/scheme/current.*；
+    # gtk.css 只在仍是 niri import/软链时才被定向删除。本脚本只补
+    # ghostty/cava，因此状态文件存在时用同一方案重放一次，让 Caelestia
+    # 的 apply_colours 重新生成上述产物并刷新边框。
     # 放在本脚本写完之后：apply_gtk 写 adw-gtk3-dark，随后的 postHook
     # （--hook，不会再进 --apply，无递归）把它按 mode 纠正，保证最后写入。
     if [ "$have_state" = 1 ]; then
