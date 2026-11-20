@@ -2,6 +2,7 @@
 let
   inherit (pkgs) lib;
   gtkSync = import ./gtk-theme-sync.nix { inherit pkgs; };
+  caelestia = lib.getExe pkgs.caelestia-cli;
   hex = c: lib.toLower (lib.removePrefix "#" c);
 
   # scheme.json 缺失时（首次激活、清场后）使用静态深色兜底。
@@ -39,10 +40,24 @@ let
 in
 pkgs.writeShellApplication {
   name = "caelestia-apps";
-  runtimeInputs = [ pkgs.coreutils pkgs.jq pkgs.dconf pkgs.systemd pkgs.procps gtkSync ];
+  # hyprland 提供 hyprctl（末尾 reload 边框）；caelestia-cli 用于重放方案。
+  runtimeInputs = [
+    pkgs.coreutils
+    pkgs.jq
+    pkgs.dconf
+    pkgs.systemd
+    pkgs.procps
+    pkgs.caelestia-cli
+    pkgs.hyprland
+    gtkSync
+  ];
   text = ''
     mode=dark
     colours=
+    name=
+    flavour=
+    variant=
+    have_state=0
     state="''${XDG_STATE_HOME:-$HOME/.local/state}/caelestia/scheme.json"
     cfg="''${XDG_CONFIG_HOME:-$HOME/.config}"
 
@@ -53,8 +68,12 @@ pkgs.writeShellApplication {
         ;;
       --apply)
         if [ -r "$state" ] && jq -e . "$state" >/dev/null 2>&1; then
+          have_state=1
           mode="$(jq -r '.mode' "$state")"
           colours="$(jq -c '.colours' "$state")"
+          name="$(jq -r '.name // empty' "$state")"
+          flavour="$(jq -r '.flavour // empty' "$state")"
+          variant="$(jq -r '.variant // empty' "$state")"
         else
           mode="$(jq -r '.mode' ${fallbackFile})"
           colours="$(jq -c '.colours' ${fallbackFile})"
@@ -107,6 +126,23 @@ pkgs.writeShellApplication {
 
     # X11/XWayland 的 GTK 只读 settings.ini；复用 niri 的同一脚本。
     gtk-theme-sync --mode "$mode" || true
+
+    # 激活清场会删掉 gtk.css / thunar.css / btop 主题 / hypr/scheme/current.lua，
+    # 而本脚本只补 ghostty/cava。状态文件存在时用同一方案重放一次，
+    # 让 Caelestia 的 apply_colours 重新生成上述产物并刷新边框。
+    # 放在本脚本写完之后：apply_gtk 写 adw-gtk3-dark，随后的 postHook
+    # （--hook，不会再进 --apply，无递归）把它按 mode 纠正，保证最后写入。
+    if [ "$have_state" = 1 ]; then
+      if [ -n "$name" ] && [ -n "$mode" ] && [ -n "$variant" ]; then
+        set -- scheme set --name "$name" --mode "$mode" --variant "$variant"
+        if [ -n "$flavour" ]; then
+          set -- "$@" --flavour "$flavour"
+        fi
+        ${caelestia} "$@" || true
+      else
+        echo "caelestia-apps: scheme.json 缺 name/mode/variant，跳过方案重放" >&2
+      fi
+    fi
 
     # 运行中的实例重载；不在跑就跳过。
     busctl --user --timeout=2 call com.mitchellh.ghostty /com/mitchellh/ghostty \
