@@ -17,6 +17,17 @@
 -- Create your files separately and then require them like this:
 -- require("myColors")
 
+-- 调色板：Caelestia 的 apply_hypr 生成 ~/.config/hypr/scheme/current.lua，
+-- 键名即 scheme 颜色（primary/outline/...）。首次启动或清场后文件不存在，
+-- 用 system/theme-hyprland.nix 的静态深色兜底，不能让配置解析失败。
+local cfg_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local ok, scheme = pcall(dofile, cfg_home .. "/hypr/scheme/current.lua")
+local t = ok and scheme or {
+  primary = "649afa", secondary = "8b93f8", tertiary = "9d8fe0",
+  outline = "737e9c", surface = "2e3246", onSurface = "d4dcec",
+}
+local function rgba(c, a) return "rgba(" .. c .. a .. ")" end
+
 ------------------
 ---- MONITORS ----
 ------------------
@@ -98,8 +109,11 @@ hl.config({
         border_size = 1,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border = {
+                colors = { rgba(t.primary, "ee"), rgba(t.secondary, "ee"), rgba(t.tertiary, "ee") },
+                angle = 45,
+            },
+            inactive_border = rgba(t.outline, "aa"),
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -136,7 +150,7 @@ hl.config({
             input_methods = false,
         },
         active_border = {
-            colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
+            colors = { rgba(t.primary, "ee"), rgba(t.secondary, "ee"), rgba(t.tertiary, "ee") },
         },
     },
 
@@ -416,10 +430,10 @@ hl.config({
         border_size = 2,
         col = {
             active_border = {
-                colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
+                colors = { rgba(t.primary, "ee"), rgba(t.secondary, "ee"), rgba(t.tertiary, "ee") },
                 angle = 45,
             },
-            inactive_border = "rgba(ffffff22)",
+            inactive_border = rgba(t.outline, "aa"),
         },
     },
 
