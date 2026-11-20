@@ -7,7 +7,10 @@
 #   ~/.config/ghostty/themes/caelestia
 #   ~/.config/cava/themes/caelestia
 # 这里只声明“用哪个主题”，不生成主题文件；niri 档案不加载本模块。
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  residue = import ../lib/theme-residue.nix { inherit (config.xdg) configHome; };
+in
 {
   # btop：主题文件归 Caelestia（enableBtop），HM 只选主题名。
   programs.btop.settings.color_theme = lib.mkForce "caelestia";
@@ -34,4 +37,11 @@
         printf '%s\n' '# Placeholder: caelestia-apps writes this.' > "$f"
       fi
     '';
+
+  # 共享 HOME 下 niri 写入的 Noctalia 产物对 Hyprland 是污染：gtk.css 的
+  # noctalia import、noctalia.theme 等。每次激活先清掉，保证本档案的
+  # rg noctalia ~/.config/... 干净；Caelestia 随后生成自己的文件。
+  home.activation.themeResidueCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    rm -f -- ${lib.escapeShellArgs residue.noctaliaArtifacts}
+  '';
 }

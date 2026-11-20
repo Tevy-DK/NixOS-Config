@@ -30,6 +30,7 @@
 }:
 let
   gtkThemeSync = import ../lib/gtk-theme-sync.nix { inherit pkgs; };
+  residue = import ../lib/theme-residue.nix { inherit (config.xdg) configHome; };
 in
 {
   # GTK 外观基础值统一 mkDefault：homeConfigurations.all 全模块求值时会与其他
@@ -87,6 +88,13 @@ in
     text = ''@import url("noctalia.css");'';
     force = true;
   };
+
+  # 共享 HOME 下 Hyprland/Caelestia 的运行时产物对 niri 是污染：current.lua、
+  # caelestia.theme 等。每次激活先清掉；scheme.json/wallpaper/sequences.txt
+  # 是用户状态，不在此列（见 lib/theme-residue.nix）。
+  home.activation.themeResidueCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    rm -f -- ${lib.escapeShellArgs residue.caelestiaArtifacts}
+  '';
 
   # HM 激活把 settings.ini 还原成 store 软链后 gtk-theme-name 会丢；用当前
   # Noctalia 模式补一次。Noctalia 没在跑时只告警，started hook 会再同步。
