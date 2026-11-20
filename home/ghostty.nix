@@ -97,7 +97,12 @@ in {
     	"ctrl+plus=increase_font_size:1"
     	"ctrl+minus=decrease_font_size:1"
     	"ctrl+zero=reset_font_size"
-    	"global:ctrl+grave_accent=toggle_quick_terminal"
+	# 不写 `global:ctrl+grave_accent=toggle_quick_terminal`：`global:` 会让
+	# 每个 ghostty 进程各自向 Hyprland 注册同一个全局快捷键，而
+	# gtk-single-instance=detect 下 `ghostty -e yazi` 这类带参数启动是独立
+	# 实例，第二次注册就会报「trigger is already bound by another hotkey」。
+	# 全局开关改由 Hyprland 绑定 CTRL+grave 调 `ghostty +toggle-quick-terminal`
+	# （D-Bus IPC，见 home/hyprland.lua）。
     	"ctrl+shift+comma=reload_config"
       ];
 

@@ -311,6 +311,12 @@ hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd("ghostty -e yazi"))
+
+-- Ghostty 下拉式快速终端：由 Hyprland 全局绑定，经 D-Bus IPC 切换。
+-- 不在 ghostty.nix 里用 `global:`：每个 ghostty 进程都会注册一次，
+-- `ghostty -e yazi` 这种独立实例会撞上已有绑定并报错。
+hl.bind("CTRL + grave", hl.dsp.exec_cmd("ghostty +toggle-quick-terminal"))
+
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
