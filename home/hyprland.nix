@@ -12,6 +12,8 @@ let
 
   rgba = color: alpha: "rgba(${hex color}${alpha})";
 
+  borderPlugin = pkgs.hyprlandPlugins.borders-plus-plus;
+
   luaConfig = builtins.replaceStrings
     [
       "@accent@"
@@ -19,6 +21,8 @@ let
       "@accent-bright@"
       "@border@"
       "@shadow@"
+      "@caelestiaShell@"
+      "@bordersPlusPlus@"
     ]
     [
       (rgba theme.accent "ff")
@@ -26,6 +30,8 @@ let
       (rgba theme.accent-bright "ff")
       (rgba theme.border "aa")
       "0xee${hex theme.black}"
+      "${pkgs.caelestia-shell}/bin/caelestia-shell"
+      "${borderPlugin}/lib/lib${borderPlugin.pname}.so"
     ]
     (builtins.readFile ./hyprland.lua);
 in
@@ -36,11 +42,6 @@ in
     package = null;         # ✅ 告诉 HM 不要自己安装 Hyprland，用系统的
     portalPackage = null;   # ✅ 告诉 HM 不要自己安装 Portal，用系统的
 
-    # 这里只声明 borders-plus-plus 的包路径；HM 据此在生成的
-    # hyprland.lua 里先 hl.plugin.load，再 require config。插件配置全部
-    # 在 home/hyprland.lua 的 plugin.borders_plus_plus 节点，不写在 Nix 里。
-    plugins = [ pkgs.hyprlandPlugins.borders-plus-plus ];
-
     extraLuaFiles = {
       "config" = {
         content = luaConfig;
@@ -48,6 +49,13 @@ in
       };
     };
   };
+
+  # Hyprland 首次启动若在 HM 激活前发生，会自己生成
+  # ~/.config/hypr/hyprland.lua；HM 激活随后会因 “would be clobbered”
+  # 整体失败，导致 config.lua 和 Caelestia autostart 都不落地。
+  # 声明 force 让 HM 明确拥有这两个入口文件，覆盖自动生成的占位配置。
+  xdg.configFile."hypr/hyprland.lua".force = true;
+  xdg.configFile."hypr/config.lua".force = true;
 
   # 截图：hyprland.lua 里 Mod+Shift+S（区域）/ Mod+Shift+Alt+S（窗口）绑定
   programs.hyprshot = {

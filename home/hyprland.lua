@@ -17,6 +17,10 @@
 -- Create your files separately and then require them like this:
 -- require("myColors")
 
+-- borders-plus-plus：加载与配置都在本文件。插件 .so 路径由 HM 求值注入，
+-- 避免把插件配置写进 home/hyprland.nix。
+hl.plugin.load("@bordersPlusPlus@")
+
 ------------------
 ---- MONITORS ----
 ------------------
@@ -51,8 +55,9 @@ local fileManager = "yazi"
 --
 hl.on("hyprland.start", function ()
     hl.exec_cmd("fcitx5")
-    -- caelestia：禁用了它的 systemd 单元（home/caelestia.nix），由 Hyprland 直接拉起
-    hl.exec_cmd("caelestia shell -d")
+    -- 绝对路径，不依赖 HM 包是否已进入 Hyprland 的 PATH。
+    -- -n 避免重复启动；配置文件由 HM 的 caelestia/shell.json 管理。
+    hl.exec_cmd("@caelestiaShell@ -n")
 end)
 
 

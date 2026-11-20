@@ -24,6 +24,10 @@
     "caelestia/cli.json".text = builtins.toJSON {
       theme.enableGtk = false;
     };
+    # 与 niri 的 gtk.nix 同款：旧代际/手工改过的 settings.ini 是普通文件时，
+    # 不加 force 会让 HM 的 checkLinkTargets 以 “would be clobbered” 整体失败。
+    "gtk-3.0/settings.ini".force = true;
+    "gtk-4.0/settings.ini".force = true;
   };
 
   gtk = {
