@@ -6,11 +6,10 @@
 # 调色板源，只把颜色分发给它有模板的消费方（hypr/GTK/终端/btop），cava/
 # fuzzel 等由 lib/caelestia-apps.nix 的 postHook 写入主题文件，不覆盖 HM 配置。
 #
-# GTK 外观：与 niri 的 gtk.nix 互斥（flake.nix 档案开关）。这里只声明
-# 与 niri 同一套的静态 dconf 基础键（adw-gtk3-dark/字体/图标），不加载
-# niri 的 Noctalia 模板/hook。Caelestia 的 enableGtk 会按壁纸重写 gtk.css，
-# 与“用 theme.nix 固定配色”的目标冲突，因此关闭；GTK 颜色保持 adw-gtk3-dark。
-# 切换代际时 HM 不会清除旧 dconf 键，显式同写后两个环境的 GTK 基础设置一致。
+# GTK 外观：与 niri 的 gtk.nix 互斥（flake.nix 档案开关）。gtk.css/thunar.css
+# 与 dconf 的 GTK 键由 Caelestia 的 apply_gtk 写；主题名按 mode 由
+# caelestia-apps 的 postHook 纠正（apply_gtk 写死 adw-gtk3-dark）。HM 只写
+# 字体/图标与 settings.ini（force），不声明 gtk.css，也不写主题名/模式。
 { pkgs, lib, theme, ... }:
 let
   caelestiaApps = import ../lib/caelestia-apps.nix { inherit pkgs theme; };
@@ -21,6 +20,9 @@ in
   home.packages = [
     pkgs.caelestia-shell
     pkgs.caelestia-cli
+    # gtk.theme = null 后 HM 不再自动安装 adw-gtk3；Caelestia 写 dconf 的
+    # 主题名指向它，必须留在 XDG_DATA_DIRS 里。
+    pkgs.adw-gtk3
   ];
 
   xdg.configFile = {
@@ -60,13 +62,13 @@ in
     ${lib.getExe caelestiaApps} --apply || echo "caelestia-apps: apply failed" >&2
   '';
 
+  # GTK 主题名/模式归 Caelestia：apply_gtk 写 gtk.css/thunar.css 和 dconf，
+  # caelestia-apps 的 postHook 再按 mode 纠正写死的 adw-gtk3-dark。
+  # HM 写 null，避免每次激活把 prefer-light 重置回固定值。
   gtk = {
     enable = true;
-    colorScheme = "dark";
-    theme = {
-      name = "adw-gtk3-dark";
-      package = pkgs.adw-gtk3;
-    };
+    theme = null;         # 主题名由 caelestia-apps 按 mode 写 dconf/settings.ini
+    colorScheme = null;   # 同上，避免 HM 激活把 prefer-light 重置成 prefer-dark
     font = {
       name = theme.font;
       size = theme.font-size-ui;

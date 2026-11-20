@@ -24,6 +24,7 @@
 {
   pkgs,
   lib,
+  config,
   theme,
   ...
 }:
@@ -72,6 +73,20 @@ in
   # 还原软链，再由下面的激活钩子/Noctalia hook 补回当前模式的主题名。
   xdg.configFile."gtk-3.0/settings.ini".force = true;
   xdg.configFile."gtk-4.0/settings.ini".force = true;
+
+  # GTK 的 *颜色* 文件 gtk.css 归 Noctalia：它运行时写同目录的
+  # noctalia.css。HM 只声明这一行 import，让 niri 的 gtk.css 也有写入者；
+  # Noctalia 的 ensure_gtk_css_import 看到内容已含 noctalia.css + @import
+  # 会直接返回，不会去改写只读软链。Hyprland 档案不加载本模块，gtk.css
+  # 由 Caelestia 的 apply_gtk 独占。
+  xdg.configFile."gtk-3.0/gtk.css" = {
+    text = ''@import url("noctalia.css");'';
+    force = true;
+  };
+  xdg.configFile."gtk-4.0/gtk.css" = {
+    text = ''@import url("noctalia.css");'';
+    force = true;
+  };
 
   # HM 激活把 settings.ini 还原成 store 软链后 gtk-theme-name 会丢；用当前
   # Noctalia 模式补一次。Noctalia 没在跑时只告警，started hook 会再同步。
