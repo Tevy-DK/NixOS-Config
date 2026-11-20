@@ -410,7 +410,8 @@ git commit -m "refactor(gtk): gtk.css 归 niri，主题名/模式归 Caelestia"
 - Modify: `home/cava.nix`
 
 **Interfaces:**
-- `import ../lib/theme-residue.nix { inherit (config.xdg) configHome dataHome; }` → `{ noctaliaArtifacts :: [string]; caelestiaArtifacts :: [string]; }`，绝对路径。
+- `import ../lib/theme-residue.nix { inherit (config.xdg) configHome dataHome; }` → `{ noctaliaArtifacts; caelestiaRuntimeArtifacts; caelestiaDisabledArtifacts; legacyThemeArtifacts; }`，全部是绝对路径的 `[string]`。
+- 组合方式：niri（`home/gtk.nix`）删 `caelestiaRuntimeArtifacts ++ caelestiaDisabledArtifacts ++ legacyThemeArtifacts`；Hyprland（`home/hyprland-theme.nix`）删 `noctaliaArtifacts ++ caelestiaDisabledArtifacts ++ legacyThemeArtifacts`。
 - 两处 activation 名分别是 `themeResidueCleanupNiri`（`home/gtk.nix`）和
   `themeResidueCleanupHyprland`（`home/hyprland-theme.nix`），都挂在
   `lib.hm.dag.entryBefore [ "linkGeneration" ]`。名字必须不同，否则
