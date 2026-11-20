@@ -7,21 +7,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Hyprland 娱乐环境的外壳：quickshell 全家桶 + CLI，钉在搬回 main 时的版本，
-    # 避免上游配置格式漂移。nixpkgs 跟随本仓，niri 不受该输入影响。
-    #
-    # quickshell 官方源 git.outfoxxed.me 走大仓库 fetch，网络差时会在求值期
-    # 失败；固定同一个 commit 的 GitHub 镜像，并让 caelestia-shell 的嵌套
-    # quickshell 输入 follow 到这里。
-    quickshell = {
-      url = "github:quickshell-mirror/quickshell/9b0f339b19057f4731bf3b48293307d7ef241671";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    caelestia-shell = {
-      url = "github:caelestia-dots/shell/e72df8eb687246aa6c6ec6daa631073b374e5215";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.quickshell.follows = "quickshell";
-    };
     # 自建二进制包集（omp、sjmcl 等），用户级安装见 home/omp.nix、home/pkgs.nix
     tevy-dk-attic = {
       url = "github:Tevy-DK/Tevy-DK-attic";
