@@ -408,3 +408,56 @@ hl.layer_rule({
   blur = true,
   ignore_alpha = 0.57,
 })
+
+hl.config({
+    general = {
+        gaps_in = 6,
+        gaps_out = 12,
+        border_size = 2,
+        col = {
+            active_border = {
+                colors = { "rgba(c6e8ffff)", "rgba(9bbcffcc)", "rgba(d9c7ffff)" },
+                angle = 45,
+            },
+            inactive_border = "rgba(ffffff22)",
+        },
+    },
+
+    decoration = {
+        rounding = 16,
+        rounding_power = 2,
+        active_opacity = 0.88,
+        inactive_opacity = 0.76,
+
+        shadow = {
+            enabled = true,
+            range = 18,
+            render_power = 4,
+            color = 0x55000000,
+        },
+
+        blur = {
+            enabled = true,
+            size = 8,
+            passes = 3,
+            vibrancy = 0.25,
+            brightness = 1.0,
+            contrast = 0.90,
+            ignore_opacity = true,
+            input_methods = false,
+        },
+    },
+
+    plugin = {
+        borders_plus_plus = {
+            add_borders = 2,
+            natural_rounding = true,
+            col = {
+                border_1 = "rgba(ffffff2e)",
+                border_2 = "rgba(ffffff14)",
+            },
+            border_size_1 = 1,
+            border_size_2 = 1,
+        },
+    },
+})

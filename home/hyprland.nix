@@ -8,7 +8,7 @@
 
     package = null;         # ✅ 告诉 HM 不要自己安装 Hyprland，用系统的
     portalPackage = null;   # ✅ 告诉 HM 不要自己安装 Portal，用系统的
-    plugins = [ ];
+    plugins = [ pkgs.hyprlandPlugins.borders-plus-plus ];
     extraLuaFiles = {
       "config" = {
         content = ./hyprland.lua;
