@@ -25,7 +25,6 @@
     nvim = true;
     omp = true;         # oh-my-pi（pi 编码代理的配置/技能套件，Tevy-DK-attic）
     pkgs = true;
-    qwen3-embed = true; # 本地嵌入服务（Qwen3-Embedding-0.6B + llama-server，8010 端口）
     shell = true;
     starship = true;
     swayimg = true;
