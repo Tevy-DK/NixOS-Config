@@ -23,7 +23,6 @@
     niri = true;        # niri 用户层配置（工作环境）
     noctalia = true;    # noctalia 桌面外壳 v5（bar/启动器/通知/OSD/托盘/剪贴板/锁屏/壁纸/polkit）
     nvim = true;
-    omp = true;         # oh-my-pi（pi 编码代理的配置/技能套件，Tevy-DK-attic）
     pkgs = true;
     shell = true;
     starship = true;
