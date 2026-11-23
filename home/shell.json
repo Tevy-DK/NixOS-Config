@@ -76,10 +76,23 @@
             "explorer": ["thunar"]
         },
         "idle": {
-            "lockBeforeSleep": false,
+            "lockBeforeSleep": true,
             "inhibitWhenAudio": true,
             "inhibitWhenCharging": false,
-            "timeouts": []
+            "timeouts": [
+                {
+                    "timeout": 180,
+                    "idleAction": "lock",
+                    "inhibitWhenAudio": false,
+                    "inhibitWhenCharging": false,
+                    "respectInhibitors": true
+                },
+                {
+                    "timeout": 300,
+                    "idleAction": "dpms off",
+                    "returnAction": "dpms on"
+                }
+            ]
         },
         "battery": {
             "warnLevels": [
