@@ -388,7 +388,7 @@ binds {
     }
 
     Super+Shift+C hotkey-overlay-title="VSCodium" {
-        spawn "codium"
+        spawn "code"
     }
 
     // ═══ 窗口管理 ═══

@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795325944,
-        "narHash": "sha256-dOPB2dprqzQTkfE8dUpFAD93oeOqT/yQzUXs52yGjJk=",
+        "lastModified": 1795534022,
+        "narHash": "sha256-xkRZ+PcPWaAyf9YrEBszYD5w2S6/Ac2tIfsufzd4dEQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "cf726ddc129f140991c2011a02d336933d0c4c4c",
+        "rev": "b56bcd042b5e69ad188eca20d9bec1bfbf3dd453",
         "type": "github"
       },
       "original": {
@@ -50,11 +50,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795287658,
-        "narHash": "sha256-7JE3RJ+ud5tnj2omvDmCR6J1eTIRsnAzl1izUMr8Eno=",
+        "lastModified": 1795558614,
+        "narHash": "sha256-YUelb6VjAKbV5zb0l+m2Z3eq0J2LghnCy0gKxMCSL4M=",
         "owner": "Tevy-DK",
         "repo": "Tevy-DK-attic",
-        "rev": "3b65fcebae03341c9388236dd2d6d9a36a307537",
+        "rev": "b87752c58b976146ed1edc06f9da3449553f34de",
         "type": "github"
       },
       "original": {

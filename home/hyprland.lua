@@ -386,7 +386,7 @@ hl.bind(mainMod .. " + SHIFT + P", hl.dsp.dpms("off"))
 -- 额外应用启动（未占用键位）
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("helium"))        -- 浏览器
 hl.bind(mainMod .. " + G", hl.dsp.exec_cmd("google-chrome"))
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("codium"))  -- VSCodium
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("code"))  -- VSCode
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
