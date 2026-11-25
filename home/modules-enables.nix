@@ -28,7 +28,7 @@
     starship = true;
     swayimg = true;
     themes = true;
-    vscodium = true;
+    vscode = true;
     yazi = true;
     zathura = true;
     x11 = true;
