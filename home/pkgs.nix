@@ -18,8 +18,7 @@
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.etcher
     # 自建 flake: Google Antigravity 桌面应用
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.antigravity
-    # 自建 flake: omp 和 pi
+    # 自建 flake: omp
     inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.omp
-    inputs.tevy-dk-attic.packages.${pkgs.stdenv.hostPlatform.system}.pi
   ];
 }
