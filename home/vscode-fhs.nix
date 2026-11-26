@@ -16,9 +16,8 @@ let
   };
 
 in {
-  programs.vscode = {
+  programs.vscode-fhs = {
     enable = true;
-    package = vscode-fhs;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
         zhuangtongfa.material-theme
