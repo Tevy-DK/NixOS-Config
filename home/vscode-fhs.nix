@@ -28,6 +28,7 @@ in {
         ms-python.python
         ms-vscode.makefile-tools
         ms-ceintl.vscode-language-pack-zh-hans
+        vscode-extensions.continue.continue
       ];
       mutableUserSettings = true;
       userSettings = vscodesettings;
