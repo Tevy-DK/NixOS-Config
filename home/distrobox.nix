@@ -3,7 +3,7 @@
   # 用户层 distrobox 配置；distrobox 本体由 system/podman.nix 安装到系统 PATH。
   programs.distrobox = {
     enable = true;
-    package = null;
+    package = null; # 由 system/podman.nix 安装到系统 PATH，home 层不再重复安装。
     # 容器手动用 distrobox assemble create 创建；不启用登录时自动拉取/重建。
     enableSystemdUnit = false;
 

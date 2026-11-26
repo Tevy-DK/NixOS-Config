@@ -21,14 +21,15 @@ in {
     package = pkgs.vscode-fhs;
     profiles.default = {
       extensions = with pkgs.vscode-extensions; [
-        zhuangtongfa.material-theme
-        ziglang.vscode-zig
-        yzhang.markdown-all-in-one
-        bbenoist.nix
-        ms-python.python
-        ms-vscode.makefile-tools
-        ms-ceintl.vscode-language-pack-zh-hans
-        vscode-extensions.continue.continue
+        zhuangtongfa.material-theme # One Dark Pro Night Flat
+        ziglang.vscode-zig # ziglang support
+        yzhang.markdown-all-in-one # markdown support
+        bbenoist.nix # nix support  
+        ms-python.python # python support
+        ms-vscode.makefile-tools # makefile support
+        ms-ceintl.vscode-language-pack-zh-hans # Chinese language pack
+        ms-vscode.cpptools # C/C++ support 
+        vizards.deepseek-v4-for-copilot # Deepseek for Copilot support
       ];
       mutableUserSettings = true;
       userSettings = vscodesettings;
