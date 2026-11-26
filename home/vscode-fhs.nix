@@ -9,10 +9,13 @@ let
     "editor.fontFamily" = "FiraCode Nerd Font Mono,FiraCode Nerd Font Mono Med";
     "workbench.colorTheme" = "One Dark Pro Night Flat";
     "files.autoSave" = "afterDelay";
-    "chat.disableAIFeatures" = true;
+    "chat.disableAIFeatures" = false;
     "liveServer.settings.donotShowInfoMsg" = true;
     "explorer.confirmDelete" = false;
     "zig.zls.enabled" = "on";
+    # 明确指定二进制，避免 GUI 启动时 PATH 没带上用户 profile
+    "zig.zls.path" = "${pkgs.zls}/bin/zls";
+    "zig.path" = "${pkgs.zig}/bin/zig";
   };
 
 in {
