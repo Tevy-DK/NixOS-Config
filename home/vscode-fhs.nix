@@ -29,7 +29,6 @@ in {
         ms-vscode.makefile-tools # makefile support
         ms-ceintl.vscode-language-pack-zh-hans # Chinese language pack
         ms-vscode.cpptools # C/C++ support 
-        vizards.deepseek-v4-for-copilot # Deepseek for Copilot support
       ];
       mutableUserSettings = true;
       userSettings = vscodesettings;
